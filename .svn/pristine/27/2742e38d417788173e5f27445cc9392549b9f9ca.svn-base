@@ -1,0 +1,295 @@
+<div class="content-header">   
+	<h1>Daftar Prosedur</h1>
+</div>
+
+<div class="content">
+	<div class="box box-warning">
+	  	<div class="box-body">
+	  		<div class="box-header">
+				<button type="button" class="btn btn-sm btn-success" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+				<button type="button" class="btn btn-sm btn-success" id="btnCetakExcel"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>		
+			</div>
+	  		<div class="form-control" style="overflow:scroll;min-height:430px;">
+				<div id="ajaxTreeGrid"></div>
+			</div>
+		</div> <!-- <div class="box-body"> -->
+	  </div>
+	</div> <!-- <div class="box box-warning"> -->
+</div>
+
+ <div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormTambahData">Tambah Data Prosedur</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="pesanBaru"></div>
+	      		<form id="formBaru" class="form-horizontal" action="admin/TambahProsedur" method="post">
+	      			<div class="form-group">
+					    <label for="kodeProsedur" class="col-sm-4 control-label">Kode</label>
+					    <div class="col-sm-8">
+					       	<input id="kodeProsedur" name="kodeProsedur" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProsedurKonsultan" class="col-sm-4 control-label">Nama (Konsultan)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurKonsultan" name="namaProsedurKonsultan" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProsedurTraining" class="col-sm-4 control-label">Nama (Training)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurTraining" name="namaProsedurTraining" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProsedurMedia" class="col-sm-4 control-label">Nama (Media)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurMedia" name="namaProsedurMedia" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProsedurSystem" class="col-sm-4 control-label">Nama (System)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurSystem" name="namaProsedurSystem" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="deskripsi" class="col-sm-4 control-label">Deskripsi</label>
+					    <div class="col-sm-8">
+					       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
+					    </div>
+				    </div>
+		        </form>  
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-success" id="btnTambahProsedur">Tambah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalTambahProsedur">Batal</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+ <div class="modal hide" id="dialogFormUbah" tabindex="2" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormUbahData">Ubah Data Prosedur</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="pesanUbah"></div>
+	      		<form id="formUbah" class="form-horizontal" action="admin/UbahProsedur" method="post">
+	      			<div class="form-group">
+					    <label for="kodeProsedurUbah" class="col-sm-4 control-label">Kode</label>
+					    <div class="col-sm-8">
+					       	<input id="kodeProsedurUbah" name="kodeProsedurUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				     <div class="form-group">
+					    <label for="namaProsedurKonsultanUbah" class="col-sm-4 control-label">Nama (Konsultan)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurKonsultanUbah" name="namaProsedurKonsultanUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProsedurTrainingUbah" class="col-sm-4 control-label">Nama (Training)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurTrainingUbah" name="namaProsedurTrainingUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				     <div class="form-group">
+					    <label for="namaProsedurMediaUbah" class="col-sm-4 control-label">Nama (Media)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurMediaUbah" name="namaProsedurMediaUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProsedurSystemUbah" class="col-sm-4 control-label">Nama (System)</label>
+					    <div class="col-sm-8">
+					       	<input id="namaProsedurSystemUbah" name="namaProsedurSystemUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="deskripsiUbah" class="col-sm-4 control-label">Deskripsi</label>
+					    <div class="col-sm-8">
+					       	<textarea id="deskripsiUbah" name="deskripsiUbah" class="form-control"></textarea>
+					    </div>
+				    </div>
+				    <input type="hidden" name="IDProsedur" id="IDProsedur"/>
+		        </form>  
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-success" id="btnUbahProsedur">Ubah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalUbahProsedur">Batal</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+	
+<script>
+	$(document).ready(function () {
+                     
+    	$('#btnTambahBaru').click(function(e)
+        {
+			e.preventDefault(); 
+			resetForm();
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormBaru').attr('class', 'modal show');               
+        });
+
+        $('#btnBatalTambahProsedur').click( function(e){
+    		e.preventDefault(); 
+    		$('#dialogFormBaru').attr('class', 'modal hide');
+   		});        
+
+   		$('#btnBatalUbahProsedur').click( function(e){
+	    	e.preventDefault(); 
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormUbah').attr('class', 'modal hide');
+	    });
+
+   		$('#btnTambahProsedur').click( function(e){
+ 			e.preventDefault();
+	       	sendRequestForm($('#formBaru').attr('action'), $('#formBaru').serialize(), 'pesanBaru');
+	    });
+ 	
+	    $('#btnUbahProsedur').click( function(e){
+ 			e.preventDefault(); 
+	       	sendRequestForm($('#formUbah').attr('action'), $('#formUbah').serialize(), 'pesanUbah'); 
+	    });
+
+	    $('#btnCari').click( function(e){
+ 			e.preventDefault(); 
+	       	ajaxDataGrid($('#formCari').attr('action'),  $('#formCari').serialize(), 'ajaxTreeGrid'); 
+	    });
+	    
+        loadGridData();
+
+    });
+
+    function resetForm()
+	{
+		$('input[type="text"], input[type="password"], select').val('');
+		$('textarea').val('');
+		$('input:first').focus();
+
+		loadGridData();
+	}
+
+	function loadGridData(){
+
+	     var source =
+         {		
+             dataType: "json",
+             dataFields: [
+                  { name: "idx", 	type: "string" },
+                  { name: "kode", 	type: "string" },
+                  { name: "namaKonsultan", 	type: "string" },
+                  { name: "namaTraining", 	type: "string" },
+                  { name: "namaMedia", 	type: "string" },
+                  { name: "namaSystem", 	type: "string" },
+                  { name: "deskripsi", 	type: "string" },
+                  { name: "action", 	type: "string" }
+             ],
+            url : "admin/GetDaftarProsedur",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {		
+            }
+        });
+
+        // create jqxDataTable.
+        $("#ajaxTreeGrid").jqxDataTable(
+        {
+            source: dataAdapter,
+            pagerButtonsCount: 10,
+            altRows: true,
+            filterable: true,
+            height: '400px',
+            pageable : true,
+            pageSize : 50,
+            pagerPosition : 'bottom',
+            filterMode: 'simple',
+            theme: 'fresh',
+            width: '100%',
+            columns: [
+              { text: 'Kode', cellsAlign: 'center', align: 'center', dataField: 'kode', width : '10%'},
+              { text: 'Nama (Konsultan)', cellsAlign: 'left', align: 'center', dataField: 'namaKonsultan', width : '15%'},
+              { text: 'Nama (Training)', cellsAlign: 'left', align: 'center', dataField: 'namaTraining', width : '15%'},
+              { text: 'Nama (Media)', cellsAlign: 'left', align: 'center', dataField: 'namaMedia', width : '15%'},
+              { text: 'Nama (System)', cellsAlign: 'left', align: 'center', dataField: 'namaSystem', width : '15%'},
+              { text: 'Deskripsi', cellsAlign: 'left', align: 'center', dataField: 'deskripsi', width : '22%' },
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '8%' }
+            ]
+        }).on('rowDoubleClick', function(event)
+        {	          	
+        	dialogFormEditShow();
+	    });	
+	}
+
+	function dialogFormEditShow()
+	{ 
+		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+		var dataProsedur = selection[0];
+			
+		var	idx      		= dataProsedur.idx,
+	 		kode    		= dataProsedur.kode,
+	 		namaKonsultan	= dataProsedur.namaKonsultan,
+	 		namaTraining	= dataProsedur.namaTraining,
+	 		namaMedia	 	= dataProsedur.namaMedia,
+	 		namaSystem	 	= dataProsedur.namaSystem,
+	 		deskripsi 		= dataProsedur.deskripsi;
+			
+			$('#alertMessage').remove();
+
+		 	$('#kodeProsedurUbah').val(kode);
+		 	$('#namaProsedurKonsultanUbah').val(namaKonsultan);
+		 	$('#namaProsedurTrainingUbah').val(namaTraining);
+		 	$('#namaProsedurMediaUbah').val(namaMedia);
+		 	$('#namaProsedurSystemUbah').val(namaSystem);
+	 		$('#deskripsiUbah').val(deskripsi);
+	 		$('#IDProsedur').val(idx);
+
+	 		$('#formUbah').find('li').attr('class',''); 
+	 		$('.tab-content').find('.tab-pane').attr('class','tab-pane');
+	 		$('#formUbah').find('li:first').attr('class', 'active');
+	 		$('.tab-content').find('.tab-pane:first').attr('class', 'tab-pane active');
+	 	
+			$('#dialogFormUbah').attr('class', 'modal show');
+
+	}
+
+	function dialogFormUbahClose()
+	{
+		 $('#dialogFormUbah').attr('class', 'modal close');	
+	}
+
+	function dialogFormBaruClose()
+	{
+		 $('#dialogFormBaru').attr('class', 'modal close');	
+	}
+
+	function deleteConfirmShow()
+	{ 
+
+	 	var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+		var dataProsedur = selection[0];
+		
+		var idx	 = dataProsedur.idx;
+		var kode = dataProsedur.kode;
+		
+	   	isDelete = confirm('Yakin prosedur '+ kode +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('admin/HapusProsedur', {IDProsedur : idx}, 'box-body');
+	}
+
+            		
+</script>
+
+ 

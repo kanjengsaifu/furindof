@@ -1,0 +1,376 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Trx_program_kerja_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahProgramKerja($dataProgramKerja)
+        {
+
+          $this->IDUser  = $_SESSION['IDUser'];
+
+          $this->IDProyek   = $this->security->xss_clean($dataProgramKerja['proyek']);
+          $this->IDOutput   = $this->security->xss_clean($dataProgramKerja['output']);
+          $this->status     = $this->security->xss_clean($dataProgramKerja['status']);
+          $this->tahapan    = $this->security->xss_clean($dataProgramKerja['tahapan']);
+          $this->deadline   = $this->security->xss_clean($dataProgramKerja['deadline']);
+          $this->realisasi  = $this->security->xss_clean($dataProgramKerja['realisasi']);
+          $this->status     = $this->security->xss_clean($dataProgramKerja['status']); 
+           
+          $this->userEntry  = $this->IDUser;
+          $this->dateEntry  = RealDateTime();
+          
+          $this->db->trans_begin();
+          
+          $i=0;
+          
+          //check daata
+          $this->selectQuery = $this->db->query("select id_program_kerja from trx_program_kerja 
+                                                where id_proyek ='".$this->IDProyek."' and id_output='".$this->IDOutput."' ");
+
+          if ($this->selectQuery->num_rows > 0)
+          {
+              $strMessage  = 'Program Kerja sudah tercatat didatabase';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+              echo $messageData; 
+              exit;
+          }
+
+          foreach ($this->tahapan as $value) 
+          { 
+            
+              $this->tglDeadline  = trim($this->deadline[$i]) <> '' ? formatDateDB($this->deadline[$i]) : '';
+              $this->tglRealisasi = trim($this->realisasi[$i]) <> '' ? formatDateDB($this->realisasi[$i]) : '';
+
+              $this->db->query("insert into trx_program_kerja (id_proyek, id_output, id_prosedur, tgl_deadline, tgl_realisasi, status, date_entry, user_entry, last_update, user_update) 
+                                values('".$this->IDProyek."','".$this->IDOutput."','".$value."','".$this->tglDeadline."','".$this->tglRealisasi."','".$this->status[$i]."',
+                                      '".$this->dateEntry."','".$this->userEntry."','','0')");
+
+              $i++;
+
+           }
+
+           if ($this->db->trans_status() === FALSE)
+           {
+              $this->db->trans_rollback(); 
+              $strMessage  = 'Tambah Program  Kerja Gagal';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');  
+              echo $messageData;   
+           }  
+           else
+           {
+           
+            $this->db->trans_commit();
+            
+            $strMessage  = 'Tambah Program Kerja telah berhasil';
+            $messageData = ConstructMessageResponse($strMessage , 'success');
+              
+            echo $messageData."<script>window.loadGridData();alert('".$strMessage."');window.resetForm();</script>";
+   
+           }   
+          
+        }
+
+        public function GetDaftarProgramKerja()
+        {
+
+          //ambil data program kerja
+          $this->selectQuery =  $this->db->query("select id_program_kerja as IDProgramKerja, trxProgramKerja.id_proyek as IDProyek,
+                                                  nama_proyek as NamaProyek, trxProgramKerja.id_output as IDOutput, nama_output as NamaOutput, 
+                                                  kode_prosedur as Tahapan, trxOutput.id_karyawan as IDKaryawan, nama_karyawan as NamaKaryawan,
+                                                  coalesce(tgl_deadline, '') as Deadline, coalesce(tgl_realisasi, '') as Realisasi,  
+                                                  trxProgramKerja.id_output as IDOutput, nama_client as NamaClient,
+                                                  nama_divisi as NamaDivisi, trxProgramKerja.status as Status      
+                                                  from trx_program_kerja trxProgramKerja left join ref_prosedur refProsedur 
+                                                  on refProsedur.id_prosedur = trxProgramKerja.id_prosedur 
+                                                  left join trx_output trxOutput
+                                                  on trxOutput.id_output = trxProgramKerja.id_output
+                                                  left join trx_proyek trxProyek
+                                                  on trxProgramKerja.id_proyek = trxProyek.id_proyek 
+                                                  left join mst_client mstClient 
+                                                  on mstClient.id_client=trxProyek.id_client 
+                                                  left join ref_divisi refDivisi
+                                                  on refDivisi.id_divisi = trxOutput.id_divisi  
+                                                  left join mst_karyawan mstKaryawan on mstKaryawan.id_karyawan = trxOutput.id_karyawan");
+          
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;";
+          $arrData = array();
+          
+          $prevIDProyek = '';
+          $prevIDOutput = '';
+          $prevOutput = '';
+          $prevPIC = '';
+
+          $i=1;
+          foreach ($this->selectQuery->result_array() as $row)
+          {
+
+            $NamaOutput     = $row['IDOutput'] <> $prevIDOutput ? $row['NamaOutput'] : '';
+            $NamaProyek     = $row['IDProyek'] <> $prevIDProyek ? $row['NamaClient']. ' </br> '.$row['NamaProyek'] : '';
+            $namaPIC        = $row['IDOutput'] <> $prevIDOutput ? $row['NamaDivisi'].' <br> '.$row['NamaKaryawan'] : '';
+            $strDelAction   = $row['IDProyek'] <> $prevIDProyek ? "<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>" : '';
+          
+            $nomor = ($row['IDProyek'] <> $prevIDProyek) ? $i++ : '';
+            
+            $tglDeadline = $row['Deadline'] <> '' ? formatDateIndo($row['Deadline']) : '';
+            $tglDeadline = str_replace('00-00-0000', '', $tglDeadline); 
+            
+            $tglRealisasi = $row['Realisasi'] <> '' ? formatDateIndo($row['Realisasi']) : '';
+            $tglRealisasi = str_replace('00-00-0000', '', $tglRealisasi); 
+
+            $arrData[] = array('idx'        => $row['IDProgramKerja'],
+                               'IDProyek'   => $row['IDProyek'],
+                               'IDOutput'   => $row['IDOutput'],
+                               'proyek'     => $NamaProyek, 
+                               'output'     => $NamaOutput,
+                               'pic'        => $namaPIC,
+                               'tahapan'    => $row['Tahapan'].'</br>'.$row['Status'],
+                               'deadline'   => $tglDeadline,
+                               'realisasi'  => $tglRealisasi,
+                               'status'     => $row['Status'],
+                               'nomor'      => $nomor,
+                               'action'     => $strDataAction.$strDelAction);
+
+            $prevOutput   = $row['NamaOutput'];
+            $prevIDProyek = $row['IDProyek'];
+            $prevIDOutput = $row['IDOutput'];
+            $prevPIC      = $row['IDKaryawan'];
+
+          }  
+          
+
+          return json_encode($arrData);
+        }
+
+        public function UbahProgramKerja($arrData)
+        {
+
+          $this->IDProgramKerja = $this->security->xss_clean($arrData['IDProgramKerja']);
+          $this->IDOutput       = $this->security->xss_clean($arrData['IDOutput']);
+          $this->deadline       = $this->security->xss_clean($arrData['deadline']);
+          $this->realisasi      = $this->security->xss_clean($arrData['realisasi']);
+          $this->status         = $this->security->xss_clean($arrData['status']);
+
+          $this->lastUpdate = RealDateTime();
+          $this->userUpdate = $_SESSION['IDUser'];
+          
+          $this->tglDeadline  = trim($this->deadline) <> '' ? formatDateDB($this->deadline) : '';
+          $this->tglRealisasi = trim($this->realisasi) <> '' ? formatDateDB($this->realisasi) : '';
+
+          $this->db->query("update trx_program_kerja 
+                            set tgl_deadline ='".$this->tglDeadline."',
+                            id_output = '".$this->IDOutput."', 
+                            tgl_realisasi='".$this->tglRealisasi."', status ='".$this->status."' 
+                            where id_program_kerja = '".$this->IDProgramKerja."' ");
+
+          $strMessage  = 'Ubah Program Kerja telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>loadGridData();alert('".$strMessage."');window.dialogFormUbahClose();</script>";    
+
+        }
+
+
+        public function HapusProgramKerja($arrData)
+        {
+
+          $this->IDProyek    = $this->security->xss_clean($arrData['proyek']);
+          $this->IDOutput    = $this->security->xss_clean($arrData['output']);
+
+          //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+          $this->arrData = array();
+          $this->arrData[] = array("tableName" => "trx_proyek_member", "SQLWhere" => "id_proyek = '".$this->IDProyek."'",
+                                   "tableName" => "trx_output", "SQLWhere" => "id_proyek = '".$this->IDProyek."'",
+                                   "tableName" => "trx_sub_output", "SQLWhere" => "id_proyek = '".$this->IDProyek."'");
+                                   "tableName" => "trx_program_kerja", "SQLWhere" => "id_proyek = '".$this->IDProyek."'");
+
+          if (!isCheckTransactionOK($this->arrData))
+          {
+            $strMessage  = 'Hapus program kerja tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+          $this->arrData = array();
+          $this->arrData[] = array("tableName" => "trx_sub_output", "SQLWhere" => "id_output = '".$this->IDOutput."'",
+                                   "tableName" => "trx_program_kerja", "SQLWhere" => "id_output = '".$this->IDOutput."'");
+
+          if (!isCheckTransactionOK($this->arrData))
+          {
+            $strMessage  = 'Hapus program kerja tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("delete from trx_program_kerja  where id_output = '".$this->IDOutput."' and id_proyek = '".$this->IDProyek."' ");
+        
+          $strMessage  = 'Hapus Program Kerja telah berhasil ';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>loadGridData();</script>";
+          exit;    
+        }    
+
+
+      public function GetComboOutputAjax($IDProyek)
+      {
+
+        $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+        $this->selectQuery = $this->db->query("select id_output as IDOutput, nama_output as NamaOutput
+                                               from trx_output trxOutput left join trx_proyek trxProyek
+                                               on trxOutput.id_proyek = trxProyek.id_proyek 
+                                               where trxProyek.id_proyek='".$this->IDProyek."'");
+       
+        $strComboAjax = '';
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+          $strComboAjax = "<div class=\"form-group\">
+                            <label for=\"pic\" class=\"col-sm-2 control-label\">Output</label>
+                              <div class=\"col-sm-10\">
+                                    <select id=\"output\" name=\"output\" class=\"form-control\" onchange=\"fillTahapan()\">
+                                      <option value=\"\" >:: Pilih Output ::</option>";
+
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+            $strComboAjax.= "<option value='".$row['IDOutput']."'>".$row['NamaOutput']."</option>";
+          }
+
+          $strComboAjax .= "</select></div></div>";
+        }
+
+        return $strComboAjax;
+      }
+
+      public function GetComboOutputUbahAjax($IDProyek)
+      {
+
+        $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+        $this->selectQuery = $this->db->query("select id_output as IDOutput, nama_output as NamaOutput
+                                               from trx_output trxOutput left join trx_proyek trxProyek
+                                               on trxOutput.id_proyek = trxProyek.id_proyek 
+                                               where trxProyek.id_proyek='".$this->IDProyek."'");
+       
+        $strComboAjax = '';
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+          $strComboAjax = "<div class=\"form-group\">
+                            <label for=\"pic\" class=\"col-sm-2 control-label\">Output</label>
+                              <div class=\"col-sm-10\">
+                                    <select id=\"output\" name=\"output\" class=\"form-control\" onchange=\"fillTahapan()\">
+                                      <option value=\"\" >:: Pilih Output ::</option>";
+
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+            $strComboAjax.= "<option value='".$row['IDOutput']."'>".$row['NamaOutput']."</option>";
+          }
+
+          $strComboAjax .= "</select></div></div>";
+        }
+
+        return $strComboAjax;
+      }
+
+      public function GetTahapanUbahAjax($IDProgramKerja)
+      {
+        
+         $this->IDProgramKerja  = $this->security->xss_clean($IDProgramKerja);
+
+         $this->selectQuery = $this->db->query("select id_program_kerja as IDProgramKerja, id_prosedur as IDProsedur,
+                                                (select kode_prosedur from ref_prosedur where id_prosedur = trx_program_kerja.id_prosedur) as KodeProsedur, 
+                                                coalesce(tgl_deadline, '') as TglDeadline,
+                                                coalesce(tgl_realisasi, '') as tglRealisasi, status as Status from trx_program_kerja
+                                                where id_program_kerja= '".$this->IDProgramKerja."' ");
+         
+         $strInput = "";
+
+         if ($this->selectQuery->num_rows() > 0)
+         { 
+
+           $row = $this->selectQuery->row_array();  
+
+           $this->tglDeadline = $row['TglDeadline'] <> '' ? formatDateIndo($row['TglDeadline']) : '';
+           $this->tglDeadline = str_replace('00-00-0000', '', $this->tglDeadline);
+           $this->tglRealisasi = $row['tglRealisasi'] <> '' ? formatDateIndo($row['tglRealisasi']) : '';
+           $this->tglRealisasi = str_replace('00-00-0000', '', $this->tglRealisasi);
+
+           $strInput= "<div class=\"form-group\">
+                              <label class=\"col-sm-2 control-label\">Tahapan</label>
+                                <div class=\"col-sm-10\">
+                                    <div class=\"input-group date\"><span class=\"input-group-addon\">".$row["KodeProsedur"]."</span>
+                                      <input name=\"tahapan\" value=\"".$row['IDProsedur']."\" type=\"hidden\" />
+                                      <input name=\"deadline\" placeholder=\"Deadline\" value=\"".$this->tglDeadline."\" type=\"text\" id=\"deadline\" class=\"form-control\" role=\"date\" readOnly>
+                                      <span onclick=\"dateShow($('#deadline'))\"  class=\"input-group-addon\"><i id=\"ref_tgl\" class=\"glyphicon glyphicon-th\"></i></span> 
+                                      <input name=\"realisasi\" placeholder=\"Realisasi\" value=\"".$this->tglRealisasi."\" type=\"text\" id=\"realisasi\" class=\"form-control\" role=\"date\" readOnly>
+                                      <span onclick=\"dateShow($('#realisasi'))\"  class=\"input-group-addon\"><i class=\"glyphicon glyphicon-th\"></i></span> 
+                                      <input type=\"text\" name=\"status\" value=\"".$row['Status']."\" id=\"status\" class=\"form-control\" placeholder=\"Status\"/>                 
+                                    </div>
+                                </div>
+                               
+                          </div>";
+          }
+
+          $strInput.="<script>
+                        $('[role=\"date\"]').datepicker({
+                        format    : 'dd-mm-yyyy',
+                        autoclose : true
+                    });</script>";
+
+          return $strInput;              
+      }
+
+      public function GetTahapanAjax()
+      {
+
+        $this->selectQuery = $this->db->query("select id_prosedur as IDProsedur, kode_prosedur as KodeProsedur
+                                               from ref_prosedur order by kode_prosedur asc");
+       
+        $strInput = "";
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+
+          $i=0;
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+
+            $strTahapan = ($i == 0 ) ? 'Tahapan' : '';
+
+            $strInput.= "<div class=\"form-group\">
+                            <label class=\"col-sm-2 control-label\">".$strTahapan."</label>
+                              <div class=\"col-sm-10\">
+                                  <div class=\"input-group\"><span class=\"input-group-addon\">".$row["KodeProsedur"]."</span>
+                                    <input name=\"tahapan[]\" value=\"".$row['IDProsedur']."\" type=\"hidden\" />
+                                    <input name=\"deadline[]\" placeholder=\"Deadline\" type=\"text\" id=\"deadline".$i."\" class=\"form-control\" role=\"date\" readOnly>
+                                    <span onclick=\"dateShow($('#deadline".$i."'))\"  class=\"input-group-addon\"><i id=\"ref_tgl\" class=\"glyphicon glyphicon-th\"></i></span> 
+                                    <input name=\"realisasi[]\" placeholder=\"Realisasi\" type=\"text\" id=\"realisasi".$i."\" class=\"form-control\" role=\"date\" readOnly>
+                                    <span onclick=\"dateShow($('#realisasi".$i."'))\"  class=\"input-group-addon\"><i class=\"glyphicon glyphicon-th\"></i></span> 
+                                    <input type=\"text\" name=\"status[]\" id=\"status".$i."\" class=\"form-control\" placeholder=\"Status\"/>                 
+                                  </div>
+                              </div>
+                             
+                        </div>";
+
+                        $i++;
+          }
+
+          $strInput.="<script>
+                        $('[role=\"date\"]').datepicker({
+                        format    : 'dd-mm-yyyy',
+                        autoclose : true
+                    });</script>";
+
+        }
+
+        return $strInput;
+      }
+
+    }

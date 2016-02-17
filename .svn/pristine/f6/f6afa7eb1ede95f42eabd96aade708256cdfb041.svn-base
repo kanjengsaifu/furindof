@@ -1,0 +1,493 @@
+<div class="content-header">   
+	<h1>Daftar Proyek per Klien</h1>
+</div>
+
+<div class="content">
+	<div class="box box-warning">
+		<div class="box-header">
+			<button type="button" class="btn btn-sm btn-success" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+			<button type="button" class="btn btn-sm btn-success" id="btnCetakExcel"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>	
+		</div>
+	  	<div class="box-body">
+			<div id="ajaxTreeGrid"></div>
+		</div> <!-- <div class="box-body"> -->
+		<div class="box-footer">		   
+			<button type="button" class="btn btn-sm btn-success" id="btnTambahBaru2"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+			<button type="button" class="btn btn-sm btn-success" id="btnCetakExcel2"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>	
+		</div>   <!-- <div class="box-footer"> -->	
+	  </div>
+	</div> <!-- <div class="box box-warning"> -->
+</div>
+
+	<div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+		<div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title" id="FormTambahData">Tambah Proyek</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<div class="pesanBaru"></div>
+				<form action="timesheet/TambahProyek" method="post" id="formTambahProyek">
+			  		<div class="form-horizontal">
+			  			<div class="form-group">
+						<label for="divisi" class="col-sm-3 control-label">Divisi</label>
+						    <div class="col-sm-9">
+					       	 	<select id="divisi" name="divisi" class="form-control" onchange="fillKodeDivisi(this, $('#KodeDivisi'))">
+						       		<option value=''>:: Pilih Divisi ::</option>
+						       		<?php 
+						       			$CI = get_instance();
+						       			$selectQuery =  $CI->db->query("select id_divisi IDDivisi, kode_divisi as KodeDivisi, nama_divisi as NamaDivisi     
+						       											from ref_divisi order by kode_divisi asc");
+						       			$arrData = $selectQuery->result_array();
+						       			foreach ($arrData as $row) {
+						       				echo "<option value='".$row['IDDivisi']."'>".$row['KodeDivisi']." - ".$row['NamaDivisi']."</option>";
+						       			}
+						       		?>
+						       	</select>
+						    </div>
+					    </div>
+
+					    <div class="form-group">
+                          <label for="client" class="col-sm-3 control-label">Client</label>
+                            <div class="col-sm-9">
+
+                            	<select id="client" name="client" class="form-control" onchange="fillKodeClient(this, $('#KodeClient'))">
+                            	<option value="" >:: Pilih Client ::</option>
+								 <?php 
+								 
+								 	$CI = &get_instance();
+
+								 	$selectQuery =  $CI->db->query("select id_client as IDClient, kode_client as KodeClient, nama_client as NamaClient
+								                                 from mst_client order by kode_client asc ");
+
+							        $arrData = $selectQuery->result_array();
+							        foreach ($arrData as $row) {
+							            echo "<option value='".$row['IDClient']."'' >".$row['KodeClient']." - ". $row['NamaClient']."</option>";
+							        }
+								?>
+								</select>
+							</div>
+						</div>
+
+						 <div class="form-group">
+                          <label for="program" class="col-sm-3 control-label">Program</label>
+                            <div class="col-sm-9">
+
+                            	<select id="program" name="program" class="form-control" onchange="fillKodeProgram(this, $('#KodeProgram'))">
+                            	<option value="" >:: Pilih Program ::</option>
+								 <?php 
+								 
+								 	$CI = &get_instance();
+
+								 	$selectQuery =  $CI->db->query("select id_program as IDProgram, 
+								 									CONCAT((SELECT kode_divisi FROM ref_divisi WHERE id_divisi = mst_program.id_divisi),'.',
+																	(SELECT kode_bidang FROM ref_bidang WHERE id_bidang = mst_program.id_bidang),'.', kode_program ) AS KodeProgram, 
+								 									nama_program as NamaProgram 
+								                                 	from mst_program order by KodeProgram asc ");
+
+							        $arrData = $selectQuery->result_array();
+							        foreach ($arrData as $row) {
+							            echo "<option value='".$row['IDProgram']."'' >".$row['KodeProgram']." - ". $row['NamaProgram']."</option>";
+							        }
+								?>
+								</select>
+							</div>
+						</div>
+
+						<div class='form-group'>
+			            <label for='kode' class='col-sm-3 control-label'>Kode</label>
+			            <div class='col-sm-9'>
+			                <div class='input-group'>
+			                  <span class='input-group-addon' id='KodeDivisi' role='code'></span>
+			                  <span class='input-group-addon' id='KodeClient' role='code'></span>
+			                   <span class='input-group-addon' id='KodeProgram' role='code'></span>
+			                  <input id='kode' name='kode' value='' type='text' class='form-control' role='numeric'/>
+			                </div>    
+			            </div>
+			          </div>
+
+			          <div class='form-group'>
+			            <label for='nama' class='col-sm-3 control-label'>Nama Proyek</label>
+			            <div class='col-sm-9'>
+			                  <input id='nama' name='nama' value='' type='text' class='form-control'/>
+			            </div>
+			          </div>
+			          <div class='form-group'>
+			            <label for='nomor' class='col-sm-3 control-label'>Surat Tugas / SPK</label>
+			            <div class='col-sm-9'>
+			                  <input id='nomor' name='nomor' value='' type='text' class='form-control' />
+			            </div>
+			          </div>
+					   		
+					</div>	  
+				</form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-success" id="btnTambahProyek">Tambah</button>
+		        <button type="button" class="btn btn-warning" id="btnBatalSimpanProyek">Batal</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+
+	<div class="modal hide" id="dialogFormUbah" tabindex="1" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+		<div class="modal-dialog">
+		    <div class="modal-content">
+		      <div class="modal-header">
+		        <h4 class="modal-title" id="FormTambahData">Ubah Proyek</h4>
+		      </div>
+		      <div class="modal-body">
+		      	<div class="pesanUbah"></div>
+				<form action="timesheet/UbahProyek" method="post" id="formUbahProyek">
+			  		<div class="form-horizontal">
+			  			<div class="form-group">
+						<label for="divisiUbah" class="col-sm-3 control-label">Divisi</label>
+						    <div class="col-sm-9">
+					       	 	<select id="divisiUbah" name="divisiUbah" class="form-control" onchange="fillKodeDivisi(this, $('#KodeDivisiUbah'))">
+						       		<option value=''>:: Pilih Divisi ::</option>
+						       		<?php 
+						       			$CI = get_instance();
+						       			$selectQuery =  $CI->db->query("select id_divisi IDDivisi, kode_divisi as KodeDivisi, nama_divisi as NamaDivisi     
+						       											from ref_divisi");
+						       			$arrData = $selectQuery->result_array();
+						       			foreach ($arrData as $row) {
+						       				echo "<option value='".$row['IDDivisi']."'>".$row['KodeDivisi']." - ".$row['NamaDivisi']."</option>";
+						       			}
+						       		?>
+						       	</select>
+						    </div>
+					    </div>
+
+					    <div class="form-group">
+                          <label for="clientUbah" class="col-sm-3 control-label">Client</label>
+                            <div class="col-sm-9">
+
+                            	<select id="clientUbah" name="clientUbah" class="form-control" onchange="fillKodeClient(this, $('#KodeClientUbah'))">
+                            	<option value="" >:: Pilih Client ::</option>
+								 <?php 
+								 
+								 	$CI = &get_instance();
+
+								 	$selectQuery =  $CI->db->query("select id_client as IDClient, kode_client as KodeClient, nama_client as NamaClient
+								                                 from mst_client");
+
+							        $arrData = $selectQuery->result_array();
+							        foreach ($arrData as $row) {
+							            echo "<option value='".$row['IDClient']."'' >".$row['KodeClient']." - ". $row['NamaClient']."</option>";
+							        }
+								?>
+								</select>
+							</div>
+						</div>
+						
+						<div class="form-group">
+                          <label for="programUbah" class="col-sm-3 control-label">Program</label>
+                            <div class="col-sm-9">
+
+                            	<select id="programUbah" name="programUbah" class="form-control" onchange="fillKodeProgram(this, $('#KodeProgramUbah'))">
+                            	<option value="" >:: Pilih Program ::</option>
+								 <?php 
+								 
+								 	$CI = &get_instance();
+
+								 	$selectQuery =  $CI->db->query("select id_program as IDProgram, 
+								 									CONCAT((SELECT kode_divisi FROM ref_divisi WHERE id_divisi = mst_program.id_divisi),'.',
+																	(SELECT kode_bidang FROM ref_bidang WHERE id_bidang = mst_program.id_bidang),'.', kode_program ) AS KodeProgram,  
+								 									nama_program as NamaProgram 
+								                                 	from mst_program order by KodeProgram asc ");
+
+							        $arrData = $selectQuery->result_array();
+							        foreach ($arrData as $row) {
+							            echo "<option value='".$row['IDProgram']."'' >".$row['KodeProgram']." - ". $row['NamaProgram']."</option>";
+							        }
+								?>
+								</select>
+							</div>
+						</div>
+
+						<div class='form-group'>
+			            <label for='kodeUbah' class='col-sm-3 control-label'>Kode</label>
+			            <div class='col-sm-9'>
+			                <div class='input-group'>
+			                  <span class='input-group-addon' id='KodeDivisiUbah' role='code'></span>
+			                  <span class='input-group-addon' id='KodeClientUbah' role='code'></span>
+			                  <span class='input-group-addon' id='KodeProgramUbah' role='code'></span>
+			                  <input id='kodeUbah' name='kodeUbah' value='' type='text' class='form-control' role='numeric'/>
+			                </div>    
+			            </div>
+			          </div>
+
+			          <div class='form-group'>
+			            <label for='namaUbah' class='col-sm-3 control-label'>Nama Proyek</label>
+			            <div class='col-sm-9'>
+			                  <input id='namaUbah' name='namaUbah' value='' type='text' class='form-control'/>
+			            </div>
+			          </div>
+			          
+			          <div class='form-group'>
+			            <label for='nomorUbah' class='col-sm-3 control-label'>Surat Tugas / SPK</label>
+			            <div class='col-sm-9'>
+			                  <input id='nomorUbah' name='nomorUbah' value='' type='text' class='form-control' />
+			            </div>
+			          </div>
+
+			          <div class='form-group'>
+			            <label for='statusUbah' class='col-sm-3 control-label'>Status</label>
+			            <div class='col-sm-9'>
+			                  <input id='statusUbah' name='statusUbah' value='' type='text' class='form-control' />
+			            </div>
+			          </div>
+
+			           <div class='form-group'>
+			            <label for='aktifUbah' class='col-sm-3 control-label'>&nbsp;</label>
+			            <div class='col-sm-9'>
+							<div class="status">
+							    <label>
+							      <input type="checkbox" value="1" name="aktifUbah" id="aktifUbah"> Aktif
+							    </label>
+							</div>
+			            </div>
+			          </div>
+
+			           <div class='form-group'>
+			            <label for='nomorUbah' class='col-sm-3 control-label'>&nbsp;</label>
+			            <div class='col-sm-9'>
+							<div class="checkbox">
+							    <label>
+							      <input type="checkbox" value="1" name="checkListUbah" id="checkListUbah"> CheckList
+							    </label>
+							</div>
+			            </div>
+			          </div>
+			          
+					</div>
+					<input type="hidden" name="IDProyek" id="IDProyek"/>	  
+				</form>
+		      </div>
+		      <div class="modal-footer">
+		        <button type="button" class="btn btn-success" id="btnUbahProyek">Ubah</button>
+		        <button type="button" class="btn btn-warning" id="btnBatalUbahProyek">Batal</button>
+		      </div>
+		    </div>
+		  </div>
+		</div>
+	</div>
+
+<script src="assets/js/func.js" type="text/javascript"></script>	
+<script>
+
+	$(document).ready(function () {	        
+		
+		$('#btnTambahBaru, #btnTambahBaru2').click(function(e)
+        {
+			e.preventDefault(); 
+			resetForm();
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormBaru').attr('class', 'modal show');               
+        });
+
+        $('#btnBatalSimpanProyek').click( function(e){
+    		e.preventDefault(); 
+    		$('#dialogFormBaru').attr('class', 'modal hide');
+   		});
+
+   		 $('#btnBatalUbahProyek').click( function(e){
+    		e.preventDefault(); 
+    		$('#dialogFormUbah').attr('class', 'modal hide');
+   		});         
+
+        $('#btnTambahProyek').click(function(e)
+        {
+			e.preventDefault(); 
+	    	
+	    	sendRequestForm($('#formTambahProyek').attr('action'), $('#formTambahProyek').serialize(), 'pesanBaru');     
+
+        });
+
+         $('#btnUbahProyek').click( function(e){
+ 			e.preventDefault(); 
+	       	sendRequestForm($('#formUbahProyek').attr('action'), $('#formUbahProyek').serialize(), 'pesanUbah'); 
+	    });
+
+        loadGridData();
+       
+    });
+
+	function dialogFormUbahClose()
+	{
+		 $('#dialogFormUbah').attr('class', 'modal close');	
+	}
+
+	function loadGridData(){	
+
+	     var source =
+         {		
+             dataType: "json",
+             dataFields: [
+                  { name: "idx", 	type: "string" },
+                  { name: "IDClient", 	type: "string" },
+                  { name: "IDDivisi", 	type: "string" },
+                  { name: "IDProgram", 	type: "string" },
+                  { name: "kodeClient", type: "string" },
+                  { name: "kodeDivisi", type: "string" },
+                  { name: "kodeProgram", type: "string" },
+                  { name: "client", 	type: "string" },
+                  { name: "divisi", 	type: "string" },
+                  { name: "kode", 	type: "string" },
+                  { name: "kodeConcat", 	type: "string" },
+                  { name: "proyek", 	type: "string" },
+                  { name: "no", 	type: "string" },
+                  { name: "nomor", 	type: "string" },
+                  { name: "checklist", 	type: "string" },
+                  { name: "checkListValue", 	type: "string" },
+                  { name: "aktif", 	type: "string" },
+                  { name: "status", 	type: "string" },
+                  { name: "action", 	type: "string" }
+             ],
+            url : "timesheet/GetDaftarProyek",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {		
+            }
+        });
+
+	    // create jqxDataTable.
+	    $("#ajaxTreeGrid").jqxDataTable(
+	        {
+	            source: dataAdapter,
+	            altRows: true,
+	            filterable: true,
+	            filterMode: 'simple',
+	            theme: 'fresh',
+	            width: '100%',
+	            columns: [
+	              { text: 'No', cellsAlign: 'center', align: 'center', dataField: 'no', width : '3%' },
+	              { text: 'Client', cellsAlign: 'left', align: 'center', dataField: 'client', width : '16%'},
+	              { text: 'Divisi', cellsAlign: 'center', align: 'center', dataField: 'divisi', width : '9%'},
+	              { text: 'Kode', cellsAlign: 'center', align: 'center', dataField: 'kodeConcat', width : '11%'},
+	              { text: 'Proyek', cellsAlign: 'left', align: 'center', dataField: 'proyek', width : '30%' },
+	              { text: 'Nomor', cellsAlign: 'center', align: 'center', dataField: 'nomor', width : '15%' },
+	              { text: 'Status', cellsAlign: 'center', align: 'center', dataField: 'status', width : '8%' },
+	              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '8%' }
+	            ]
+	        }).on('rowDoubleClick', function(event)
+	        {	          	
+	        	dialogFormEditShow();
+		    });	
+		}
+
+
+	function dialogFormEditShow()
+	{ 
+		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+		var dataProyek = selection[0];
+			
+		var	idx      		 = dataProyek.idx,
+	 		IDDivisi  		 = dataProyek.IDDivisi,
+	 		IDClient 		 = dataProyek.IDClient,
+	 		IDProgram 		 = dataProyek.IDProgram,
+	 		kodeDivisi  	 = dataProyek.kodeDivisi,
+	 		kodeClient 		 = dataProyek.kodeClient,
+	 		KodeProgram 	 = dataProyek.kodeProgram,
+	 		kode 			 = dataProyek.kode,
+	 		nama    		 = dataProyek.proyek,
+	 		nomor 			 = dataProyek.nomor,
+	 		checklist 		 = dataProyek.checkListValue,
+	 		aktif 	 		 = dataProyek.aktif,
+	 		status 			 = dataProyek.status;
+			
+			$('#alertMessage').remove();
+
+		 	$('#kodeUbah').val(kode);
+		 	$('#namaUbah').val(nama);
+	 		$('#nomorUbah').val(nomor);
+	 		$('#divisiUbah').val(IDDivisi);
+	 		$('#clientUbah').val(IDClient);
+	 		$('#programUbah').val(IDProgram);
+	 		$('#IDProyek').val(idx);
+	 		$('#KodeDivisiUbah').html(kodeDivisi);
+	 		$('#KodeClientUbah').html(kodeClient);
+	 		$('#KodeProgramUbah').html(KodeProgram);
+	 		$('#statusUbah').val(status);
+	 		
+	 		document.getElementById('checkListUbah').checked = (checklist == 1);
+	 		document.getElementById('aktifUbah').checked = (aktif == 1);
+	 		
+			$('#dialogFormUbah').attr('class', 'modal show');
+
+	}
+
+	function resetForm()
+	{
+		$('input, select').val('');
+		$('span[role="code"]').html('');
+	}
+
+	function fillAutoCode()
+	{
+		var IDDivisi = document.getElementById('divisi').value;
+		var IDClient = document.getElementById('client').value;
+		var IDProgram = document.getElementById('program').value;
+		
+		dataTextOut = ajaxFillGridJSON('timesheet/GetProyekAutoCode', {IDDivisi : IDDivisi, IDProgram : IDProgram, IDClient : IDClient}); 	
+		$('#kode').val(dataTextOut);
+	}
+
+	function fillAutoCodeUbah()
+	{
+		var IDDivisi = document.getElementById('divisiUbah').value;
+		var IDClient = document.getElementById('clientUbah').value;
+		var IDProgram = document.getElementById('programUbah').value;
+		
+		dataTextOut = ajaxFillGridJSON('timesheet/GetProyekAutoCode', {IDDivisi : IDDivisi, IDProgram : IDProgram, IDClient : IDClient}); 	
+		$('#kodeUbah').val(dataTextOut);
+	}
+
+	function fillKodeClient(objSource, objReference)
+	{
+		
+		var IDClient = $(objSource).val();
+		dataTextOut = ajaxFillGridJSON('timesheet/GetKodeClient', {IDClient : IDClient}); 
+		$(objReference).html(dataTextOut);
+		fillAutoCode();
+		fillAutoCodeUbah();
+	}
+
+	function fillKodeProgram(objSource, objReference)
+	{
+		
+		var IDProgram = $(objSource).val();
+		dataTextOut = ajaxFillGridJSON('timesheet/GetKodeProgram', {IDProgram : IDProgram}); 
+		$(objReference).html(dataTextOut);
+		fillAutoCode();
+		fillAutoCodeUbah();
+	}
+
+	function fillKodeDivisi(objSource, objReference)
+	{
+		var IDDivisi = $(objSource).val();
+		dataTextOut = ajaxFillGridJSON('timesheet/GetKodeDivisi', {IDDivisi : IDDivisi}); 
+		$(objReference).html(dataTextOut);
+		fillAutoCode();
+		fillAutoCodeUbah();
+	}
+
+	function deleteConfirmShow()
+	{ 
+
+	 	var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+		var dataProyek = selection[0];
+		
+		var idx	 = dataProyek.idx;
+		var nama = dataProyek.proyek;
+		
+	   	isDelete = confirm('Yakin Divisi '+ nama +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('timesheet/HapusProyek', {IDProyek : idx}, 'box-body');
+	}
+</script>
+
+ 

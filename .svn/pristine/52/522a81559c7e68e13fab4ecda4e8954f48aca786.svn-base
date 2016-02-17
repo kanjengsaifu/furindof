@@ -1,0 +1,269 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Trx_proyek_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahProyek($dataProyek)
+        {
+
+          $this->IDUser      = $_SESSION['IDUser'];
+
+          $this->IDClient   = $this->security->xss_clean($dataProyek['client']);
+          $this->IDDivisi   = $this->security->xss_clean($dataProyek['divisi']);
+          $this->IDProgram  = $this->security->xss_clean($dataProyek['program']);
+          $this->nomor      = $this->security->xss_clean($dataProyek['nomor']);
+          $this->kode       = $this->security->xss_clean($dataProyek['kode']);
+          $this->nama       = $this->security->xss_clean($dataProyek['nama']);
+         
+          $this->userEntry  = $this->IDUser;
+          $this->dateEntry  = RealDateTime();
+         
+          $this->userUpdate  = $this->IDUser;
+          $this->dateUpdate  = RealDateTime();
+
+          $this->kode  = str_pad($this->kode , 3, '0', STR_PAD_LEFT);
+  
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_proyek from trx_proyek where kode_proyek ='".$this->kode."'   
+                                                 and id_client = '".$this->IDClient."' 
+                                                 and id_program = '".$this->IDProgram."' 
+                                                 and id_divisi = '".$this->IDDivisi."' limit 1");
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Kode proyek sudah tercatat, silahkan gunakan kode proyek yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          //cek nama yang sama
+          $this->selectQuery = $this->db->query("select id_proyek from trx_proyek where nama_proyek ='".$this->nama."'   
+                                                 and id_client = '".$this->IDClient."' 
+                                                 and id_program = '".$this->IDProgram."' 
+                                                 and id_divisi = '".$this->IDDivisi."' limit 1");
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Nama proyek sudah tercatat di database';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          //check nama yang sama
+          $this->selectQuery =  $this->db->query("select id_proyek from trx_proyek where kode_proyek ='".$this->kode."'   
+                                                 and id_client = '".$this->IDClient."' 
+                                                 and id_program = '".$this->IDProgram."' 
+                                                 and nama_proyek = '".$this->nama."'
+                                                 and id_divisi = '".$this->IDDivisi."' limit 1");
+
+          if ($this->selectQuery->num_rows () > 0)
+          {
+            $strMessage  = 'Nama output sudah tercatat di database, silahkan gunakan nama output yang lain';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("insert into trx_proyek (id_divisi, id_client, id_program, nomor_proyek, kode_proyek, nama_proyek, date_entry, user_entry, last_update, user_update) 
+                             values('".$this->IDDivisi."', '".$this->IDClient."', '".$this->IDProgram."','".$this->nomor."','".$this->kode."','".$this->nama."',
+                                   '".$this->dateEntry."','".$this->userEntry."','','0')");
+        
+          $strMessage  = 'Tambah Proyek telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>window.loadGridData();alert('".$strMessage."');window.resetForm();</script>";
+        }
+
+        public function UbahProyek($dataProyek)
+        {
+          $this->IDUser      = $_SESSION['IDUser'];
+
+          $this->IDProyek   = $this->security->xss_clean($dataProyek['proyek']);
+          $this->IDClient   = $this->security->xss_clean($dataProyek['client']);
+          $this->IDDivisi   = $this->security->xss_clean($dataProyek['divisi']);
+          $this->IDProgram  = $this->security->xss_clean($dataProyek['program']);
+          $this->nomor      = $this->security->xss_clean($dataProyek['nomor']);
+          $this->kode       = $this->security->xss_clean($dataProyek['kode']);
+          $this->nama       = $this->security->xss_clean($dataProyek['nama']);
+          $this->status     = $this->security->xss_clean($dataProyek['status']);
+          $this->aktif      = $this->security->xss_clean($dataProyek['aktif']);
+          $this->checklist  = $this->security->xss_clean($dataProyek['checklist']);
+
+          $this->kode  = str_pad($this->kode , 3, '0', STR_PAD_LEFT);
+         
+          $this->userUpdate  = $this->IDUser;
+          $this->dateUpdate  = RealDateTime();
+          
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_proyek from trx_proyek where kode_proyek ='".$this->kode."'   
+                                                 and id_proyek <>'".$this->IDProyek."' 
+                                                 and id_client = '".$this->IDClient."' 
+                                                 and id_program = '".$this->IDProgram."'  
+                                                 and id_divisi = '".$this->IDDivisi."' limit 1");
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Kode Proyek sudah tercatat, silahkan gunakan kode proyek yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          //cek nama yang sama
+          $this->selectQuery = $this->db->query("select id_proyek from trx_proyek where nama_proyek ='".$this->nama."'   
+                                                 and id_proyek <> '".$this->IDProyek."'
+                                                 and id_client = '".$this->IDClient."' 
+                                                 and id_program = '".$this->IDProgram."' 
+                                                 and id_divisi = '".$this->IDDivisi."' limit 1");
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Nama proyek sudah tercatat di database';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          $this->db->query("update trx_proyek set id_client   = '".$this->IDClient."',
+                                                  id_divisi   = '".$this->IDDivisi."',
+                                                  id_program  = '".$this->IDProgram."',
+                                                  nomor_proyek = '".$this->nomor."', 
+                                                  kode_proyek = '".$this->kode."', 
+                                                  nama_proyek = '".$this->nama."', 
+                                                  checklist = '".$this->checklist."', 
+                                                  status = '".$this->status."',
+                                                  aktif = '".$this->aktif."',
+                                                  last_update = '".$this->dateUpdate."', 
+                                                  user_update = '".$this->userUpdate."' 
+                                                  where id_proyek = '".$this->IDProyek."'");         
+
+          $strMessage  = 'Ubah Proyek telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>loadGridData();alert('".$strMessage."');window.dialogFormUbahClose();</script>";
+        }
+
+         public function HapusProyek($IDProyek)
+        {
+            
+            $this->IDProyek = $this->security->xss_clean($IDProyek);
+
+            //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+            $this->arrData = array();
+            $this->arrData[] = array("tableName" => "trx_proyek_member", "SQLWhere" => "id_proyek = '".$this->IDProyek."'",
+                                     "tableName" => "trx_output", "SQLWhere" => "id_proyek = '".$this->IDProyek."'",
+                                     "tableName" => "trx_sub_output", "SQLWhere" => "id_proyek = '".$this->IDProyek."'",
+                                     "tableName" => "trx_program_kerja", "SQLWhere" => "id_proyek = '".$this->IDProyek."'");
+
+            if (!isCheckTransactionOK($this->arrData))
+            {
+              $strMessage  = 'Hapus proyek tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+              echo $messageData;
+              exit;
+            }
+            
+            //hapus 
+            $this->selectQuery = $this->db->query("delete from trx_proyek where id_proyek = '".$this->IDProyek."'");
+          
+            $strMessage  = 'Hapus proyek telah berhasil ';
+            $messageData = ConstructMessageResponse($strMessage , 'success');
+
+            echo $messageData."<script>loadGridData();</script>";
+            exit;
+                
+        }
+
+
+        function GetProyekAutoCode($dataProyek)
+        {
+          
+          $this->IDDivisi   = $this->security->xss_clean($dataProyek['divisi']);
+          $this->IDClient   = $this->security->xss_clean($dataProyek['client']);
+          $this->IDProgram  = $this->security->xss_clean($dataProyek['program']);
+
+          //ambil nomor proyek
+          $this->selectQuery =  $this->db->query("select max(kode_proyek) as KodeProyek from trx_proyek
+                                                  where id_divisi = '".$this->IDDivisi."' 
+                                                  and id_program = '".$this->IDProgram."' 
+                                                  and id_client='".$this->IDClient."' "); 
+          
+          $arrData = ($this->selectQuery->num_rows() > 0) ? $this->selectQuery->row_array() : array('KodeProyek' => 0);
+
+          $newNumber = $arrData['KodeProyek'] + 1;
+          
+          $newNumber = str_pad($newNumber, 3, '0', STR_PAD_LEFT);
+
+          return $newNumber;   
+
+        }
+
+        public function GetDaftarProyek()
+        {
+            
+          $this->selectQuery =  $this->db->query("select id_proyek as IDProyek, kode_proyek as KodeProyek,
+                                                  concat((select kode_divisi from ref_divisi where id_divisi  = trxProyek.id_divisi),'.', 
+                                                  (select kode_client from mst_client where id_client  = trxProyek.id_client),'.', 
+                                                  (select kode_program from mst_program where id_program  = trxProyek.id_program), '.', kode_proyek) as KodeProyekConcat,
+                                                  trxProyek.id_divisi as IDDivisi, kode_divisi as KodeDivisi, nama_divisi as NamaDivisi,
+                                                  trxProyek.id_client as IDClient, kode_client as KodeClient, nama_client as NamaClient,
+                                                  trxProyek.id_program as IDProgram, kode_program as KodeProgram, nama_program as NamaProgram, 
+                                                  nama_proyek as NamaProyek, nomor_proyek as Nomor,
+                                                  checklist as Checklist, trxProyek.aktif as Aktif, trxProyek.status as Status  
+                                                  from trx_proyek trxProyek
+                                                  left join mst_client mstClient
+                                                  on mstClient.id_client = trxProyek.id_client 
+                                                  left join ref_divisi refDivisi 
+                                                  on refDivisi.id_divisi = trxProyek.id_divisi
+                                                  left join mst_program mstProgram 
+                                                  on mstProgram.id_program = trxProyek.id_program
+                                                  where trxProyek.aktif = 1  
+                                                  order by NamaClient asc");
+
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+
+
+          $arrData = array();
+          $i=1;
+          foreach ($this->selectQuery->result_array() as $row) 
+          { 
+            $strChecked = $row['Checklist'] == 1 ? 'checked' : '';
+            $arrData[] = array('idx' => $row['IDProyek'], 
+                                'IDClient' => $row['IDClient'],
+                                'IDDivisi' => $row['IDDivisi'],
+                                'IDProgram' => $row['IDProgram'],
+                                'kodeClient' => $row['KodeClient'],
+                                'kodeDivisi' => $row['KodeDivisi'],
+                                'kodeProgram' => $row['KodeProgram'],
+                                'client' => $row['NamaClient'],
+                                'divisi' => $row['NamaDivisi'],
+                                'kode'  => $row['KodeProyek'],
+                                'kodeConcat' => $row['KodeProyekConcat'],
+                                'proyek' => $row['NamaProyek'], 
+                                'nomor' => $row['Nomor'], 
+                                'no' => $i, 
+                                'checklist' => "<input type='checkbox' ".$strChecked."/>",
+                                'checkListValue' => $row['Checklist'],
+                                'status' => $row['Status'],
+                                'aktif' => $row['Aktif'],
+                                'action' => $strDataAction);
+              $i++;
+          }
+          
+          return json_encode($arrData);
+        }
+
+    }

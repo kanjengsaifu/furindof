@@ -1,0 +1,615 @@
+<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
+	//ConstructMessageResponse
+	if ( ! function_exists('ConstructMessageResponse') )
+	{
+		function ConstructMessageResponse($messageResponseText = 'Unsuccesfully Retrieved Data', $alertType, $isNeedRefresh = false, $refreshURL = '', $glyphicon = '')
+		{
+
+			$messageResponseText = ($glyphicon <> '') ?  "<span class='glyphicon glyphicon-".$glyphicon."'>&nbsp;</span>".$messageResponseText : $messageResponseText;
+
+			$messageResponseText = "<div class='alert alert-".$alertType."' id='alertMessage' alert-dismissible' role='alert'>".$messageResponseText."<button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button> </div>";	
+
+			return $messageResponseText;
+		}
+	}	
+
+	//GenerateNewCRSFHash
+	if ( ! function_exists('GenerateNewCRSFHash') )
+	{
+		function GenerateNewCRSFHash()
+		{
+			$CI=& get_instance();
+			
+			$ipAddressHash = $CI->input->ip_address();			
+			$_SESSION[config_item('csrf_token_name')] = md5(uniqid().microtime().rand().$ipAddressHash);			 
+			return $_SESSION[config_item('csrf_token_name')];			
+		}
+	}
+
+	//isCRSFVerify
+	if ( ! function_exists('isCRSFVerify') )
+	{
+		function isCRSFVerify()
+		{	
+			
+			$CI=& get_instance();						
+			$crsfPostValue 		= $CI->input->post(config_item('csrf_token_name'), true);			
+			$crsfSessionValue	= isset($_SESSION[config_item('csrf_token_name')]) ? $_SESSION[config_item('csrf_token_name')] : '';
+			return $crsfPostValue == $crsfSessionValue;
+			
+		}
+	}
+	
+	//GetMonthName
+	if ( ! function_exists('GetMonthName') )
+	{
+		function GetMonthName($bulan)
+		{	
+			$strNama  =  ($bulan == 1) ? 'Januari' 	: ''; 
+			$strNama  =  ($bulan == 2) ? 'Februari' : $strNama;
+			$strNama  =  ($bulan == 3) ? 'Maret' 	: $strNama;
+			$strNama  =  ($bulan == 4) ? 'April'	: $strNama;
+			$strNama  =  ($bulan == 5) ? 'Mei' 		: $strNama;
+			$strNama  =  ($bulan == 6) ? 'Juni' 	: $strNama;
+			$strNama  =  ($bulan == 7) ? 'Juli' 	: $strNama;
+			$strNama  =  ($bulan == 8) ? 'Agustus' 	: $strNama;
+			$strNama  =  ($bulan == 9) ? 'September': $strNama;
+			$strNama  =  ($bulan == 10) ? 'Oktober' : $strNama;			
+			$strNama  =  ($bulan == 11) ? 'Nopember': $strNama;			
+			$strNama  =  ($bulan == 12) ? 'Desember': $strNama;			
+			return $strNama;
+		}
+	}
+
+	//RealDateTime
+	if ( ! function_exists('RealDateTime') )
+	{
+		function RealDateTime($formatType = '', $includeTime = true)
+		{	
+			//Penyesuaian Pengambilan tanggal format date time indonesia
+			//karena bisa jadi TimeZone di server berbeda
+			//--------------------------------------------------------------------------
+			$serverDate = mktime(date("G"), date("i"), date("s"), date("n"), date("j"), date("Y"));		
+			$diffGMT = substr(date("O", $serverDate), 1, 2);
+			$dateDiffGMT = 60 * 60 * $diffGMT;
+
+			if (substr(date("O", $dateDiffGMT), 0, 1) == '+')		
+				$GMTDate = $serverDate - $dateDiffGMT;		
+			else		
+				$GMTDate = $serverDate + $dateDiffGMT;		
+
+			$DateDiffIndonesian = 60 * 60 * 7;
+
+			$newDate = date('Y-m-d H:i:s', $GMTDate + $DateDiffIndonesian);
+
+			if ($formatType == 'Year') 	 $newDate = date('Y', $GMTDate + $DateDiffIndonesian);
+			if ($formatType == 'Month')  $newDate = date('m', $GMTDate + $DateDiffIndonesian);
+			if (! $includeTime ) $newDate = date('d-m-Y', $GMTDate + $DateDiffIndonesian);
+			
+			//--------------------------------------------------------------------------	
+
+			return $newDate;
+		}
+	}	
+
+	//strToCurrDB()
+	if ( ! function_exists('strToCurrDB') )
+	{
+		function strToCurrDB($strCurrency, $replace = ',')
+		{
+			$strValue = str_replace($replace, '', $strCurrency);
+			return  $strValue;
+		}
+	}	
+
+	//formatDateIndo
+	if ( ! function_exists('formatDateIndo') )
+	{
+		function formatDateIndo($paramDate, $separator = '-')
+		{
+			$arrDate = explode($separator, $paramDate);
+			$Year 	 = $arrDate[0];
+			$Month 	 = $arrDate[1];
+			$Day 	 = $arrDate[2];
+
+			$newDate = $Day.$separator.$Month.$separator.$Year;
+
+			return  $newDate;
+		}
+	}
+
+	//formatDateDB
+	if ( ! function_exists('formatDateDB') )
+	{
+		function formatDateDB($paramDate, $separator = '-')
+		{
+			$arrDate = explode($separator, $paramDate);
+			$Year 	 = $arrDate[2];
+			$Month 	 = $arrDate[1];
+			$Day 	 = $arrDate[0];
+
+			$newDate = $Year.$separator.$Month.$separator.$Day;
+
+			return  $newDate;
+		}
+	}	
+
+	//getTreeViewData
+	if ( ! function_exists('getTreeViewData') )
+	{
+
+		function getTreeViewData($induk, $fieldList, $dataList, $actionList, $tableName, $fieldID, $fieldCode, $fieldName, $whereList = '')
+		{
+
+			$_SESSION['treeViewData'] = '';
+			$strJsonData = '[';
+			recursiveTreeView($induk, $fieldList, $dataList, $actionList, $tableName, $fieldID, $fieldCode, $fieldName, $whereList);
+			$treeViewData = $_SESSION['treeViewData'];
+			$treeViewData = substr($treeViewData, 0, strlen($treeViewData) - 1);
+			$strJsonData .= $treeViewData;
+			$strJsonData .=']';
+
+			return $strJsonData;
+		}
+    }	
+
+	//recursiveTreeView
+	if ( ! function_exists('recursiveTreeView') )
+	{
+		function recursiveTreeView($induk = '', $fieldList = '', $dataList = '', $actionList = '', $tableName = '', $fieldID = '', $fieldCode = '', $fieldName = '', $whereList = '')
+		    {
+		    	
+		    	$CI=&get_instance();
+
+		     	$treeData = $CI->db->query("select ".$fieldList." from ".$tableName." where induk = '".$induk."' ".$whereList);
+
+		    	if ( ($treeData->num_rows() ) > 0 )
+		    	{	 
+		    		
+			        foreach($treeData->result_array() as $row)
+			        {
+
+			          	$strShowCode = ($fieldCode <> '') && ($tableName <> 'sys_modul') ? $row[$fieldCode].' - ' : '';
+
+			          	$strDataList = '{';
+
+			          	foreach ($dataList as $value) {
+			          		$strDataList.= '\"'. $value .'\" : \"'. $row[$value] .'\",';
+			          	}
+			          	 
+			          	$strDataList = substr($strDataList, 0, strlen($strDataList) - 1 );
+
+			          	$strDataList.='}';
+
+			          	$strJsonText = '{"id":'.$row[$fieldID].',"dataList" : "'.$strDataList.'", "action" : "'.$actionList.'", "name":"'.$strShowCode.$row[$fieldName];
+			        	$strJsonText.= $row['Header'] ? '", "children":[' : '"},';
+
+			        	$_SESSION['treeViewData'].= $strJsonText;
+
+			        	recursiveTreeView($row[$fieldCode],  $fieldList, $dataList, $actionList, $tableName, $fieldID, $fieldCode, $fieldName, $whereList);
+
+	     				$strJsonText2 = $row['Header'] ? ']},' : '';
+			          	$_SESSION['treeViewData'] = $row['Header'] ?  substr($_SESSION['treeViewData'], 0 ,strlen($_SESSION['treeViewData']) - 1) : $_SESSION['treeViewData'];
+
+			          	$_SESSION['treeViewData'].= $strJsonText2;
+			       
+			        } //foreach($treeData->result_array() as $row)
+
+		      	} //if ( ($treeData->num_rows() ) > 0 )
+				
+		    }   
+	}
+
+	//getTreeGridMenu
+	if ( ! function_exists('getTreeGridMenu') )
+	{
+
+		function getTreeGridMenu($induk, $fieldList, $dataList, $actionList, $tableName, $fieldID, $fieldCode, $fieldName, $groupID = '0')
+		{
+
+			$_SESSION['treeViewData'] = '';
+			$strJsonData = '[';
+			recursiveTreeGridMenu($induk, $fieldList, $dataList, $actionList, $tableName, $fieldID, $fieldCode, $fieldName, $groupID);
+			$treeViewData = $_SESSION['treeViewData'];
+			$treeViewData = substr($treeViewData, 0, strlen($treeViewData) - 1);
+			$strJsonData .= $treeViewData;
+			$strJsonData .=']';
+
+			return $strJsonData;
+		}
+    }	
+
+	//recursiveTreeView
+	if ( ! function_exists('recursiveTreeGridMenu') )
+	{
+		function recursiveTreeGridMenu($induk = '', $fieldList = '', $dataList = '', $actionList = '', $tableName = '', $fieldID = '', $fieldCode = '', $fieldName = '', $groupID = 0)
+		    {
+		    	
+		    	$CI=&get_instance();
+
+		     	$treeData = $CI->db->query("select ".$fieldList." from ".$tableName." where induk = '".$induk."'");
+
+		    	if ( ($treeData->num_rows() ) > 0 )
+		    	{	 
+		    		
+			        foreach($treeData->result_array() as $row)
+			        {
+
+			          	$strShowCode = ($fieldCode <> '') && ($tableName <> 'sys_modul') ? $row[$fieldCode].' - ' : '';
+
+			          	$strDataList = '{';
+
+			          	foreach ($dataList as $value) {
+			          		$strDataList.= '\"'. $value .'\" : \"'. $row[$value] .'\",';
+			          	}
+			          	 
+			          	$strDataList = substr($strDataList, 0, strlen($strDataList) - 1 );
+
+			          	$strDataList.='}';
+
+			          	$actionChildList = ($row['Header'] == 0) ? $actionList : '';
+
+			          	$strText = '{"id":'.$row[$fieldID].',"dataList" : "'.$strDataList.'", "action" : "'.$actionChildList.'", "name":"'.$strShowCode.$row[$fieldName];
+			          
+			        	$strText.= $row['Header'] ? '", "children":[' : '"},';
+
+			        	$_SESSION['treeViewData'].= $strText;
+
+			        	//rekursif
+			        	recursiveTreeGridMenu($row[$fieldCode],  $fieldList, $dataList, $actionList, $tableName, $fieldID, $fieldCode, $fieldName, $groupID);
+
+	     				$strText2 = $row['Header'] ? ']},' : '';
+			          	$_SESSION['treeViewData'] = $row['Header'] ?  substr($_SESSION['treeViewData'], 0 ,strlen($_SESSION['treeViewData']) - 1) : $_SESSION['treeViewData'];
+
+			          	$_SESSION['treeViewData'].= $strText2;
+			       
+			        } //foreach($treeData->result_array() as $row)
+
+		      	} //if ( ($treeData->num_rows() ) > 0 )
+				
+		    }   
+	}
+
+	//getTreeMenuData
+	if ( ! function_exists('getTreeMenuData') )
+	{
+
+		function getTreeMenuData($induk, $tableName, $fieldID, $fieldCode, $fieldName)
+		{
+
+			$_SESSION['treeMenuData'] = '';
+			$strMenuData = '<li class="treeview active">';
+			recursiveTreeMenu($induk, $tableName, $fieldID, $fieldCode, $fieldName);		
+			$strMenuData .= $_SESSION['treeMenuData'];
+			$strMenuData .='</li>';			
+			return $strMenuData;			
+		}
+    }	    
+
+	//recursiveTreeMenu
+	if ( ! function_exists('recursiveTreeMenu') )
+	{
+		function recursiveTreeMenu($induk, $tableName, $fieldID, $fieldCode, $fieldName)
+		    {
+		    	
+		    	$CI=&get_instance();
+
+		     	$treeData = $CI->db->query("select * from ".$tableName." where aktif=1 and induk_menu = '".$induk."'");
+		  
+		    	if ( ($treeData->num_rows() ) > 0 )
+		    	{	 
+
+			        foreach($treeData->result_array() as $row)
+			        {			        	
+			        	
+			          	$strShowCode = ($fieldCode <> '') && ($tableName <> 'sys_modul') &&  ($tableName <> 'ref_output_rba_menu') ? $row[$fieldCode].' - ' : '';
+			          	
+			          	$urlLink = $row['header'] ? '#' : $row['link_modul'];
+			          	
+			          	$headerIcon = ($row['header'])  ? 'fa fa-suitcase' : 'fa fa-chevron-circle-right';
+			          	$ajaxClass  = ($row['header']) ?  '' : 'class="sidebarMenu"' ;     	
+		      
+		        		if ($tableName == 'sys_modul')
+		        		{
+		        			$HakAksesMenu = $CI->db->query("SELECT id_group FROM sys_group_modul 
+		        											WHERE id_group = (SELECT id_group
+		        											FROM mst_karyawan WHERE id_karyawan='".$_SESSION['IDUser']."' )
+		        											and id_modul = 	'".$row['id_modul']."'");
+		        		
+		        			$isHaveAccess = ($HakAksesMenu->num_rows() > 0);			          	
+		        		}				 
+		        		else
+		        		{
+		        			$isHaveAccess = true;
+		        		}       		
+
+		          		$strText = ($isHaveAccess) ? '<li><a '.$ajaxClass.' href="'.$urlLink.'"><i class="'.$headerIcon.'"></i>'.$strShowCode.$row[$fieldName].'</a></li>' : '';
+
+
+			          	if ($row['header']){
+
+			          		$strText .= "<ul class='treeview-menu menu-open' style='display: block;'>";
+
+			          		if ($tableName == 'sys_modul')
+		        			{
+				          		$HakAksesMenu = $CI->db->query("SELECT id_modul FROM sys_group_modul sysUserModul 
+																WHERE id_group = (SELECT id_group
+		        												FROM mst_karyawan WHERE id_karyawan='".$_SESSION['IDUser']."' ) 
+																AND id_modul IN (SELECT id_modul FROM sys_modul
+																WHERE induk_menu = '".$row['id_modul']."') LIMIT 1");
+
+				          		
+				          		$isHaveAccess = ($HakAksesMenu->num_rows() > 0);
+			          		}
+			          		else
+			          		{
+			          			$isHaveAccess = true;	
+			          		}	
+
+			          		$strText = ($isHaveAccess) ? $strText : '';
+
+			          	}
+			          	else{
+			          		$strText .=  '</li>';
+			          	}
+			        	
+			        	$_SESSION['treeMenuData'].= $strText;
+			        	recursiveTreeMenu($row[$fieldCode],  $tableName, $fieldID, $fieldCode, $fieldName);
+
+	     				$strText2 = $row['header'] ? '</li></ul>' : '';			          
+
+			          	$_SESSION['treeMenuData'].= $strText2;			       	
+
+			        } //foreach($treeData->result_array() as $row)
+
+		      	} //if ( ($treeData->num_rows() ) > 0 )
+				
+		    }   
+
+			//GetNamaInstansi
+			if ( ! function_exists('GetNamaInstansi') )
+			{
+				function GetNamaInstansi()
+		    	{
+		     
+					$strNamaUPTD   = 'PUSKESMAS '.$_SESSION['NamaUPTD'];
+					$strNamaDinas  = $_SESSION['NamaUnitKerja'];
+					$strTipeLogin  = $_SESSION['TipeLogin'];
+
+       				$strNamaInstansi =  ($strTipeLogin == 'Dinas') ? $strNamaDinas :  $strNamaUPTD;
+     				
+       				$_SESSION['DaftarUPTD'] = array();
+
+       				if ($strTipeLogin == 'Dinas')
+       				{
+       					$CI=& get_instance();
+       					
+       					$selectQuery = $CI->db->query("SELECT id_uptd as IDUPTD, kode_uptd as KodeUPTD, nama_uptd as NamaUPTD 
+				       									FROM mst_uptd 
+				       									ORDER BY KodeUPTD ASC");
+       					
+       					$arrSelectQuery = $selectQuery->result_array();
+
+       					foreach ($arrSelectQuery as $row) {
+       						$_SESSION['DaftarUPTD'][] = array("IDUPTD" 		=> $row['IDUPTD'], 
+       														  "KodeUPTD" 	=> $row['KodeUPTD'],
+       														  "NamaUPTD"	=> $row['NamaUPTD']);
+       					}
+
+       				}
+       				else
+       				{
+       					unset($_SESSION['DaftarUPTD']);
+       				}
+
+       				return $strNamaInstansi;
+       			}	
+			}		
+
+			//GetLogoInstansi
+			if ( ! function_exists('GetLogoInstansi') )
+			{
+				function GetLogoInstansi()
+		    	{
+
+					$logoDinas 		= GetSettingValue('file_logo_dinas');
+					$logoPuskesmas  = GetSettingValue('file_logo_puskesmas');
+
+	   				$logoFile =  ($_SESSION['TipeLogin'] == 'Dinas') ? $logoDinas :  $logoPuskesmas;
+	 			
+	   				return $logoFile;
+	   			}	
+			}		
+
+			//writeCRUDLog
+			if ( ! function_exists('writeCRUDLog') )
+			{
+				function writeCRUDLog($content = '', $module = 'default', $action = 'default')
+			  	{
+
+			  		$serverDate = mktime(date("G"), date("i"), date("s"), date("n"), date("j"), date("Y"));		
+					$diffGMT = substr(date("O", $serverDate), 1, 2);
+					$dateDiffGMT = 60 * 60 * $diffGMT;
+
+					if (substr(date("O", $dateDiffGMT), 0, 1) == '+')		
+						$GMTDate = $serverDate - $dateDiffGMT;		
+					else		
+						$GMTDate = $serverDate + $dateDiffGMT;		
+
+					$DateDiffIndonesian = 60 * 60 * 7;
+
+					$newDate = date('Y-m-d H:i:s', $GMTDate + $DateDiffIndonesian);
+
+					$currentYear 	= date('Y', $GMTDate + $DateDiffIndonesian);
+					$currentMonth 	= date('m', $GMTDate + $DateDiffIndonesian);
+					$currendDate 	= date('d-m-Y', $GMTDate + $DateDiffIndonesian);
+					
+					$logDir		= APPPATH.'logs/';
+					$CRUDLogDir = $logDir.'CRUDLog/';
+					$yearDir 	= $CRUDLogDir.$currentYear.'/';
+					$monthDir 	= $yearDir.$currentMonth.'/';
+					$fileName 	= $monthDir.$currendDate;
+
+					@mkdir($CRUDLogDir, 0700);
+			  		@mkdir($yearDir, 0700);
+			  		@mkdir($monthDir, 0700);
+
+			  		$currendDateTime = date('d-m-Y H:i:s', $GMTDate + $DateDiffIndonesian);
+
+					$fp = @fopen($fileName, 'ab');
+					@fwrite($fp, $currendDateTime . " [ ".$module." - ".$action." - ".$_SESSION['IDUser']." ] : ".$content. " \n");
+					@fclose($fp);	
+			  	}
+			}  	
+
+			//writeTransLog
+			if ( ! function_exists('writeTransLog') )
+			{
+				function writeTransLog($content = '', $module = 'default', $action = 'default')
+			  	{
+
+			  		$serverDate = mktime(date("G"), date("i"), date("s"), date("n"), date("j"), date("Y"));		
+					$diffGMT = substr(date("O", $serverDate), 1, 2);
+					$dateDiffGMT = 60 * 60 * $diffGMT;
+
+					if (substr(date("O", $dateDiffGMT), 0, 1) == '+')		
+						$GMTDate = $serverDate - $dateDiffGMT;		
+					else		
+						$GMTDate = $serverDate + $dateDiffGMT;		
+
+					$DateDiffIndonesian = 60 * 60 * 7;
+
+					$newDate = date('Y-m-d H:i:s', $GMTDate + $DateDiffIndonesian);
+
+					$currentYear 	= date('Y', $GMTDate + $DateDiffIndonesian);
+					$currentMonth 	= date('m', $GMTDate + $DateDiffIndonesian);
+					$currendDate 	= date('d-m-Y', $GMTDate + $DateDiffIndonesian);
+					
+					$logDir		= APPPATH.'logs/';
+					$CRUDLogDir = $logDir.'transLog/';
+					$yearDir 	= $CRUDLogDir.$currentYear.'/';
+					$monthDir 	= $yearDir.$currentMonth.'/';
+					$fileName 	= $monthDir.$currendDate;
+
+					@mkdir($CRUDLogDir, 0700);
+			  		@mkdir($yearDir, 0700);
+			  		@mkdir($monthDir, 0700);
+
+			  		$currendDateTime = date('d-m-Y H:i:s', $GMTDate + $DateDiffIndonesian);
+
+					$fp = @fopen($fileName, 'ab');
+					@fwrite($fp, $currendDateTime . " [ ".$module." - ".$action." - ".$_SESSION['IDUser']." ] : ".$content. " \n");
+					@fclose($fp);	
+			  	}
+			}  	
+
+
+			//GetSettingValue($settingName)
+			if ( ! function_exists('GetSettingValue') )
+			{
+				function GetSettingValue($settingName)
+			  	{
+			  		$CI=& get_instance();
+			  		$result = $CI->db->query("select set_setting_value as SettingValue from set_setting where set_setting_nama = '".$settingName."' ");
+			  		$arrResult = $result->row_array();
+			  		return $arrResult['SettingValue'];
+			  	}
+			}  	
+
+			//isCheckTransactionOK
+			if ( ! function_exists('isCheckTransactionOK') )
+			{
+				function isCheckTransactionOK($arrData)
+			  	{
+			  		$isFound = false;
+			  		
+			  		$CI=& get_instance();
+
+			  		foreach ($arrData as $row) {
+				  		
+				  		$selectQuery = $CI->db->query("select * from ".$row['tableName']." where ".$row['SQLWhere']. " limit 1 ");
+
+				  		if ($selectQuery->num_rows() > 0)
+				  		{
+				  			$isFound = true;
+				  			break;
+				  		}
+			  		}
+
+			  		return !$isFound;
+			  	}
+			}		
+
+
+			//formatCurrency($value)
+			if ( ! function_exists('formatCurrency') )
+			{
+				function formatCurrency($value)
+			  	{
+			  		return number_format($value, 0, '', ',');
+			  	}
+			}  	
+
+			//GetAutoNum($value)
+			if ( ! function_exists('GetAutoNum') )
+			{
+				function GetAutoNum($tipe)
+			  	{
+			  		$tipe  = strtolower($tipe);
+			  		$tableName = 'trx_'.$tipe;
+			  		$CI = &get_instance();
+			  		
+			  		$selectQuery = $CI->db->query('select kode_'.$tipe.' as trxNumber from '.$tableName.' order by id_'.$tipe.' desc limit 1');
+
+			  		$arrResult =  ($selectQuery->num_rows() > 0) ? $selectQuery->row_array() : array("trxNumber" => '0');
+			  		$lastNumber = $arrResult['trxNumber'] + 1;
+			  		$lastNumber = str_pad($lastNumber, 5, '0', STR_PAD_LEFT);
+			  		return $lastNumber; 
+			  	}
+			}  	
+
+			//GetSQLUPTDValue
+			if ( ! function_exists('GetSQLUPTDValue') )
+			{
+				function GetSQLUPTDValue($DML= '', $type = '')
+			  	{
+			  	    
+			  	    $IDUPTD = $_SESSION['IDUPTD'];
+
+			  	    $strValue =  ($DML == 'insert')  ? (($_SESSION['IDUPTD'] > 0 ) ? ',id_uptd' : '')  : ',id_uptd';	
+			  		
+			  		if ($type == 'value') 
+			  		{
+			  			
+			  			if ($DML == 'select')
+			  			{
+			  				$strValue = 'id_uptd ';
+			  				$strValue .= $_SESSION['IDUPTD'] > 0 ? "='".$IDUPTD."'" : "IS NULL";
+			  			}
+			  			
+			  			if ($DML == 'insert')
+			  			{
+			  				$strValue = $IDUPTD > 0 ? ",'".$IDUPTD."'" : "";
+			  			}
+
+			  		}
+
+			  		return $strValue; 
+			  	}
+			}  	
+
+			//cleanStr
+			if ( ! function_exists('cleanStr') )
+			{
+				function cleanStr($str)
+				{
+					//handle karakter khusus
+					$str = str_replace("'", "`", $str);
+					return $str;
+				}
+			}
+	}
+
+
+/* End of file func_helper.php */	

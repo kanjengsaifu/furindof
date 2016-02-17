@@ -1,0 +1,190 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Master_indikator_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahIndikator($dataIndikator)
+        {
+
+          $this->IDUser          = $_SESSION['IDUser'];
+          $this->IDTipeIndikator = $this->security->xss_clean($dataIndikator['tipeIndikator']);
+          $this->kodeIndikator   = $this->security->xss_clean($dataIndikator['kode']);
+          $this->namaIndikator   = $this->security->xss_clean($dataIndikator['nama']);
+          $this->deskripsi      = $this->security->xss_clean($dataIndikator['deskripsi']);
+         
+          $this->userEntry    = $this->IDUser;
+          $this->dateEntry    = RealDateTime();
+
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_indikator from ref_indikator where kode_indikator ='".$this->kodeIndikator."' 
+                                                  and id_tipe_indikator = '".$this->IDTipeIndikator."'");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Kode Indikator sudah tercatat, silahkan gunakan kode Indikator yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          //cek nama yang sama
+          $this->selectQuery = $this->db->query("select id_indikator from ref_indikator where nama_indikator ='".$this->namaIndikator."' 
+                                                  and id_tipe_indikator = '".$this->IDTipeIndikator."'");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Nama Indikator sudah tercatat, silahkan gunakan nama Indikator yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          $this->db->query("insert into ref_indikator (id_tipe_indikator, kode_indikator, nama_indikator, 
+                                                      deskripsi, date_entry, user_entry, last_update, user_update) 
+                            values('".$this->IDTipeIndikator."','".$this->kodeIndikator."','".$this->namaIndikator."',  '".$this->deskripsi."',
+                                  '".$this->dateEntry."','".$this->userEntry."','','0')");
+
+          $strMessage  = 'Tambah Indikator telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>alert('".$strMessage."');window.resetForm();dialogFormBaruClose();</script>";
+        }
+
+
+        public function UbahIndikator($dataIndikator)
+        {
+
+          $this->IDUser           = $_SESSION['IDUser']; 
+          $this->IDIndikator      = $this->security->xss_clean($dataIndikator['Idx']);
+          $this->IDTipeIndikator  = $this->security->xss_clean($dataIndikator['tipeIndikator']);
+          $this->kodeIndikator    = $this->security->xss_clean($dataIndikator['kode']);
+          $this->namaIndikator    = $this->security->xss_clean($dataIndikator['nama']);
+          $this->deskripsi        = $this->security->xss_clean($dataIndikator['deskripsi']);
+          $this->userUpdate       = $this->IDUser; 
+          $this->lastUpdate       = RealDateTime();
+
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_indikator from ref_indikator where kode_indikator ='".$this->kodeIndikator."' 
+                                                 and id_tipe_indikator = '".$this->IDTipeIndikator."' 
+                                                 and id_indikator <> '".$this->IDIndikator."' limit 1");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Kode Indikator sudah tercatat, silahkan gunakan kode Indikator yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData."<script>alert('".$strMessage."');</script>";
+
+              exit;
+          }
+          
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_indikator from ref_indikator where nama_indikator ='".$this->namaIndikator."' 
+                                                 and id_tipe_indikator = '".$this->IDTipeIndikator."' 
+                                                 and id_indikator <> '".$this->IDIndikator."' limit 1");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Nama Indikator sudah tercatat, silahkan gunakan nama Indikator yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          $this->db->query("update ref_indikator set kode_indikator = '".$this->kodeIndikator."', 
+                            id_tipe_indikator = '".$this->IDTipeIndikator."',
+                            nama_indikator = '".$this->namaIndikator."',
+                            deskripsi ='".$this->deskripsi."', 
+                            last_update ='".$this->lastUpdate."', 
+                            user_update ='".$this->userUpdate."'
+                            where id_indikator = '".$this->IDIndikator."'");
+    
+          $strMessage  = 'Ubah Indikator telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>alert('".$strMessage."');loadGridData();window.dialogFormUbahClose()</script>";
+        
+        }
+  
+        public function HapusIndikator($IDIndikator)
+        {
+            
+            $this->IDIndikator = $this->security->xss_clean($IDIndikator);
+            $this->IDUser   = $_SESSION['IDUser']; 
+
+            //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+            $this->arrData = array();
+            $this->arrData[] = array("tableName" => "trx_timesheet", "SQLWhere" => "id_indikator = '".$this->IDIndikator."'");
+
+            if (!isCheckTransactionOK($this->arrData))
+            {
+              $strMessage  = 'Hapus indikator tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+              echo $messageData;
+              exit;
+            }
+
+            //hapus 
+            $this->selectQuery = $this->db->query("delete from ref_indikator where id_indikator = '".$this->IDIndikator."'");
+            
+            $strMessage  = 'Hapus Indikator telah berhasil ';
+            $messageData = ConstructMessageResponse($strMessage , 'success');
+
+            echo $messageData."<script>loadGridData();</script>";
+            exit;
+                
+        }
+
+  
+        public function GetDaftarIndikator()
+        {
+          $this->selectQuery = $this->db->query("SELECT id_indikator as IDIndikator, kode_indikator as KodeIndikator, nama_indikator as NamaIndikator,
+                                                refTipeIndikator.id_tipe_indikator as IDTipeIndikator,
+                                                kode_tipe_indikator as KodeTipeIndikator,
+                                                nama_tipe_indikator as NamaTipeIndikator,
+                                                refIndikator.deskripsi as Deskripsi    
+                                                 FROM ref_indikator refIndikator     
+                                                 inner join ref_tipe_indikator refTipeIndikator 
+                                                 on refIndikator.id_tipe_indikator = refTipeIndikator.id_tipe_indikator 
+                                                 ORDER BY concat(KodeTipeIndikator,'.',KodeIndikator) asc");
+
+          $arrSelectQuery = array();
+
+          foreach ($this->selectQuery->result_array() as $row) {
+
+            $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+
+            $arrSelectQuery[] = array('idx' =>  $row['IDIndikator'],
+                                       'IDTipeIndikator'  => $row['IDTipeIndikator'],
+                                       'NamaTipeIndikator' => $row['NamaTipeIndikator'],
+                                       'kodeIndikator'     =>  $row['KodeIndikator'],
+                                       'kodeTipeIndikator'  =>  $row['KodeTipeIndikator'],
+                                       'kodeDisplay' =>  $row['KodeTipeIndikator'].'.'.$row['KodeIndikator'],
+                                       'nama'      =>  $row['NamaIndikator'],
+                                       'deskripsi' =>  $row['Deskripsi'],
+                                       'action'    =>  $strDataAction
+                                      );
+          }
+
+          return json_encode($arrSelectQuery);
+
+        }
+
+        public function GetKodeTipeIndikator($IDTipeIndikator)
+        {
+          $IDTipeIndikator = $this->security->xss_clean($IDTipeIndikator);
+          $selectquery =  $this->db->query("select kode_tipe_indikator as KodeTipeIndikator from ref_tipe_indikator where id_tipe_indikator = '".$IDTipeIndikator."' ");
+          $data = $selectquery->row_array();
+          return $data['KodeTipeIndikator'];
+        }
+
+    }

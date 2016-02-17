@@ -1,0 +1,94 @@
+<div class="content-header">   
+	<h1>Member Proyek</h1>
+</div>
+
+<div class="content">
+	<div class="box box-warning">
+	  	<div class="box-body">
+	  		<form action="timesheet/TambahMemberProyek" method="post" id="formTambahMemberProyek">
+	  		<div class="form-horizontal">
+	  		  	<div class="form-group">
+				<label for="proyek" class="col-sm-2 control-label">Proyek</label>
+				    <div class="col-sm-10">
+			       	 	<select id="proyek" name="proyek" class="form-control" onchange="showKaryawan()">
+				       		<option value=''>:: Pilih Proyek ::</option>
+				       		<?php  
+				       			$CI = get_instance();
+				       			$selectQuery =  $CI->db->query("SELECT id_proyek AS IDProyek, 
+																CONCAT((SELECT kode_divisi FROM ref_divisi WHERE id_divisi = trx_proyek.id_divisi),'.',
+																(SELECT kode_client FROM mst_client WHERE id_client = trx_proyek.id_client),'.',
+																(SELECT kode_program FROM mst_program WHERE id_program=trx_proyek.id_program), '.', kode_proyek ) AS KodeProyek,
+																CONCAT((SELECT nama_client FROM 
+																mst_client WHERE id_client = trx_proyek.id_client), ' - ', nama_proyek) AS NamaProyek  
+																FROM trx_proyek
+																ORDER BY KodeProyek, NamaProyek ASC");
+				       			$arrTipeIndikator = $selectQuery->result_array();
+				       			foreach ($arrTipeIndikator as $row) {
+				       				echo "<option value='".$row['IDProyek']."'>".$row['KodeProyek']." - ".$row['NamaProyek']."</option>";
+				       			}
+				       		?>
+				       	</select>
+				    </div>
+			    </div>  	
+		   	
+			   	<div id="dataKaryawan"></div> 
+			   	
+			   	<div class="form-group text-right">
+				<label for="btnSimpan" class="col-sm-2 control-label">&nbsp;</label>
+				    <div class="col-sm-10">
+				    	<button type="button" class="btn btn-sm btn-success" id="btnSimpan"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span>&nbsp;Simpan</button>	
+				    </div>
+				</div>  
+					
+			</div>	  
+		</form>
+		</div> <!-- <div class="box-body"> -->
+	  </div>
+	</div> <!-- <div class="box box-warning"> -->
+</div>
+	
+<script>
+
+	$(document).ready(function () {	        
+		
+		$('select').select2();
+
+        $('#btnSimpan').click(function(e)
+        {
+			e.preventDefault(); 
+	    	
+	    	sendRequestForm($('#formTambahMemberProyek').attr('action'), $('#formTambahMemberProyek').serialize(), 'content');     
+
+        });
+
+    });
+
+
+	function resetform()
+	{
+		$('#dataKaryawan').html('');
+	}
+
+	function showKaryawan()
+	{
+		resetform();
+		var IDProyek = document.getElementById('proyek').value;
+		var htmlOut = ajaxFillGridJSON('timesheet/GetDaftarMemberProyek', {IDProyek : IDProyek});
+		$('#dataKaryawan').html(htmlOut);
+	}
+
+	function pilihSemua(objReference)
+	{
+		
+		var checked = document.getElementById(objReference).checked;
+
+		var checkboxLength = document.getElementsByName('karyawan[]').length;
+
+		for(i=0;i<checkboxLength;i++){
+			document.getElementsByName('karyawan[]')[i].checked  = checked;
+		}
+	}
+        		
+</script>
+
+ 

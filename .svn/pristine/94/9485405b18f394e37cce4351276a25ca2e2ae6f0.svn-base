@@ -1,0 +1,504 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Trx_timesheet_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahTimesheet($dataTimesheet)
+        {
+          $this->IDUser  = $_SESSION['IDUser'];
+
+          $this->IDProgramKerja  = $this->security->xss_clean($dataTimesheet['IDProgramKerja']);
+          $this->IDKunjungan  = $this->security->xss_clean($dataTimesheet['kunjungan']);
+
+          $this->tanggal      = $this->security->xss_clean($dataTimesheet['tanggal']);
+          $this->jam          = $this->security->xss_clean($dataTimesheet['jam']);
+          $this->aktivitas    = $this->security->xss_clean($dataTimesheet['aktivitas']);
+          
+          $this->aktivitas    = cleanStr($this->aktivitas);
+
+          $this->IDSubOutput  = $this->security->xss_clean($dataTimesheet['subOutput']);
+
+          $this->userEntry  = $this->IDUser;
+          $this->dateEntry  = RealDateTime();
+     
+          $this->tanggal  = formatDateDB($this->tanggal);
+          $this->waktu    = $this->jam;
+
+          $strFieldKunjungan =  trim($this->IDKunjungan) <> '' ?   'id_kunjungan,' : '' ;
+          $strKunjungan      =  trim($this->IDKunjungan) <> '' ?   "'".$this->IDKunjungan."'," : '' ;
+
+          $strFieldWhereOutput    = $this->IDSubOutput > 0 ? 'id_sub_output,' : '';
+          $strFieldSelectOutput   = $this->IDSubOutput > 0 ? "'".$this->IDSubOutput."'," : '' ;
+
+          $this->db->query("insert into trx_timesheet (id_program_kerja,".$strFieldWhereOutput.$strFieldKunjungan."id_karyawan, 
+                              aktivitas, tanggal, jam, date_entry, user_entry, last_update, user_update) 
+                            values('".$this->IDProgramKerja."',".$strFieldSelectOutput.$strKunjungan."'".$this->IDUser."', 
+                                   '".$this->aktivitas."', '".$this->tanggal."', '".$this->waktu."', 
+                                   '".$this->dateEntry."','".$this->userEntry."','','0')");
+          
+          $strMessage  = 'Tambah Timesheet telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>window.loadGridData();alert('".$strMessage."');window.resetForm();</script>";     
+          
+        }
+
+        public function GetDaftarProgramKerjaBrowse()
+        {
+          
+          $this->IDUser  = $_SESSION['IDUser'];
+
+          $strUserWhere = ($_SESSION['IDGroup'] <> 1) ? "where trxProyekMember.id_karyawan = '".$this->IDUser."'" : '';
+
+          $this->selectQuery =  $this->db->query("select (select id_program_kerja from trx_program_kerja
+                                                          where id_proyek = trxProyek.id_proyek and 
+                                                          id_output = trxOutput.id_output limit 1) as IDProgramKerja,
+                                                          trxOutput.id_output as IDOutput, trxProyek.id_proyek as IDProyek, 
+                                                          trxOutput.id_karyawan as IDKaryawan, 
+                                                          nama_client as NamaClient, nama_proyek as NamaProyek,
+                                                          nama_output as NamaOutput,
+                                                          nama_divisi as NamaDivisi,
+                                                          (SELECT nama_karyawan FROM mst_karyawan WHERE id_karyawan = trxOutput.id_karyawan) AS NamaKaryawan 
+                                                          FROM trx_proyek trxProyek
+                                                          LEFT JOIN mst_client mstClient ON trxProyek.id_client = mstClient.id_client
+                                                          LEFT JOIN trx_output trxOutput ON trxOutput.id_proyek = trxProyek.id_proyek
+                                                          LEFT JOIN ref_divisi refDivisi ON refDivisi.id_divisi = trxOutput.id_divisi 
+                                                          LEFT JOIN trx_proyek_member trxProyekMember ON trxProyekMember.id_proyek = trxProyek.id_proyek ".$strUserWhere." 
+                                                          order by NamaClient, IDProyek, IDOutput ");
+
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;";
+          $arrData = array();
+          
+          $prevIDProyek = '';
+          $prevIDOutput = '';
+          $prevOutput = '';
+          $prevPIC = '';
+
+          $k=1;
+          foreach ($this->selectQuery->result_array() as $row)
+          {
+
+            $NamaOutput     = $row['IDOutput'] <> $prevIDOutput ? $row['NamaOutput'] : '';
+            $NamaProyek     = $row['IDProyek'] <> $prevIDProyek ? $row['NamaClient']. ' </br> '.$row['NamaProyek'] : '';
+            $namaPIC        = $row['IDOutput'] <> $prevIDOutput ? $row['NamaDivisi'].' <br> '.$row['NamaKaryawan'] : '';
+            
+            $IDProgramKerja = $row['IDProgramKerja'];
+
+            $selectQuery = $this->db->query("select id_divisi as IDDivisi, nama_divisi as NamaDivisi from ref_divisi 
+                                           where id_divisi = (select id_divisi from mst_karyawan where id_karyawan = '".$this->IDUser."')  ");
+           
+            $namaDivisi = strtolower($selectQuery->first_row()->NamaDivisi);
+            $IDDIvisi = $selectQuery->first_row()->IDDivisi;
+
+            if ( $IDDIvisi == 5) $namaDivisi = 'Konsultan';
+
+            $this->selectQuery = $this->db->query("select id_program_kerja as IDProgramKerja, 
+                                                  kode_prosedur as Tahapan, 
+                                                  nama_prosedur_".$namaDivisi." as NamaProsedur 
+                                                  from ref_prosedur refProsedur
+                                                  left join trx_program_kerja trxProgramKerja
+                                                  on refProsedur.id_prosedur = trxProgramKerja.id_prosedur
+                                                  where id_proyek='".$row['IDProyek']."' and id_output= '".$row['IDOutput']."'");
+        
+            $strTahapanButton = $this->selectQuery->num_rows () > 0 ? '' : ':: Belum Ada Data ::';
+
+            foreach ($this->selectQuery->result_array() as $row2) 
+            {
+              $strTahapanButton.= '<div title="'.$row2['NamaProsedur'].'" class="btn btn-sm btn-success" style="margin:3px;padding:9px;" onclick="pickup(\''.$row2['IDProgramKerja'].'\')">'.$row2['Tahapan'].'</div>';
+            }
+
+            $nomor = ($row['IDProyek'] <> $prevIDProyek) ? $k++ : '';
+            
+       
+            $programKerjaPilih = $row['NamaClient'].', '.$row['NamaProyek'].', '.$row['NamaOutput'].', '.$row['NamaDivisi'];//.', '.$row['Tahapan'];
+          
+
+            $arrData[] = array('idx'        => $row['IDProgramKerja'],
+                               'IDProyek'   => $row['IDProyek'],
+                               'IDOutput'   => $row['IDOutput'],
+                               'proyek'     => $NamaProyek, 
+                               'output'     => $NamaOutput,
+                               'pic'        => $namaPIC,
+                               'programKerjaPilih' => $programKerjaPilih,
+                               'tahapan'    =>  $strTahapanButton,
+                               'status'     => '',
+                               'nomor'      => $nomor,
+                               'action'     => $strDataAction);
+
+            $prevOutput   = $row['NamaOutput'];
+            $prevIDProyek = $row['IDProyek'];
+            $prevIDOutput = $row['IDOutput'];
+            $prevPIC      = $row['IDKaryawan'];
+                   
+          }  
+
+          return json_encode($arrData);
+        }
+
+        public function GetDaftarTimesheet()
+        {
+          
+          $this->IDUser  = $_SESSION['IDUser'];
+
+          //ambil data timesheet 
+          $this->selectQuery =  $this->db->query("select id_timesheet as IDTimesheet, 
+                                                  trxProyek.id_program as IDProgram, 
+                                                  trxProgramKerja.id_proyek as IDProyek, 
+                                                  trxProgramKerja.id_prosedur as IDProsedur,
+                                                  trxTimesheet.id_indikator as IDIndikator, 
+                                                  trxTimesheet.id_kunjungan as IDKunjungan,
+                                                  trxTimesheet.id_sub_output as IDSubOutput,
+                                                  trxProgramKerja.id_output as IDOutput,
+                                                  nama_proyek as NamaProyek, 
+                                                  nama_program as NamaProgram,
+                                                  nama_client as NamaClient,
+                                                  nama_kunjungan as NamaKunjungan,
+                                                  nama_indikator as NamaIndikator,
+                                                  kode_prosedur as KodeProsedur, 
+                                                  (select nama_output from trx_output trxOutput where trxOutput.id_output = 
+                                                  (select id_output from trx_program_kerja where id_proyek = trxProgramKerja.id_proyek limit 1) ) as NamaOutput,
+                                                  (select nama_divisi from ref_divisi where id_divisi = trxProyek.id_divisi) as NamaDivisi,
+                                                  aktivitas as Aktivitas, jam as Waktu, tanggal as Tanggal, jam as Waktu,    
+                                                  trxTimesheet.id_program_kerja as IDProgramKerja 
+
+                                                  from trx_timesheet trxTimesheet 
+                                                  left join trx_program_kerja trxProgramKerja on trxProgramKerja.id_program_kerja = trxTimesheet.id_program_kerja     
+                                                  left join trx_proyek trxProyek on trxProyek.id_proyek = trxProgramKerja.id_proyek
+                                                  left join ref_prosedur refProsedur on refProsedur.id_prosedur = trxProgramKerja.id_prosedur 
+                                                  left join mst_program mstProgram on mstProgram.id_program = trxProyek.id_program 
+                                                  left join mst_client mstClient on mstClient.id_client = trxProyek.id_client 
+                                                  left join ref_kunjungan refKunjungan on refKunjungan.id_kunjungan = trxTimesheet.id_kunjungan 
+                                                  left join ref_indikator refIndikator on refIndikator.id_indikator = trxTimesheet.id_indikator 
+
+                                                  where trxTimesheet.id_karyawan = '".$this->IDUser."' 
+                                                  -- and month(tanggal) = '".RealDateTime('Month')."' and year(tanggal) = '".RealDateTime('Year')."'  
+                                                  order by Tanggal, NamaProyek, KodeProsedur asc ");
+
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+          $arrData = array();
+        
+          foreach ($this->selectQuery->result_array() as $row)
+          {
+            
+           $programKerjaPilih = $row['NamaClient'].', '.$row['NamaProyek'].', '.$row['NamaOutput'].', '.$row['NamaDivisi'].', '.$row['KodeProsedur'];
+
+            $arrData[] = array('idx'           => $row['IDTimesheet'],
+                               'IDProgramKerja' => $row['IDProgramKerja'],
+                               'IDProyek'      => $row['IDProyek'],
+                               'IDOutput'      => $row['IDOutput'],
+                               'IDSubOutput'   => $row['IDSubOutput'],
+                               'IDProgram'     => $row['IDProgram'],
+                               'IDProsedur'    => $row['IDProsedur'],
+                               'IDIndikator'   => $row['IDIndikator'],
+                               'IDKunjungan'   => $row['IDKunjungan'],
+                               'ProgramKerja'   => $programKerjaPilih,
+                               'NamaProyek'    => $row['NamaProyek'],
+                               'KodeProsedur'  => $row['KodeProsedur'],
+                               'Aktivitas'     => $row['Aktivitas'],
+                               'Tanggal'       => formatDateIndo($row['Tanggal']),
+                               'Waktu'         => $row['Waktu']. ' Jam' ,
+                               'Jam'           => $row['Waktu'],
+                               'action'        => $strDataAction);
+          }  
+          
+
+          return json_encode($arrData);
+        }
+
+        public function UbahTimesheet($dataTimesheet)
+        {
+
+          $this->IDTimesheet    = $this->security->xss_clean($dataTimesheet['IDTimesheet']);
+          $this->IDProgramKerja = $this->security->xss_clean($dataTimesheet['IDProgramKerja']);
+          $this->IDKunjungan    = $this->security->xss_clean($dataTimesheet['kunjungan']);
+          $this->IDSubOutput    = $this->security->xss_clean($dataTimesheet['subOutput']);
+          $this->tanggal        = $this->security->xss_clean($dataTimesheet['tanggal']);
+          $this->jam            = $this->security->xss_clean($dataTimesheet['jam']);
+          $this->aktivitas      = $this->security->xss_clean($dataTimesheet['aktivitas']);
+          $this->aktivitas      = cleanStr($this->aktivitas);
+
+          $this->lastUpdate = RealDateTime();
+          $this->userUpdate = $_SESSION['IDUser'];
+
+          $strEditKunjungan =  trim($this->IDKunjungan) <> '' ?   "id_kunjungan ='".$this->IDKunjungan."', " : "id_kunjungan = NULL, ";
+
+          $this->db->query("update trx_timesheet set id_program_kerja = '".$this->IDProgramKerja."', ".$strEditKunjungan." 
+                                                     aktivitas = '".$this->aktivitas."',
+                                                     id_sub_output = '".$this->IDSubOutput."',
+                                                     tanggal = '".formatDateDB($this->tanggal)."',
+                                                     jam = '".$this->jam."',
+                                                     last_update = '".$this->lastUpdate."', 
+                                                     user_update  = '".$this->userUpdate."' 
+                                                     where id_timesheet= '".$this->IDTimesheet."' ");
+          
+          $strMessage  = 'Ubah Timesheet telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>loadGridData();alert('".$strMessage."');$('body').attr('class', 'skin-yellow sidebar-collapse');window.dialogFormUbahClose();</script>";    
+
+        }
+
+
+        public function HapusTimesheet($IDTimesheet)
+        {
+
+          $this->IDTimesheet    = $this->security->xss_clean($IDTimesheet);
+          
+          $this->db->query("delete from trx_timesheet  where id_timesheet = '".$this->IDTimesheet."' ");
+        
+
+          $strMessage  = 'Hapus Timesheet telah berhasil ';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>loadGridData();</script>";
+          exit;    
+        }    
+
+
+      public function GetComboOutputAjax($IDProyek)
+      {
+
+        $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+        $this->selectQuery = $this->db->query("select id_output as IDOutput, nama_output as NamaOutput
+                                               from trx_output trxOutput left join trx_proyek trxProyek
+                                               on trxOutput.id_proyek = trxProyek.id_proyek 
+                                               where trxProyek.id_proyek='".$this->IDProyek."'");
+       
+        $strComboAjax = '';
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+          $strComboAjax = "<div class=\"form-group\">
+                            <label for=\"pic\" class=\"col-sm-2 control-label\">Output</label>
+                              <div class=\"col-sm-10\">
+                                    <select id=\"output\" name=\"output\" class=\"form-control\" onchange=\"fillTahapan()\">
+                                      <option value=\"\" >:: Pilih Output ::</option>";
+
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+            $strComboAjax.= "<option value='".$row['IDOutput']."'>".$row['NamaOutput']."</option>";
+          }
+
+          $strComboAjax .= "</select></div></div>";
+        }
+
+        return $strComboAjax;
+      }
+
+      public function GetComboOutputUbahAjax($IDProyek)
+      {
+
+        $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+        $this->selectQuery = $this->db->query("select id_output as IDOutput, nama_output as NamaOutput
+                                               from trx_output trxOutput left join trx_proyek trxProyek
+                                               on trxOutput.id_proyek = trxProyek.id_proyek 
+                                               where trxProyek.id_proyek='".$this->IDProyek."'");
+       
+        $strComboAjax = '';
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+          $strComboAjax = "<div class=\"form-group\">
+                            <label for=\"pic\" class=\"col-sm-2 control-label\">Output</label>
+                              <div class=\"col-sm-10\">
+                                    <select id=\"output\" name=\"output\" class=\"form-control\" onchange=\"fillTahapan()\" disabled>
+                                      <option value=\"\" >:: Pilih Output ::</option>";
+
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+            $strComboAjax.= "<option value='".$row['IDOutput']."'>".$row['NamaOutput']."</option>";
+          }
+
+          $strComboAjax .= "</select></div></div>";
+        }
+
+        return $strComboAjax;
+      }
+
+      public function GetTahapanUbahAjax($IDTimesheet)
+      {
+        
+         $this->IDTimesheet  = $this->security->xss_clean($IDTimesheet);
+
+         $this->selectQuery = $this->db->query("select id_program_kerja as IDTimesheet, id_prosedur as IDProsedur,
+                                                (select kode_prosedur from ref_prosedur where id_prosedur = trx_timesheet.id_prosedur) as KodeProsedur, 
+                                                coalesce(tgl_deadline, '') as TglDeadline,
+                                                coalesce(tgl_realisasi, '') as tglRealisasi, status as Status from trx_timesheet
+                                                where id_program_kerja= '".$this->IDTimesheet."' ");
+         
+         $strInput = "";
+
+         if ($this->selectQuery->num_rows() > 0)
+         { 
+
+           $row = $this->selectQuery->row_array();  
+
+           $this->tglDeadline = $row['TglDeadline'] <> '' ? formatDateIndo($row['TglDeadline']) : '';
+           $this->tglDeadline = str_replace('00-00-0000', RealDateTime('', false), $this->tglDeadline);
+           $this->tglRealisasi = $row['tglRealisasi'] <> '' ? formatDateIndo($row['tglRealisasi']) : '';
+           $this->tglRealisasi = str_replace('00-00-0000', RealDateTime('', false), $this->tglRealisasi);
+
+           $strInput= "<div class=\"form-group\">
+                              <label class=\"col-sm-2 control-label\">Tahapan</label>
+                                <div class=\"col-sm-10\">
+                                    <div class=\"input-group date\"><span class=\"input-group-addon\">".$row["KodeProsedur"]."</span>
+                                      <input name=\"tahapan\" value=\"".$row['IDProsedur']."\" type=\"hidden\" />
+                                      <input name=\"deadline\" placeholder=\"Deadline\" value=\"".$this->tglDeadline."\" type=\"text\" id=\"deadline\" class=\"form-control\" role=\"date\" readOnly>
+                                      <span onclick=\"dateShow($('#deadline'))\"  class=\"input-group-addon\"><i id=\"ref_tgl\" class=\"glyphicon glyphicon-th\"></i></span> 
+                                      <input name=\"realisasi\" placeholder=\"Realisasi\" value=\"".$this->tglRealisasi."\" type=\"text\" id=\"realisasi\" class=\"form-control\" role=\"date\" readOnly>
+                                      <span onclick=\"dateShow($('#realisasi'))\"  class=\"input-group-addon\"><i class=\"glyphicon glyphicon-th\"></i></span> 
+                                      <input type=\"text\" name=\"status\" value=\"".$row['Status']."\" id=\"status\" class=\"form-control\" placeholder=\"Status\"/>                 
+                                    </div>
+                                </div>
+                               
+                          </div>";
+          }
+
+          $strInput.="<script>
+                        $('[role=\"date\"]').datepicker({
+                        format    : 'dd-mm-yyyy',
+                        autoclose : true
+                    });</script>";
+
+          return $strInput;              
+      }
+
+      public function GetTahapanAjax()
+      {
+
+        $this->selectQuery = $this->db->query("select id_prosedur as IDProsedur, kode_prosedur as KodeProsedur
+                                               from ref_prosedur order by kode_prosedur asc");
+       
+        $strInput = "";
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+
+          $i=0;
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+
+            $strTahapan = ($i == 0 ) ? 'Tahapan' : '';
+
+            $strInput.= "<div class=\"form-group\">
+                            <label class=\"col-sm-2 control-label\">".$strTahapan."</label>
+                              <div class=\"col-sm-10\">
+                                  <div class=\"input-group\"><span class=\"input-group-addon\">".$row["KodeProsedur"]."</span>
+                                    <input name=\"tahapan[]\" value=\"".$row['IDProsedur']."\" type=\"hidden\" />
+                                    <input name=\"deadline[]\" placeholder=\"Deadline\" type=\"text\" id=\"deadline".$i."\" class=\"form-control\" role=\"date\" readOnly>
+                                    <span onclick=\"dateShow($('#deadline".$i."'))\"  class=\"input-group-addon\"><i id=\"ref_tgl\" class=\"glyphicon glyphicon-th\"></i></span> 
+                                    <input name=\"realisasi[]\" placeholder=\"Realisasi\" type=\"text\" id=\"realisasi".$i."\" class=\"form-control\" role=\"date\" readOnly>
+                                    <span onclick=\"dateShow($('#realisasi".$i."'))\"  class=\"input-group-addon\"><i class=\"glyphicon glyphicon-th\"></i></span> 
+                                    <input type=\"text\" name=\"status[]\" id=\"status".$i."\" class=\"form-control\" placeholder=\"Status\"/>                 
+                                  </div>
+                              </div>
+                             
+                        </div>";
+
+                        $i++;
+          }
+
+          $strInput.="<script>
+                        $('[role=\"date\"]').datepicker({
+                        format    : 'dd-mm-yyyy',
+                        autoclose : true
+                    });</script>";
+
+        }
+
+        return $strInput;
+      }
+
+      public function GetDaftarTimesheetRekapExcel($tglAwal, $tglAkhir)
+      {
+
+        $this->tglAwal   = formatDateDB($this->security->xss_clean($tglAwal));
+        $this->tglAkhir  = formatDateDB($this->security->xss_clean($tglAkhir));
+
+        //ambil data timesheet 
+        $this->selectQuery =  $this->db->query("select nama_karyawan as NamaKaryawan,
+                                                  concat(kode_divisi, ' - ', nama_divisi) as NamaDivisi,
+                                                  concat(month(tanggal), '/', year(tanggal)) as Bulan,
+                                                  concat((select kode_divisi from ref_divisi where id_divisi = mstProgram.id_divisi),'.', (select kode_bidang from ref_bidang where id_bidang = mstProgram.id_bidang), '.', kode_program, ' - ', nama_program) as NamaProgram,
+                                                  concat((select kode_divisi from ref_divisi where id_divisi = trxProyek.id_divisi),'.', (select kode_client from mst_client where id_client = trxProyek.id_client), '.', (select kode_program from mst_program where id_program = trxProyek.id_program), '.', kode_proyek, ' - ', nama_proyek) as NamaProyek, 
+                                                  concat(kode_bidang, ' - ', nama_bidang) as NamaBidang, 
+                                                  concat(kode_client, ' - ', nama_client) as NamaClient,
+                                                  kode_prosedur as Tahapan,
+                                                  concat(kode_indikator, ' - ', nama_indikator) as NamaIndikator,
+                                                  concat(kode_kunjungan, ' - ', nama_kunjungan) as NamaKunjungan,
+                                                  tanggal as Tanggal, jam as Jam,
+                                                  aktivitas as NamaAktivitas, nama_output AS NamaOutput, nama_sub_output AS NamaSubOutput    
+
+                                                  from trx_timesheet trxTimesheet left join trx_program_kerja trxProgramKerja
+                                                  on trxTimesheet.id_program_kerja = trxProgramKerja.id_program_kerja
+                                                  left join trx_proyek trxProyek on trxProyek.id_proyek = trxProgramKerja.id_proyek  
+                                                  left join mst_client mstClient on mstClient.id_client = trxProyek.id_client
+                                                  left join mst_program mstProgram on mstProgram.id_program = trxProyek.id_program
+                                                  left join ref_indikator refIndikator on refIndikator.id_indikator = trxTimesheet.id_indikator 
+                                                  left join ref_bidang mstBidang on mstBidang.id_bidang =  mstProgram.id_bidang
+                                                  left join ref_prosedur refProsedur on refProsedur.id_prosedur = trxProgramKerja.id_prosedur  
+                                                  left join ref_kunjungan refKunjungan on refKunjungan.id_kunjungan = trxTimesheet.id_kunjungan  
+                                                  left join mst_karyawan mstKaryawan on mstKaryawan.id_karyawan = trxTimesheet.id_karyawan 
+                                                  left join ref_divisi refDivisi on refDivisi.id_divisi = mstKaryawan.id_divisi 
+                                                  left join trx_output AS trxOutput ON trxOutput.id_output = trxProgramKerja.id_output
+                                                  left join trx_sub_output AS trxSubOutput ON trxSubOutput.id_sub_output = trxTimesheet.id_sub_output   
+
+                                                where 
+                                                (tanggal >= '".$this->tglAwal."' and tanggal <= '".$this->tglAkhir."')  
+                                                and mstKaryawan.aktif = 1  
+                                                order by trxTimesheet.id_karyawan, trxTimesheet.tanggal asc ");
+
+        $arrData = $this->selectQuery->num_rows() > 0 ? $this->selectQuery->result_array() : array();
+        return $arrData;        
+      }
+
+      public function GetDaftarTimesheetPerStaffExcel($IDKaryawan, $tglAwal, $tglAkhir)
+      {
+        
+        $this->IDKaryawan = $this->security->xss_clean($IDKaryawan);
+        $this->tglAwal    = formatDateDB($this->security->xss_clean($tglAwal));
+        $this->tglAkhir   = formatDateDB($this->security->xss_clean($tglAkhir));
+
+        //ambil data timesheet 
+        $this->selectQuery =  $this->db->query("select nama_karyawan as NamaKaryawan,
+                                                concat(kode_divisi, ' - ', nama_divisi) as NamaDivisi,
+                                                concat(month(tanggal), '/', year(tanggal)) as Bulan,
+                                                concat((select kode_divisi from ref_divisi where id_divisi = mstProgram.id_divisi),'.', (select kode_bidang from ref_bidang where id_bidang = mstProgram.id_bidang), '.', kode_program, ' - ', nama_program) as NamaProgram,
+                                                concat((select kode_divisi from ref_divisi where id_divisi = trxProyek.id_divisi),'.', (select kode_client from mst_client where id_client = trxProyek.id_client), '.', (select kode_program from mst_program where id_program = trxProyek.id_program), '.', kode_proyek, ' - ', nama_proyek) as NamaProyek, 
+                                                concat(kode_bidang, ' - ', nama_bidang) as NamaBidang, 
+                                                concat(kode_client, ' - ', nama_client) as NamaClient,
+                                                kode_prosedur as Tahapan,
+                                                concat(kode_indikator, ' - ', nama_indikator) as NamaIndikator,
+                                                concat(kode_kunjungan, ' - ', nama_kunjungan) as NamaKunjungan,
+                                                tanggal as Tanggal, jam as Jam,
+                                                aktivitas as NamaAktivitas, nama_output AS NamaOutput, nama_sub_output AS NamaSubOutput     
+                                              
+                                                from trx_timesheet trxTimesheet left join trx_program_kerja trxProgramKerja
+                                                on trxTimesheet.id_program_kerja = trxProgramKerja.id_program_kerja
+                                                left join trx_proyek trxProyek on trxProyek.id_proyek = trxProgramKerja.id_proyek  
+                                                left join mst_client mstClient on mstClient.id_client = trxProyek.id_client
+                                                left join mst_program mstProgram on mstProgram.id_program = trxProyek.id_program
+                                                left join ref_indikator refIndikator on refIndikator.id_indikator = trxTimesheet.id_indikator 
+                                                left join ref_bidang mstBidang on mstBidang.id_bidang =  mstProgram.id_bidang
+                                                left join ref_prosedur refProsedur on refProsedur.id_prosedur = trxProgramKerja.id_prosedur  
+                                                left join ref_kunjungan refKunjungan on refKunjungan.id_kunjungan = trxTimesheet.id_kunjungan  
+                                                left join mst_karyawan mstKaryawan on mstKaryawan.id_karyawan = trxTimesheet.id_karyawan 
+                                                left join ref_divisi refDivisi on refDivisi.id_divisi = mstKaryawan.id_divisi 
+                                                left join trx_output AS trxOutput ON trxOutput.id_output = trxProgramKerja.id_output
+                                                left join trx_sub_output AS trxSubOutput ON trxSubOutput.id_sub_output = trxTimesheet.id_sub_output  
+
+                                                where trxTimesheet.id_karyawan = '".$this->IDKaryawan."' 
+                                                and mstKaryawan.aktif = 1
+                                                and (tanggal >= '".$this->tglAwal."' and tanggal <= '".$this->tglAkhir."' ) 
+                                                order by trxTimesheet.tanggal asc");
+      
+        $arrData = $this->selectQuery->num_rows() > 0 ? $this->selectQuery->result_array() : array();
+        return $arrData;
+      }
+
+    }

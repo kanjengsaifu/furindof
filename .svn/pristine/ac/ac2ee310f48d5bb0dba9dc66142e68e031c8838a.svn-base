@@ -1,0 +1,72 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Timesheet_model extends CI_Model{
+    	
+		  private $selectQuery;
+      private $arrMenuData;
+
+      public function __construct() {
+          parent::__construct();
+      }
+
+      public function GetMenuTimesheet()
+      {
+        
+          $this->selectQuery = $this->db->query("SELECT id_modul as IDModul FROM sys_modul WHERE nama_modul='Timesheet'");
+          
+          $this->arrMenuData = $this->selectQuery->row_array();
+          
+          $this->IDModulInduk =$this->arrMenuData['IDModul'];
+
+          return getTreeMenuData($this->IDModulInduk, 'sys_modul', 'id_modul', 'id_modul', 'nama_modul');           
+      	
+      }
+
+      public function GetKodeProgram($IDProgram)
+      {
+
+        $this->IDProgram  = $this->security->xss_clean($IDProgram);
+
+        $this->selectQuery = $this->db->query("SELECT kode_program as KodeProgram from mst_program where id_program='".$this->IDProgram."' ");
+          
+        $this->arrData =  ($this->selectQuery->num_rows() > 0)  ? $this->selectQuery->row_array() : array('KodeProgram' => '');
+          
+        return $this->arrData['KodeProgram'];
+      }
+
+      public function GetKodeDivisi($IDDivisi)
+      {
+        $this->IDDivisi  = $this->security->xss_clean($IDDivisi);
+
+        $this->selectQuery = $this->db->query("SELECT kode_divisi as KodeDivisi from ref_divisi where id_divisi='".$this->IDDivisi."' ");
+          
+        $this->arrData =  ($this->selectQuery->num_rows() > 0)  ? $this->selectQuery->row_array() : array('KodeDivisi' => '');
+          
+        return $this->arrData['KodeDivisi'];
+      }
+
+      public function GetKodeBidang($IDBidang)
+      {
+        $this->IDBidang  = $this->security->xss_clean($IDBidang);
+
+        $this->selectQuery = $this->db->query("SELECT kode_bidang as KodeBidang from ref_bidang where id_bidang='".$this->IDBidang."' ");
+          
+        $this->arrData =  ($this->selectQuery->num_rows() > 0)  ? $this->selectQuery->row_array() : array('KodeBidang' => '');
+          
+        return $this->arrData['KodeBidang'];
+      }
+
+      public function GetKodeClient($IDClient)
+      {
+        $this->IDClient  = $this->security->xss_clean($IDClient);
+
+        $this->selectQuery = $this->db->query("SELECT kode_client as KodeClient from mst_client where id_client='".$this->IDClient."' ");
+          
+        $this->arrData =  ($this->selectQuery->num_rows() > 0)  ? $this->selectQuery->row_array() : array('KodeClient' => '');
+          
+        return $this->arrData['KodeClient'];
+
+      }
+
+    }
+

@@ -1,0 +1,345 @@
+<div class="content-header">   
+    <h1>Daftar Program Kerja</h1>
+</div>
+
+
+<div class="content">
+    <div class="box box-warning">
+        <div class="box-header">
+             <button type="button" class="btn btn-sm btn-success" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+             <button type="button" class="btn btn-sm btn-success" id="btnCetakExcel"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>   
+        </div>
+        <div class="box-body">
+            <div id="ajaxTreeGrid"></div>
+        </div> <!-- <div class="box-body"> -->
+        <div class="box-footer">   
+            <button type="button" class="btn btn-sm btn-success" id="btnTambahBaru2"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+            <button type="button" class="btn btn-sm btn-success" id="btnCetakExcel2"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button> 
+        </div>   <!-- <div class="box-footer"> -->  
+      </div>
+    </div> <!-- <div class="box box-warning"> -->
+</div>
+    
+    <div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="FormTambahData">Tambah Program Kerja</h4>
+              </div>
+              <div class="modal-body">
+                <div class="pesanBaru"></div>
+                <form action="timesheet/TambahProgramKerja" method="post" id="formTambahProgramKerja">
+                    <div class="form-horizontal">
+
+                        <div class="form-group">
+                        <label for="proyek" class="col-sm-2 control-label">Proyek</label>
+                            <div class="col-sm-10">
+                                <select id="proyek" name="proyek" class="form-control" onchange="fillComboOutput()">
+                                    <option value=''>:: Pilih Proyek ::</option>
+                                    <?php 
+                                        $CI = get_instance();
+                                        $selectQuery =  $CI->db->query("select id_proyek as IDProyek, 
+                                                                        concat((select kode_divisi from ref_divisi where id_divisi  = trxProyek.id_divisi),'.', 
+                                                                        (select kode_client from mst_client where id_client  = trxProyek.id_client),'.', kode_proyek) as KodeProyek,
+                                                                        nama_proyek as NamaProyek     
+                                                                        from trx_proyek trxProyek");
+                                        $arrData = $selectQuery->result_array();
+                                        foreach ($arrData as $row) {
+                                            echo "<option value='".$row['IDProyek']."'>".$row['KodeProyek']." - ".$row['NamaProyek']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="outputAjax"></div>
+                        <div id="tahapanAjax"></div>  
+                       
+                    </div>    
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnTambahProgramKerja">Tambah</button>
+                <button type="button" class="btn btn-warning" id="btnBatalSimpanProgramKerja">Batal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+   <div class="modal hide" id="dialogFormUbah" tabindex="1" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="FormUbahData">Ubah Program Kerja</h4>
+              </div>
+              <div class="modal-body">
+                <div class="pesanUbah"></div>
+                <form action="timesheet/UbahProgramKerja" method="post" id="formUbahProgramKerja">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                        <label for="proyekUbah" class="col-sm-2 control-label">Proyek</label>
+                            <div class="col-sm-10">
+                                <select id="proyekUbah" name="proyekUbah" class="form-control" onchange="fillComboOutputUbah()" disabled>
+                                    <option value=''>:: Pilih Proyek ::</option>
+                                    <?php 
+                                        $CI = get_instance();
+                                        $selectQuery =  $CI->db->query("select id_proyek as IDProyek, 
+                                                                        concat((select kode_divisi from ref_divisi where id_divisi  = trxProyek.id_divisi),'.', 
+                                                                        (select kode_client from mst_client where id_client  = trxProyek.id_client),'.', kode_proyek) as KodeProyek,
+                                                                        nama_proyek as NamaProyek     
+                                                                        from trx_proyek trxProyek");
+                                        $arrData = $selectQuery->result_array();
+                                        foreach ($arrData as $row) {
+                                            echo "<option value='".$row['IDProyek']."'>".$row['KodeProyek']." - ".$row['NamaProyek']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="outputUbahAjax"></div>
+                        <div id="tahapanUbahAjax"></div>  
+                       
+                    </div>
+
+                    <input type="hidden" name="IDProgramKerja" id="IDProgramKerja"/>    
+
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnUbahProgramKerja">Ubah</button>
+                <button type="button" class="btn btn-warning" id="btnBatalUbahProgramKerja">Batal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+
+<script src="assets/js/func.js" type="text/javascript"></script>    
+<script>
+
+    $(document).ready(function () {         
+        
+        $('#btnTambahBaru, #btnTambahBaru2').click(function(e)
+        {
+            e.preventDefault(); 
+            resetForm();
+            $('#alertMessage').remove();
+            $('#dialogFormBaru').attr('class', 'modal show');             
+        });
+
+        $('#btnBatalSimpanProgramKerja').click( function(e){
+            e.preventDefault(); 
+            $('#dialogFormBaru').attr('class', 'modal hide');
+        });
+
+         $('#btnBatalUbahProgramKerja').click( function(e){
+            e.preventDefault(); 
+            $('#dialogFormUbah').attr('class', 'modal hide');
+        });         
+
+        $('#btnTambahProgramKerja').click(function(e)
+        {
+            e.preventDefault(); 
+            
+            sendRequestForm($('#formTambahProgramKerja').attr('action'), $('#formTambahProgramKerja').serialize(), 'pesanBaru');     
+
+        });
+
+         $('#btnUbahProgramKerja').click( function(e){
+            e.preventDefault(); 
+            sendRequestForm($('#formUbahProgramKerja').attr('action'), $('#formUbahProgramKerja').serialize(), 'pesanUbah'); 
+        });
+
+        loadGridData();
+       
+    });
+
+    function dialogFormUbahClose()
+    {
+        $('#dialogFormUbah').attr('class', 'modal close'); 
+    }
+
+    function loadGridData(){    
+
+         var source =
+         {      
+             dataType: "json",
+             dataFields: [
+                  { name: "idx",        type: "string" },
+                  { name: "IDProyek",   type: "string" },
+                  { name: "IDOutput",   type: "string" },
+                  { name: "proyek",     type: "string" },
+                  { name: "nomor",      type: "string" },
+                  { name: "output",     type: "string" },
+                  { name: "pic",        type: "string" },
+                  { name: "tahapan",    type: "string" },
+                  { name: "deadline",   type: "string" },
+                  { name: "realisasi",  type: "string" },
+                  { name: "status",     type: "string" },
+                  { name: "action",     type: "string" }
+             ],
+            url : "timesheet/GetDaftarProgramKerja",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {     
+            }
+        });
+
+        // create jqxDataTable.
+        $("#ajaxTreeGrid").jqxDataTable(
+            {
+                source: dataAdapter,
+                altRows: true,
+                filterable: true,
+                filterMode: 'simple',
+                width: '100%',
+                theme: 'fresh',
+                columns: [
+                  { text: 'No', cellsAlign: 'center', align: 'center', dataField: 'nomor', width : '5%'},
+                  { text: 'Client / Proyek', cellsAlign: 'left', align: 'center', dataField: 'proyek', width : '24%'},
+                  { text: 'Output', cellsAlign: 'left', align: 'center', dataField: 'output', width : '26%'},
+                  { text: 'Divisi / PIC', cellsAlign: 'center', align: 'center', dataField: 'pic', width : '10%'},
+                  { text: 'Tahapan', cellsAlign: 'center', align: 'center', dataField: 'tahapan', width : '7%'},
+                  { text: 'Deadline', cellsAlign: 'center', align: 'center', dataField: 'deadline', width : '10%'},
+                  { text: 'Realisasi', cellsAlign: 'center', align: 'center', dataField: 'realisasi', width : '10%' },
+                  { text: '', cellsAlign: 'left', align: 'center', dataField: 'action', width: '8%' }
+                ]
+            }).on('rowDoubleClick', function(event)
+            {               
+                dialogFormEditShow();
+            }); 
+        }
+
+
+    function dialogFormEditShow()
+    { 
+        var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+        var dataProyek = selection[0];
+            
+      
+        var idx       = dataProyek.idx,
+            IDOutput   = dataProyek.IDOutput,
+            IDProyek   = dataProyek.IDProyek;
+
+            $('#alertMessage').remove();
+
+            $('#proyekUbah').val(IDProyek);
+            $('#IDProgramKerja').val(idx);
+            
+            fillComboOutputUbah();
+            fillTahapanUbah();
+
+            $('#output').val(IDOutput);
+
+            $('#dialogFormUbah').attr('class', 'modal show');
+    }
+
+    function fillComboOutput()
+    {
+       var IDProyek = document.getElementById('proyek').value;
+        
+       dataTextOut = ajaxFillGridJSON('timesheet/GetComboOutputAjax', {IDProyek : IDProyek});
+
+       $('#outputAjax').html(dataTextOut);
+       $('#tahapanAjax').html('');  
+
+    }
+
+    function fillComboOutputUbah()
+    {
+       var IDProyek = document.getElementById('proyekUbah').value;
+        
+       dataTextOut = ajaxFillGridJSON('timesheet/GetComboOutputUbahAjax', {IDProyek : IDProyek});
+
+       $('#outputUbahAjax').html(dataTextOut);
+       $('#tahapanUbahAjax').html(''); 
+
+    }
+
+    function fillTahapan()
+    {
+        dataTextOut = ajaxFillGridJSON('timesheet/GetTahapanAjax');
+
+       $('#tahapanAjax').html(dataTextOut);
+    }
+
+    function fillTahapanUbah()
+    {
+        
+        var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+        var dataProgramKerja = selection[0];
+        
+        var idx  = dataProgramKerja.idx;
+      
+        dataTextOut = ajaxFillGridJSON('timesheet/GetTahapanUbahAjax', {IDProgramKerja : idx});
+
+       $('#tahapanUbahAjax').html(dataTextOut);
+    }
+
+    function resetForm()
+    {
+        $('input, select').val('');
+        $('span[role="code"]').html('');
+        $('#outputUbahAjax, #outputAjax, #tahapanAjax, #tahapanUbahAjax').html('');
+    }
+
+    function fillAutoCode()
+    {
+        var IDDivisi = document.getElementById('divisi').value;
+        var IDClient = document.getElementById('client').value;
+        
+        dataTextOut = ajaxFillGridJSON('timesheet/GetProyekAutoCode', {IDDivisi : IDDivisi, IDClient : IDClient});  
+        $('#kode').val(dataTextOut);
+    }
+
+    function fillAutoCodeUbah()
+    {
+        var IDDivisi = document.getElementById('divisiUbah').value;
+        var IDClient = document.getElementById('clientUbah').value;
+        
+        dataTextOut = ajaxFillGridJSON('timesheet/GetProyekAutoCode', {IDDivisi : IDDivisi, IDClient : IDClient});  
+        $('#kodeUbah').val(dataTextOut);
+    }
+
+
+    function fillKodeClient(objSource, objReference)
+    {
+        
+        var IDClient = $(objSource).val();
+        dataTextOut = ajaxFillGridJSON('timesheet/GetKodeClient', {IDClient : IDClient}); 
+        $(objReference).html(dataTextOut);
+        fillAutoCode();
+        fillAutoCodeUbah();
+    }
+
+    function fillKodeDivisi(objSource, objReference)
+    {
+        var IDDivisi = $(objSource).val();
+        dataTextOut = ajaxFillGridJSON('timesheet/GetKodeDivisi', {IDDivisi : IDDivisi}); 
+        $(objReference).html(dataTextOut);
+        fillAutoCode();
+        fillAutoCodeUbah();
+    }
+
+    function deleteConfirmShow()
+    { 
+
+        var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+        var dataProgramKerja = selection[0];
+        
+        var IDProyek  = dataProgramKerja.IDProyek;
+        var IDOutput  = dataProgramKerja.IDOutput;
+        var namaOutput = dataProgramKerja.output;
+
+        isDelete = confirm('Yakin Program Kerja dengan output '+ namaOutput +' akan dihapus ?');
+        if (isDelete) sendRequestForm('timesheet/HapusProgramKerja', {IDProyek : IDProyek, IDOutput : IDOutput}, 'box-body');
+    }
+</script>
+
+ 

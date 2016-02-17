@@ -1,0 +1,171 @@
+<table>
+	<tr>
+		<td rowspan="4">
+			<img style="width:30px;height:40px; padding-top:5px;" src="http://seno/furindo_baru//assets/images/logo1.png"/>
+		</td>
+		<td colspan="3" style="font-size: 18px ; font-weight: bold ">
+			C.V. SNR EKSPOR FURINDO
+		</td>
+	</tr>
+		<td colspan="3">
+			<label>JL. RING ROAD SELATAN, TLAJUK/WOJO RT.7/RW.11</label><br>
+		</td>
+	</tr>
+		<td colspan="3">
+			<label>BANGUN HARJO, SEWON, BANTUL, YOGYAKARTA</label><br>
+		</td>
+	</tr>
+		<td colspan="3">
+			<label>TEL/FAX: +62-274-3057199</label>
+		</td>			
+</table>
+<br>
+<table>
+	<tr>
+		<td>TO</td>
+		<td colspan="2">TOHIR</td>
+		<td style="text-align:center;" colspan="7">PO. NO : TH012016</td>
+	</tr>
+	<tr>
+		<td>Attn.</td>
+		<td colspan="2">TOHIR</td>
+		<td style="text-align:center;" colspan="7">Delevery Date : 19 February 2016</td>
+	</tr>
+	<tr>
+		<td></td>
+		<td colspan="3">JL. KP citrosomo rt 17 rw 6 Senenan</td>
+	</tr>
+	<tr>
+		<td>Ph./Fax</td>
+		<td>85293309990</td>
+		<td></td>
+	</tr>
+</table>
+
+<br>
+<table id="item-list" width="100%" border="1">
+	<thead>
+		<th style="width:75px">SO Ref No</th>
+		<th style="width:75px">Material Code</th>
+		<th style="width:130px">Description</th>
+		<th style="width:30px">qty</th>
+		<th style="width:100px">Unit</th>
+		<th style="width:65px">UP (Rp)</th>
+		<th style="width:65px">Amount (Rp)</th>
+		<th style="width:100px">Material</th>
+		<th style="width:65px">Picture</th>
+		<th style="width:65px">Remark</th>
+
+	</thead>
+		<tr height="150px">
+		<td>FR011316s</td>
+		<td>GDES142P</td>
+		<td>MARNIE DESK, PALE</td>
+		<td style="text-align: right, vertical-align:middle;">10</td>		
+
+		<td>PCS</td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>0</span></td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>0</span></td>
+		<td>raw material</td>
+				<td height="52" width="52"><img src="http://seno/furindo_baru//assets/images/product/GDES142P_lg.jpg" height="50" width="50"/></td>
+				<td>0</td>
+	</tr>
+		<tr height="150px">
+		<td>FR011316</td>
+		<td>GCHA265HB-LN</td>
+		<td>CONSTANTINE SIDE CHAIR, HB, LINEN</td>
+		<td style="text-align: right, vertical-align:middle;">20</td>		
+
+		<td>PCS</td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>0</span></td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>0</span></td>
+		<td>raw material</td>
+				<td height="52" width="52"><img src="http://seno/furindo_baru//assets/images/product/GCHA265HB-LN_lg.jpg" height="50" width="50"/></td>
+				<td>0</td>
+	</tr>
+		<tr height="150px">
+		<td>FR011316q</td>
+		<td>GSTOOL142HB</td>
+		<td>KAHL STOOL, HB</td>
+		<td style="text-align: right, vertical-align:middle;">10</td>		
+
+		<td>PCS</td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>600,000</span></td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>6,000,000</span></td>
+		<td>raw material</td>
+				<td height="52" width="52"><img src="http://seno/furindo_baru//assets/images/product/GSTOOL142HB_lg.jpg" height="50" width="50"/></td>
+				<td>0</td>
+	</tr>
+		<tr height="150px">
+		<td>FR011416R</td>
+		<td>SOF267HB</td>
+		<td>ALECIA LOVE SEAT, HB</td>
+		<td style="text-align: right, vertical-align:middle;">20</td>		
+
+		<td>PCS</td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>800,000</span></td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>16,000,000</span></td>
+		<td>raw material</td>
+				<td height="52" width="52"><img src="http://seno/furindo_baru//assets/images/product/SOF267HB_lg.jpg" height="50" width="50"/></td>
+				<td>0</td>
+	</tr>
+		<tr height="150px">
+		<td>FR012016</td>
+		<td>GTAB496</td>
+		<td>BROOKE DINING TABLE, TEAK BASE W/HB TOP</td>
+		<td style="text-align: right, vertical-align:middle;">10</td>		
+
+		<td>PCS</td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>2,350,000</span></td>
+		<td style="text-align: right" ><span class='currency' style='color:#B4B4B4'>IDR</span> <span class='value'>23,500,000</span></td>
+		<td>raw material</td>
+				<td height="52" width="52"><img src="http://seno/furindo_baru//assets/images/product/GTAB496_lg.jpg" height="50" width="50"/></td>
+				<td>0</td>
+	</tr>
+	
+	<tfoot>
+		<th colspan="3">Total</th>
+		
+		<td style="text-align: right">70</td>
+		<th colspan="2"></th>
+		<td style="text-align: right"><span class='currency' style='color:#B4B4B4'>USD</span> <span class='value'>45,500,000.00</span></td>
+
+	</tfoot>
+
+</table>
+<br>
+<table>
+	<tr>
+		<td colspan="1">Note :</td>
+		<td colspan="3">- Kadar air MAKSIMAL 10% KD</td>
+		<td colspan="4">- Bebas Pin Hole/Kutu/Teter/Bubuk</td>
+	</tr>
+	<tr>
+		<td colspan="1"></td>
+		<td colspan="3">- Bebas GLUE LINE dan CUTTER MARK</td>
+		<td colspan="4">- Kayu harus sudah diobat anti kutu</td>
+	</tr>
+</table>
+<br>
+	BANTUL, 20 January 2016	<p> C.V. SNR EKSPOR FURINDO &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+		Vendor </p>
+	<br><br><br>
+	<p> (FRANKIE JD ORAH) 		&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+								&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+		(_____________________) </p> 
+

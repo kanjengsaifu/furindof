@@ -1,0 +1,220 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Master_program_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahProgram($dataProgram)
+        {
+
+          $this->IDUser     = $_SESSION['IDUser'];
+          $this->IDDivisi   = $this->security->xss_clean($dataProgram['divisi']);
+          $this->IDBidang   = $this->security->xss_clean($dataProgram['bidang']);
+          $this->kode       = $this->security->xss_clean($dataProgram['kode']);
+          $this->nama       = $this->security->xss_clean($dataProgram['nama']);
+          $this->IDStatus   = $this->security->xss_clean($dataProgram['status']);
+          $this->deskripsi  = $this->security->xss_clean($dataProgram['deskripsi']);
+         
+          $this->userEntry    = $this->IDUser;
+          $this->dateEntry    = RealDateTime();
+
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_program from mst_program where kode_program ='".$this->kode."' 
+                                                  and id_divisi = '".$this->IDDivisi."'  
+                                                  and id_bidang = '".$this->IDBidang."' ");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Kode Program sudah tercatat, silahkan gunakan kode Program yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          //cek nama yang sama
+          $this->selectQuery = $this->db->query("select id_program from mst_program where nama_program ='".$this->nama."' 
+                                                  and id_divisi = '".$this->IDDivisi."'  
+                                                  and id_bidang = '".$this->IDBidang."' ");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Nama Program sudah tercatat, silahkan gunakan nama Program yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+
+          $this->db->query("insert into mst_program (id_divisi, id_bidang, id_status, kode_program, nama_program, 
+                                                      deskripsi, date_entry, user_entry, last_update, user_update) 
+                            values('".$this->IDDivisi."','".$this->IDBidang."','".$this->IDStatus."','".$this->kode."','".$this->nama."',  '".$this->deskripsi."',
+                                  '".$this->dateEntry."','".$this->userEntry."','','0')");
+
+          $strMessage  = 'Tambah Program telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>alert('".$strMessage."');window.resetForm();dialogFormBaruClose();</script>";
+        }
+
+
+        public function UbahProgram($dataProgram)
+        {
+
+          $this->IDUser     = $_SESSION['IDUser'];
+
+          $this->IDProgram   = $this->security->xss_clean($dataProgram['IDProgram']);
+          $this->IDDivisi   = $this->security->xss_clean($dataProgram['divisi']);
+          $this->IDBidang   = $this->security->xss_clean($dataProgram['bidang']);
+          $this->kode       = $this->security->xss_clean($dataProgram['kode']);
+          $this->nama       = $this->security->xss_clean($dataProgram['nama']);
+          $this->IDStatus   = $this->security->xss_clean($dataProgram['status']);
+          $this->deskripsi  = $this->security->xss_clean($dataProgram['deskripsi']);
+
+          $this->userUpdate       = $this->IDUser; 
+          $this->lastUpdate       = RealDateTime();
+
+          //cek kode yang sama
+          $this->selectQuery = $this->db->query("select id_program from mst_program where kode_program ='".$this->kode."' 
+                                                  and id_divisi = '".$this->IDDivisi."' 
+                                                  and id_bidang = '".$this->IDBidang."' 
+                                                 and id_program <>'".$this->IDProgram."' limit 1");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Kode Program sudah tercatat, silahkan gunakan kode Program yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+        
+          //check nama yang sama
+          $this->selectQuery = $this->db->query("select id_program from mst_program where nama_program ='".$this->nama."' 
+                                                  and id_divisi = '".$this->IDDivisi."' 
+                                                  and id_bidang = '".$this->IDBidang."' 
+                                                 and id_program <>'".$this->IDProgram."' limit 1");
+      
+          if ($this->selectQuery->num_rows() > 0)
+          {
+              $strMessage  = 'Nama Program sudah tercatat, silahkan gunakan nama Program yang lain';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+
+              echo $messageData;
+
+              exit;
+          }
+        
+
+          $this->db->query("update mst_program set kode_program = '".$this->kode."', 
+                            id_divisi= '".$this->IDDivisi."',
+                            id_bidang= '".$this->IDBidang."',
+                            id_status= '".$this->IDStatus."',
+                            nama_program = '".$this->nama."',
+                            deskripsi ='".$this->deskripsi."', 
+                            last_update ='".$this->lastUpdate."', 
+                            user_update ='".$this->userUpdate."'
+                            where id_program = '".$this->IDProgram."'");
+    
+          $strMessage  = 'Ubah Program telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>alert('".$strMessage."');loadGridData();window.dialogFormUbahClose()</script>";
+        
+        }
+  
+        public function HapusProgram($IDProgram)
+        {
+            
+            $this->IDProgram = $this->security->xss_clean($IDProgram);
+            $this->IDUser   = $_SESSION['IDUser']; 
+            
+            //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+            $this->arrData = array();
+            $this->arrData[] = array("tableName" => "trx_proyek", "SQLWhere" => "id_program = '".$this->IDProgram."'");
+
+            if (!isCheckTransactionOK($this->arrData))
+            {
+              $strMessage  = 'Hapus program tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+              $messageData = ConstructMessageResponse($strMessage , 'danger');
+              echo $messageData;
+              exit;
+            }
+
+            //hapus 
+            $this->selectQuery = $this->db->query("delete from mst_program where id_program = '".$this->IDProgram."'");
+            
+            $strMessage  = 'Hapus Program telah berhasil ';
+            $messageData = ConstructMessageResponse($strMessage , 'success');
+
+            echo $messageData."<script>loadGridData();</script>";
+            exit;
+                
+        }
+
+  
+        public function GetDaftarProgram()
+        {
+          $this->selectQuery = $this->db->query("select id_program as IDProgram, mstProgram.id_divisi as IDDivisi, 
+                                                kode_divisi as KodeDivisi, mstProgram.id_bidang as IDBidang, kode_bidang as KodeBidang, 
+                                                mstProgram.id_status as IDStatus, nama_status as NamaStatus, 
+                                                kode_program as KodeProgram, nama_program as NamaProgram, 
+                                                mstProgram.deskripsi as Deskripsi 
+                                                from mst_program mstProgram left join ref_divisi mstDivisi
+                                                on mstProgram.id_divisi = mstDivisi.id_divisi
+                                                left join ref_bidang refBidang 
+                                                on refBidang.id_bidang = mstProgram.id_bidang
+                                                left join ref_status refStatus
+                                                on refStatus.id_status = mstProgram.id_status
+                                                ORDER BY concat(KodeDivisi,'.',KodeBidang,'.',KodeProgram) asc");
+       
+          $arrSelectQuery = array();
+
+          foreach ($this->selectQuery->result_array() as $row) {
+
+            $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+
+            $arrSelectQuery[] = array('idx'         => $row['IDProgram'],
+                                      'IDDivisi'    => $row['IDDivisi'],
+                                      'IDBidang'    => $row['IDBidang'],
+                                      'IDStatus'    => $row['IDStatus'],
+                                      'NamaStatus'  => $row['NamaStatus'],
+                                      'KodeDivisi'  => $row['KodeDivisi'],
+                                      'KodeBidang'  => $row['KodeBidang'],
+                                      'kodeDisplay' => $row['KodeDivisi'].'.'.$row['KodeBidang'].'.'.$row['KodeProgram'],
+                                      'kode'        => $row['KodeProgram'],
+                                      'nama'        => $row['NamaProgram'],
+                                      'deskripsi'   => $row['Deskripsi'],
+                                      'action'      => $strDataAction);
+          }
+
+          return json_encode($arrSelectQuery);
+
+        }
+
+        public function GetKodeBidangAJax($IDBidang)
+        {
+          $IDBidang = $this->security->xss_clean($IDBidang);
+
+          $selectquery =  $this->db->query("select kode_bidang as KodeBidang 
+                                            from ref_bidang where id_bidang = '".$IDBidang."' ");
+          $data = $selectquery->row_array();
+          return $data['KodeBidang'];
+        }
+
+         public function GetKodeDivisiAJax($IDDivisi)
+        {
+          $IDDivisi = $this->security->xss_clean($IDDivisi);
+
+          $selectquery =  $this->db->query("select kode_divisi as KodeDivisi 
+                                            from ref_divisi where id_divisi = '".$IDDivisi."' ");
+          $data = $selectquery->row_array();
+          return $data['KodeDivisi'];
+        }
+
+    }

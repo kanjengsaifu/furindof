@@ -1,0 +1,266 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Trx_sub_output_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahSubOutput($dataOutput)
+        {
+
+          $this->IDUser     = $_SESSION['IDUser'];
+
+          $this->IDProyek   = $this->security->xss_clean($dataOutput['proyek']);
+          $this->IDOutput   = $this->security->xss_clean($dataOutput['output']);
+          $this->nama       = $this->security->xss_clean($dataOutput['nama']);
+          $this->deskripsi  = $this->security->xss_clean($dataOutput['deskripsi']); 
+           
+          $this->userEntry  = $this->IDUser;
+          $this->dateEntry  = RealDateTime();
+
+          //check nama yang sama
+          $this->selectQuery =  $this->db->query("select id_sub_output from trx_sub_output 
+                                                  where id_proyek='".$this->IDProyek."' and id_output= '".$this->IDOutput."' 
+                                                  and nama_sub_output='".$this->nama."' 
+                                                  limit 1");
+
+          if ($this->selectQuery->num_rows () > 0)
+          {
+            $strMessage  = 'Nama sub output sudah tercatat di database, silahkan gunakan nama sub output yang lain';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("insert into trx_sub_output (id_proyek, id_output, nama_sub_output, deskripsi, 
+                            date_entry, user_entry, last_update, user_update)  
+                            values('".$this->IDProyek."','".$this->IDOutput."','".$this->nama."','".$this->deskripsi."',
+                                    '".$this->dateEntry."','".$this->userEntry."','','0')");
+
+          $strMessage  = 'Tambah Sub Output telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>window.loadGridData();alert('".$strMessage."');window.resetForm();</script>";
+        }
+
+        public function GetDaftarSubOutput()
+        {
+
+          //ambil data sub output
+          $this->selectQuery =  $this->db->query("select trxSubOutput.id_sub_output as IDSubOutput, nama_sub_output as NamaSubOutput,
+                                                  trxSubOutput.id_proyek as IDProyek, nama_proyek as NamaProyek,
+                                                  trxSubOutput.id_output as IDOutput,
+                                                  nama_output as NamaOutput,
+                                                  trxSubOutput.deskripsi  as Deskripsi 
+                                                  from trx_sub_output trxSubOutput left join trx_output as trxOutput  
+                                                  on trxSubOutput.id_output = trxOutput.id_output
+                                                  left join trx_proyek trxProyek 
+                                                  on trxOutput.id_proyek = trxProyek.id_proyek 
+                                                  order by NamaProyek, IDOutput, IDSubOutput asc");
+          
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+
+          $arrData = array();
+          
+          $prevIDProyek = '';
+          $prevIDOutput = '';
+         
+          $i=0;
+          foreach ($this->selectQuery->result_array() as $row)
+          {
+            $pencarian = $row['NamaProyek']. ' '.  $row['NamaOutput']. ' '.$row['NamaSubOutput'];
+
+            $NamaProyek  = $row['IDProyek'] <> $prevIDProyek ? $row['NamaProyek'] : '';
+            $NamaOutput  = $row['IDOutput'] <> $prevIDOutput ? $row['NamaOutput'] : '';
+
+            $i = ($row['IDOutput'] <> $prevIDOutput) ? 1 : $i;
+
+            $arrData[] = array('idx'          => $row['IDSubOutput'],
+                               'IDProyek'     => $row['IDProyek'],
+                               'IDOutput'     => $row['IDOutput'],
+                               'NamaProyek'   => $NamaProyek, 
+                               'NamaOutput'   => $NamaOutput,
+                               'NamaSubOutput'=> $row['NamaSubOutput'],
+                               'nomor'        => $i,
+                               'Deskripsi'    => $row['Deskripsi'],
+                               'Pencarian'    => $pencarian,
+                               'action'       => $strDataAction);
+            $i++;
+            $prevIDProyek = $row['IDProyek'];
+            $prevIDOutput = $row['IDOutput'];
+
+          }  
+          
+
+          return json_encode($arrData);
+        }
+
+        public function UbahSubOutput($arrData)
+        {
+
+         $this->IDUser     = $_SESSION['IDUser'];
+
+          $this->IDProyek     = $this->security->xss_clean($arrData['proyek']);
+          $this->IDOutput     = $this->security->xss_clean($arrData['output']);
+          $this->IDSubOutput  = $this->security->xss_clean($arrData['IDSubOutput']);
+          $this->nama         = $this->security->xss_clean($arrData['subOutput']);
+          $this->deskripsi    = $this->security->xss_clean($arrData['deskripsi']); 
+           
+          $this->lastUpdate = RealDateTime();
+          $this->userUpdate = $_SESSION['IDUser'];
+
+          //check nama yang sama
+          $this->selectQuery =  $this->db->query("select id_sub_output from trx_sub_output 
+                                                  where id_proyek='".$this->IDProyek."' and id_output= '".$this->IDOutput."' 
+                                                  and nama_sub_output='".$this->nama."' 
+                                                  and id_sub_output <> '".$this->IDSubOutput."'  
+                                                  limit 1");
+          
+          if ($this->selectQuery->num_rows () > 0)
+          {
+            $strMessage  = 'Nama sub output sudah tercatat di database, silahkan gunakan nama sub output yang lain';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("update trx_sub_output set id_proyek ='".$this->IDProyek."',
+                            id_output='".$this->IDOutput."', nama_sub_output = '".$this->nama."',
+                            deskripsi = '".$this->deskripsi."',
+                            last_update = '".$this->lastUpdate."', user_update = '".$this->userUpdate."' 
+                            where id_sub_output = '".$this->IDSubOutput."' ");
+
+          $strMessage  = 'Ubah Sub Output telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>loadGridData();alert('".$strMessage."');window.dialogFormUbahClose();</script>";    
+
+        }
+
+
+        public function HapusSubOutput($IDSubOutput)
+        {
+
+          $this->IDSubOutput    = $this->security->xss_clean($IDSubOutput);
+          $this->userEntry   = $_SESSION['IDUser'];
+
+          //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+          $this->arrData = array();
+          $this->arrData[] = array("tableName" => "trx_timesheet", "SQLWhere" => "id_sub_output = '".$this->IDSubOutput."'");
+
+          if (!isCheckTransactionOK($this->arrData))
+          {
+            $strMessage  = 'Hapus sub output tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("delete from trx_sub_output 
+                            where id_sub_output = '".$this->IDSubOutput."' ");
+        
+
+          $strMessage  = 'Hapus sub output telah berhasil ';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>loadGridData();</script>";
+          exit;    
+        }    
+
+        public function GetComboOutputAjax($IDProyek)
+        {
+
+          $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+          $this->selectQuery = $this->db->query("select id_output as IDOutput, nama_output as NamaOutput
+                                                 from trx_output trxOutput left join trx_proyek trxProyek
+                                                 on trxOutput.id_proyek = trxProyek.id_proyek 
+                                                 where trxProyek.id_proyek='".$this->IDProyek."'");
+         
+          $strComboAjax = '';
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+            $strComboAjax = "<div class=\"form-group\">
+                              <label for=\"pic\" class=\"col-sm-3 control-label\">Output</label>
+                                <div class=\"col-sm-9\">
+                                      <select id=\"output\" name=\"output\" class=\"form-control\">
+                                        <option value=\"\" >:: Pilih Output ::</option>";
+
+            foreach ($this->selectQuery->result_array() as $row) 
+            {
+              $strComboAjax.= "<option value='".$row['IDOutput']."'>".$row['NamaOutput']."</option>";
+            }
+
+            $strComboAjax .= "</select></div></div>";
+          }
+
+          return $strComboAjax;
+        }
+
+        public function GetComboOutputUbahAjax($IDProyek)
+        {
+
+          $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+          $this->selectQuery = $this->db->query("select id_output as IDOutput, nama_output as NamaOutput
+                                                 from trx_output trxOutput left join trx_proyek trxProyek
+                                                 on trxOutput.id_proyek = trxProyek.id_proyek 
+                                                 where trxProyek.id_proyek='".$this->IDProyek."'");
+         
+          $strComboAjax = '';
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+            $strComboAjax = "<div class=\"form-group\">
+                              <label for=\"pic\" class=\"col-sm-3 control-label\">Output</label>
+                                <div class=\"col-sm-9\">
+                                      <select id=\"output\" name=\"output\" class=\"form-control\" disabled>
+                                        <option value=\"\" >:: Pilih Output ::</option>";
+
+            foreach ($this->selectQuery->result_array() as $row) 
+            {
+              $strComboAjax.= "<option value='".$row['IDOutput']."'>".$row['NamaOutput']."</option>";
+            }
+
+            $strComboAjax .= "</select></div></div>";
+          }
+
+          return $strComboAjax;
+        }
+
+        public function GetComboSubOutputFromTimesheetAjax($IDOutput, $IDProyek, $IDSubOutput)
+        {
+
+          $this->IDOutput     = $this->security->xss_clean($IDOutput);
+          $this->IDProyek     = $this->security->xss_clean($IDProyek);
+          $this->IDSubOutput  = $this->security->xss_clean($IDSubOutput);
+
+          $this->selectQuery = $this->db->query("select id_sub_output as IDSubOutput, nama_sub_output as NamaSubOutput 
+                                                 from trx_sub_output trxSubOutput left join trx_output trxOutput 
+                                                 on trxOutput.id_output = trxSubOutput.id_output  
+                                                 where trxOutput.id_output='".$this->IDOutput."'
+                                                 and trxSubOutput.id_proyek='".$this->IDProyek."' ");
+          $strComboAjax = '';
+
+          if ($this->selectQuery->num_rows() > 0)
+          {
+            $strComboAjax = "<div class=\"form-group\">
+                              <label for=\"subOutput\" class=\"col-sm-3 control-label\">Sub Output</label>
+                                <div class=\"col-sm-9\">
+                                      <select id=\"subOutput\" name=\"subOutput\" class=\"form-control\">
+                                        <option value=\"\" >:: Pilih Sub Output ::</option>";
+
+            foreach ($this->selectQuery->result_array() as $row) 
+            {
+              $strSelected = $this->IDSubOutput == $row['IDSubOutput'] ? 'selected' : '';
+              $strComboAjax.= "<option value='".$row['IDSubOutput']."' ".$strSelected.">".$row['NamaSubOutput']."</option>";
+            }
+
+            $strComboAjax .= "</select></div></div>";
+          }
+
+          return $strComboAjax;
+        }
+    }

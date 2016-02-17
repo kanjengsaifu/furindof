@@ -1,0 +1,306 @@
+<div class="content-header">   
+    <h1>Daftar Sub Output per Proyek</h1>
+</div>
+
+<div class="content">
+    <div class="box box-warning">
+        <div class="box-header">
+             <button type="button" class="btn btn-sm btn-success" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>   
+             <button type="button" class="btn btn-sm btn-success" id="btnCetakExcel"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>
+        </div>
+        <div class="box-body">
+            <div id="ajaxTreeGrid"></div>
+        </div> <!-- <div class="box-body"> -->
+        <div class="box-footer">           
+             <button type="button" class="btn btn-sm btn-success" id="btnTambahBaru2"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>   
+             <button type="button" class="btn btn-sm btn-success" id="btnCetakExcel2"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>
+        </div>   <!-- <div class="box-footer"> -->  
+      </div>
+    </div> <!-- <div class="box box-warning"> -->
+</div>
+
+    <div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="FormTambahData">Tambah Sub Output</h4>
+              </div>
+              <div class="modal-body">
+                <div class="pesanBaru"></div>
+                <form action="timesheet/TambahSubOutput" method="post" id="formTambahSubOutput">
+                    <div class="form-horizontal">
+                        <div class="form-group">
+                        <label for="proyek" class="col-sm-3 control-label">Proyek</label>
+                            <div class="col-sm-9">
+                                <select id="proyek" name="proyek" class="form-control" onchange="fillComboOutput()">
+                                    <option value=''>:: Pilih Proyek ::</option>
+                                    <?php 
+                                        $CI = get_instance();
+                                        $selectQuery =  $CI->db->query("select id_proyek as IDProyek, 
+                                                                        concat((select kode_divisi from ref_divisi where id_divisi  = trxProyek.id_divisi),'.', 
+                                                                        (select kode_client from mst_client where id_client  = trxProyek.id_client),'.', kode_proyek) as KodeProyek,
+                                                                        nama_proyek as NamaProyek     
+                                                                        from trx_proyek trxProyek");
+                                        $arrTipeIndikator = $selectQuery->result_array();
+                                        foreach ($arrTipeIndikator as $row) {
+                                            echo "<option value='".$row['IDProyek']."'>".$row['KodeProyek']." - ".$row['NamaProyek']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="comboOutputAjax"></div>
+
+                        <div class="form-group">
+                          <label for="nama" class="col-sm-3 control-label">Sub Output</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="nama" id="nama" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="deskripsi" class="col-sm-3 control-label">Deskripsi</label>
+                            <div class="col-sm-9">
+                              <textarea name="deskripsi" id="deskripsi" class="form-control"></textarea>
+                            </div>
+                        </div>
+                            
+                    </div>    
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnTambahProyek">Tambah</button>
+                <button type="button" class="btn btn-warning" id="btnBatalSimpanProyek">Batal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+    <div class="modal hide" id="dialogFormUbah" tabindex="1" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h4 class="modal-title" id="FormTambahData">Ubah Sub Output</h4>
+              </div>
+              <div class="modal-body">
+                <div class="pesanUbah"></div>
+                <form action="timesheet/UbahSubOutput" method="post" id="formUbahSubOutput">
+                    <div class="form-horizontal">
+
+                        <div class="form-group">
+                        <label for="proyekUbah" class="col-sm-3 control-label">Proyek</label>
+                            <div class="col-sm-9">
+                                <select id="proyekUbah" name="proyekUbah" class="form-control" onchange="fillComboOutputUbah()">
+                                    <option value=''>:: Pilih Proyek ::</option>
+                                    <?php 
+                                        $CI = get_instance();
+                                        $selectQuery =  $CI->db->query("select id_proyek as IDProyek, 
+                                                                        concat((select kode_divisi from ref_divisi where id_divisi  = trxProyek.id_divisi),'.', 
+                                                                        (select kode_client from mst_client where id_client  = trxProyek.id_client),'.', kode_proyek) as KodeProyek,
+                                                                        nama_proyek as NamaProyek     
+                                                                        from trx_proyek trxProyek");
+                                        $arrTipeIndikator = $selectQuery->result_array();
+                                        foreach ($arrTipeIndikator as $row) {
+                                            echo "<option value='".$row['IDProyek']."'>".$row['KodeProyek']." - ".$row['NamaProyek']."</option>";
+                                        }
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="comboOutputUbahAjax"></div>
+
+                        <div class="form-group">
+                          <label for="namaUbah" class="col-sm-3 control-label">Sub Output</label>
+                            <div class="col-sm-9">
+                              <input type="text" name="namaUbah" id="namaUbah" class="form-control"/>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                          <label for="deskripsiUbah" class="col-sm-3 control-label">Deskripsi</label>
+                            <div class="col-sm-9">
+                              <textarea name="deskripsiUbah" id="deskripsiUbah" class="form-control"></textarea>
+                            </div>
+                        </div>
+                            
+                    </div>    
+                    <input type="hidden" name="IDSubOutput" id="IDSubOutput"/>    
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-success" id="btnUbahProyek">Ubah</button>
+                <button type="button" class="btn btn-warning" id="btnBatalUbahProyek">Batal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </div>
+
+<script src="assets/js/func.js" type="text/javascript"></script>    
+<script>
+
+    $(document).ready(function () {         
+        
+        $('#btnTambahBaru, #btnTambahBaru2').click(function(e)
+        {
+            e.preventDefault(); 
+            resetForm();
+            $('#alertMessage').remove();
+            $('#dialogFormBaru').attr('class', 'modal show');               
+        });
+
+        $('#btnBatalSimpanProyek').click( function(e){
+            e.preventDefault(); 
+            $('#dialogFormBaru').attr('class', 'modal hide');
+        });
+
+         $('#btnBatalUbahProyek').click( function(e){
+            e.preventDefault(); 
+            $('#dialogFormUbah').attr('class', 'modal hide');
+        });         
+
+        $('#btnTambahProyek').click(function(e)
+        {
+            e.preventDefault(); 
+            
+            sendRequestForm($('#formTambahSubOutput').attr('action'), $('#formTambahSubOutput').serialize(), 'pesanBaru');     
+
+        });
+
+         $('#btnUbahProyek').click( function(e){
+            e.preventDefault(); 
+            sendRequestForm($('#formUbahSubOutput').attr('action'), $('#formUbahSubOutput').serialize(), 'pesanUbah'); 
+        });
+
+        loadGridData();
+       
+    });
+
+    function dialogFormUbahClose()
+    {
+         $('#dialogFormUbah').attr('class', 'modal close'); 
+    }
+
+    function loadGridData(){    
+
+         var source =
+         {      
+             dataType: "json",
+             dataFields: [
+                  { name: "idx",            type: "string" },
+                  { name: "IDProyek",       type: "string" },
+                  { name: "NamaProyek",     type: "string" },
+                  { name: "IDOutput",       type: "string" },
+                  { name: "NamaOutput",     type: "string" },
+                  { name: "nomor",          type: "string" },
+                  { name: "NamaSubOutput",  type: "string" },
+                  { name: "Deskripsi",      type: "string" },
+                  { name: "Pencarian",      type: "string" },
+                  { name: "action",         type: "string" }
+             ],
+            url : "timesheet/GetDaftarSubOutput",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {     
+            }
+        });
+
+        // create jqxDataTable.
+        $("#ajaxTreeGrid").jqxDataTable(
+            {
+                source: dataAdapter,
+                altRows: true,
+                filterable: true,
+                filterMode: 'simple',
+                width: '100%',
+                theme: 'fresh',
+                columns: [
+                  { text: 'Proyek / Kegiatan', cellsAlign: 'left', align: 'center', dataField: 'NamaProyek', width : '30%'},
+                  { text: 'Output', cellsAlign: 'left', align: 'center', dataField: 'NamaOutput', width : '30%'},
+                  { text: '', cellsAlign: 'center', align: 'center', dataField: 'nomor', width : '4%'},
+                  { text: 'Sub Output', cellsAlign: 'left', align: 'center', dataField: 'NamaSubOutput', width : '26%'},
+                  { text: '', cellsAlign: 'left', align: 'center', dataField: 'Pencarian', hidden: true},
+                  { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '10%' }
+                ]
+            }).on('rowDoubleClick', function(event)
+            {               
+                dialogFormEditShow();
+            }); 
+        }
+
+
+    function dialogFormEditShow()
+    { 
+        var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+        var dataProyek = selection[0];
+            
+      
+        var idx       = dataProyek.idx,
+            IDProyek  = dataProyek.IDProyek,
+            IDOutput  = dataProyek.IDOutput,
+            subOutput = dataProyek.NamaSubOutput,
+            deskripsi = dataProyek.Deskripsi;
+
+            $('#alertMessage').remove();
+
+            $('#namaUbah').val(subOutput);
+            $('#proyekUbah').val(IDProyek);
+            $('#IDSubOutput').val(idx);
+            $('#deskripsiUbah').val(deskripsi);
+            
+            fillComboOutputUbah();
+
+            $('#output').val(IDOutput);
+
+            $('#dialogFormUbah').attr('class', 'modal show');
+
+    }
+
+    function fillComboOutput()
+    {
+       var IDProyek = document.getElementById('proyek').value;
+        
+       dataTextOut = ajaxFillGridJSON('timesheet/GetComboOutputFromSubOutputAjax', {IDProyek : IDProyek});
+
+       $('#comboOutputAjax').html(dataTextOut);  
+
+    }
+
+    function fillComboOutputUbah()
+    {
+       var IDProyek = document.getElementById('proyekUbah').value;
+        
+       dataTextOut = ajaxFillGridJSON('timesheet/GetComboOutputFromSubOutputAjax', {IDProyek : IDProyek});
+
+       $('#comboOutputUbahAjax').html(dataTextOut);  
+
+    }
+
+    function resetForm()
+    {
+        $('input, select').val('');
+        $('span[role="code"]').html('');
+        $('#comboOutputAjax').html('');
+    }
+
+    function deleteConfirmShow()
+    { 
+
+        var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+        var dataSubOutput = selection[0];
+        
+        var idx         = dataSubOutput.idx;
+        var nama        = dataSubOutput.NamaSubOutput;
+        
+        isDelete = confirm('Yakin Output '+ nama +' akan dihapus ?');
+        if (isDelete) sendRequestForm('timesheet/HapusSubOutput', {IDSubOutput : idx}, 'box-body');
+    }
+</script>
+
+ 

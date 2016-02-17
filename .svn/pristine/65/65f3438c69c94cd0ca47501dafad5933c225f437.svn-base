@@ -1,0 +1,1153 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+	class Timesheet extends MY_Controller {
+		
+ 	    public function __construct() 
+	    {
+			parent::__construct();
+		}
+	         
+		public function index()
+		{	
+			$this->checkCredentialAccess();
+
+			$this->checkIsAjaxRequest();
+
+	        $this->load->model('timesheet_model', 'ModelTimesheet');
+	        $dataMenu = array('dataMenu' => $this->ModelTimesheet->GetMenuTimesheet());
+
+	        $menu 	  = $this->load->view('menu_timesheet_view', $dataMenu, true);
+	        $content  = $this->load->view('timesheet_view', '', true);
+
+	        $arrData = array('menu' 	=> $menu,
+	        			   	 'content'  => $content);
+
+	        echo json_encode($arrData);
+
+		}
+		
+		public function Proyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('trx_proyek_view', true);                
+
+            echo  $content;
+		}
+
+		public function Timeshet()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('trx_timesheet_view', true);                
+
+            echo  $content;
+		}
+
+
+		public function MemberProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('trx_member_proyek_view', true);                
+
+            echo  $content;
+		}
+
+		public function Output()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('trx_output_view', true);                
+
+            echo  $content;
+		}
+
+		public function SubOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('trx_sub_output_view', true);                
+
+            echo  $content;
+		}
+
+		public function ProgramKerja()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('trx_program_kerja_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetKodeProgram()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDProgram = $this->input->post('IDProgram', true);
+			
+            $messageData = $this->load->model('timesheet_model', 'ModelTimesheet');
+            $messageData = $this->ModelTimesheet->GetKodeProgram($this->IDProgram);
+            echo $messageData;
+		}
+
+		public function GetKodeBidang()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDBidang = $this->input->post('IDBidang', true);
+			
+            $messageData = $this->load->model('timesheet_model', 'ModelTimesheet');
+            $messageData = $this->ModelTimesheet->GetKodeBidang($this->IDBidang);
+            echo $messageData;
+		}
+
+		public function GetKodeDivisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDDivisi = $this->input->post('IDDivisi', true);
+			
+            $messageData = $this->load->model('timesheet_model', 'ModelTimesheet');
+            $messageData = $this->ModelTimesheet->GetKodeDivisi($this->IDDivisi);
+            echo $messageData;
+		}
+
+		public function GetKodeClient()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDClient = $this->input->post('IDClient', true);
+			
+            $messageData = $this->load->model('timesheet_model', 'ModelTimesheet');
+            $messageData = $this->ModelTimesheet->GetKodeClient($this->IDClient);
+            echo $messageData;
+
+		}	
+
+		public function GetProyekAutoCode()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->divisi 	= $this->input->post('IDDivisi', true);
+            $this->client 	= $this->input->post('IDClient', true);
+			$this->program 	= $this->input->post('IDProgram', true);
+
+            $arrData = array('divisi' => $this->divisi,
+            				 'program' => $this->program,
+            				 'client' => $this->client); 
+
+            $messageData = $this->load->model('trx_proyek_model', 'ModelProyek');
+            $messageData = $this->ModelProyek->GetProyekAutoCode($arrData);
+            echo $messageData;
+		}
+
+		public function GetListKodeDivisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDProgram = $this->input->post('IDProgram', true);
+			$this->IDClient = $this->input->post('IDClient', true);
+			$this->IDBidang = $this->input->post('IDBidang', true);
+
+			$arrData = array('IDProgram' => $this->IDProgram,
+							 'IDClient'  => $this->IDClient,
+							 'IDBidang'  => $this->IDBidang);
+			
+            $messageData = $this->load->model('trx_proyek_model', 'ModelProyek');
+            $messageData = $this->ModelProyek->GetListKodeDivisi($arrData);
+            echo $messageData;
+		}
+
+		public function GetDaftarClientProgramAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDBidang = $this->input->post('IDBidang', true);
+
+			$arrData = array('IDBidang' => $this->IDBidang);
+			
+            $messageData = $this->load->model('trx_proyek_model', 'ModelProyek');
+            $messageData = $this->ModelProyek->GetDaftarClientProgramAjax($arrData);
+            echo $messageData;
+		}
+
+		public function GetComboPICAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDProyek = $this->input->post('IDProyek', true);
+
+            $messageData = $this->load->model('trx_output_model', 'ModelOutput');
+            $messageData = $this->ModelOutput->GetComboPICAjax($this->IDProyek);
+            echo $messageData;
+		}
+
+		public function GetComboOutputAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDProyek = $this->input->post('IDProyek', true);
+
+            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+            $messageData = $this->ModelProgramKerja->GetComboOutputAjax($this->IDProyek);
+            echo $messageData;
+		}
+
+		public function GetComboOutputFromSubOutputAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDProyek = $this->input->post('IDProyek', true);
+
+            $messageData = $this->load->model('trx_sub_output_model', 'ModelSubOutput');
+            $messageData = $this->ModelSubOutput->GetComboOutputAjax($this->IDProyek);
+            echo $messageData;
+		}
+
+		public function GetComboSubOutputFromTimesheetAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDOutput 	= $this->input->post('IDOutput', true);
+			$this->IDProyek 	= $this->input->post('IDProyek', true);
+			$this->IDSubOutput 	= $this->input->post('IDSubOutput', true);
+
+            $messageData = $this->load->model('trx_sub_output_model', 'ModelSubOutput');
+            $messageData = $this->ModelSubOutput->GetComboSubOutputFromTimesheetAjax($this->IDOutput, $this->IDProyek, $this->IDSubOutput);
+            echo $messageData;
+		}
+
+		public function GetComboOutputUbahAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDProyek = $this->input->post('IDProyek', true);
+
+            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+            $messageData = $this->ModelProgramKerja->GetComboOutputUbahAjax($this->IDProyek);
+            echo $messageData;
+		}
+		
+		public function GetTahapanAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+			
+            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+            $messageData = $this->ModelProgramKerja->GetTahapanAjax();
+            echo $messageData;	
+		}
+
+		public function GetTahapanUbahAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->IDProgramKerja = $this->input->post('IDProgramKerja', true);
+			
+            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+            $messageData = $this->ModelProgramKerja->GetTahapanUbahAjax($this->IDProgramKerja);
+            echo $messageData;	
+		} 
+
+		public function GetDaftarOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $messageData = $this->load->model('trx_output_model', 'ModelOutput');
+            $messageData = $this->ModelOutput->GetDaftarOutput();
+            echo $messageData;
+
+		}
+
+		public function GetDaftarSubOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $messageData = $this->load->model('trx_sub_output_model', 'ModelSubOutput');
+            $messageData = $this->ModelSubOutput->GetDaftarSubOutput();
+            echo $messageData;
+
+		}
+		
+		public function GetDaftarProgramKerja()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+            $messageData = $this->ModelProgramKerja->GetDaftarProgramKerja();
+            echo $messageData;
+		}
+
+		public function GetDaftarProgramKerjaBrowse()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+            $messageData = $this->load->model('trx_timesheet_model', 'ModelTimesheet');
+            $messageData = $this->ModelTimesheet->GetDaftarProgramKerjaBrowse();
+            echo $messageData;
+		}
+
+		public function GetDaftarOutputProgramKerjaAjax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDProyek = $this->input->post('IDProyek', true);
+			
+			$arrData = array('IDProyek' => $this->IDProyek);
+            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+            $messageData = $this->ModelProgramKerja->GetDaftarOutputProgramKerjaAjax($arrData);
+            echo $messageData;
+
+		}
+
+		public function GetDaftarProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $messageData = $this->load->model('trx_proyek_model', 'ModelProyek');
+            $messageData = $this->ModelProyek->GetDaftarProyek();
+
+            echo $messageData;
+
+		}
+
+		public function GetDaftarTimesheet($tglAwal, $tglAkhir)
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $messageData = $this->load->model('trx_timesheet_model', 'ModeTimesheet');
+            $messageData = $this->ModeTimesheet->GetDaftarTimesheet($tglAwal, $tglAkhir);
+
+            echo $messageData;
+		}
+
+		public function TambahMemberProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('proyek', 'Proyek', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('karyawan[]', 'Karyawan', 'trim|required|min_length[1]|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('proyek').form_error('karyawan[]');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 	= $this->input->post('proyek', true);
+				$this->karyawan = $this->input->post('karyawan', true);
+				
+				$arrData = array('proyek'	=> $this->proyek,
+								 'karyawan'	=> $this->karyawan);
+
+	            $messageData = $this->load->model('trx_member_proyek_model', 'ModelMemberProyek');
+	            $messageData = $this->ModelMemberProyek->TambahMemberProyek($arrData);
+	            echo $messageData;
+			}
+		}
+
+		public function TambahProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('client', 'Client', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('divisi', 'Divisi', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('program', 'Program', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('kode', 'kode', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('nama', 'nama', 'trim|required|min_length[1]|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('client').form_error('divisi').
+								form_error('program').form_error('kode').form_error('nama');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+
+				$this->client 	= $this->input->post('client', true);
+				$this->divisi 	= $this->input->post('divisi', true);
+				$this->program 	= $this->input->post('program', true);
+				$this->kode 	= $this->input->post('kode', true);
+				$this->nama 	= $this->input->post('nama', true);
+				$this->nomor 	= $this->input->post('nomor', true);
+				
+				$arrData = array('client'	=> $this->client,
+								 'divisi'	=> $this->divisi,
+								 'program'	=> $this->program,
+								 'kode'		=> $this->kode,
+								 'nama'		=> $this->nama,
+								 'nomor'	=> $this->nomor);
+
+	            $messageData = $this->load->model('trx_proyek_model', 'ModelProyek');
+	            $messageData = $this->ModelProyek->TambahProyek($arrData);
+	            echo $messageData;
+			}
+		}
+	
+		public function TambahTimesheet()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('IDProgramKerja', 'Program Kerja', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('tanggal', 'Tanggal', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('jam', 'Jam', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('aktivitas', 'Aktivitas', 'trim|required|min_length[1]|xss_clean');
+          
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('IDProgramKerja').form_error('jam').
+								  form_error('aktivitas').form_error('tanggal');
+				$messageData 	= ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDProgramKerja 	= $this->input->post('IDProgramKerja', true);
+				$this->kunjungan 		= $this->input->post('kunjungan', true);
+				$this->tanggal 	 		= $this->input->post('tanggal', true);
+				$this->jam 		 		= $this->input->post('jam', true);
+				$this->aktivitas 		= $this->input->post('aktivitas', true);
+				$this->subOutput 		= $this->input->post('subOutput', true);
+
+				$this->tglAwal 			= $this->input->post('tglAwalTambah', true);
+				$this->tglAkhir 		= $this->input->post('tglAkhirTambah', true);
+
+				$arrData = array('IDProgramKerja'=> $this->IDProgramKerja,
+								 'kunjungan'	=> $this->kunjungan,
+								 'subOutput'	=> $this->subOutput,
+								 'tanggal'		=> $this->tanggal,
+								 'tglAwalTambah'=> $this->tglAwal,
+								 'tglAkhirTambah'=> $this->tglAkhir,
+								 'jam'			=> $this->jam,
+								 'aktivitas'	=> $this->aktivitas);
+
+	            $messageData = $this->load->model('trx_timesheet_model', 'ModelTimesheet');
+	            $messageData = $this->ModelTimesheet->TambahTimesheet($arrData);
+	            echo $messageData;
+			}	
+		}
+
+		public function UbahTimesheet()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDTimesheet', 'ID Timesheet', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('IDProgramKerjaUbah', 'ID ProgramKerja', 'trim|required|min_length[1]|xss_clean');	
+            $this->form_validation->set_rules('tanggalUbah', 'Tanggal', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('jamUbah', 'Jam', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('aktivitasUbah', 'Aktivitas', 'trim|required|min_length[1]|xss_clean');
+          
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('IDTimesheet').form_error('IDProgramKerjaUbah').
+								   form_error('jamUbah').form_error('aktivitasUbah').form_error('tanggalUbah');
+				$messageData 	= ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDTimesheet 	 	= $this->input->post('IDTimesheet', true);	
+				$this->IDProgramKerja 	= $this->input->post('IDProgramKerjaUbah', true);
+				$this->SubOutput 		= $this->input->post('subOutput', true);		
+				$this->indikator 		= $this->input->post('indikatorUbah', true);
+				$this->kunjungan 		= $this->input->post('kunjunganUbah', true);
+				$this->tanggal 	 		= $this->input->post('tanggalUbah', true);
+				$this->jam 		 		= $this->input->post('jamUbah', true);
+				$this->subOutput 		= $this->input->post('jamUbah', true);
+				$this->aktivitas 		= $this->input->post('aktivitasUbah', true);
+
+				$this->tglAwal 			= $this->input->post('tglAwalEdit', true);
+				$this->tglAkhir 		= $this->input->post('tglAkhirEdit', true);
+
+				$arrData = array('IDTimesheet'		=> $this->IDTimesheet,
+								 'IDProgramKerja'	=> $this->IDProgramKerja,
+								 'tglAwal' 			=> $this->tglAwal,
+								 'tglAkhir' 		=> $this->tglAkhir,
+								 'indikator'		=> $this->indikator,
+								 'subOutput' 		=> $this->SubOutput,
+								 'kunjungan'		=> $this->kunjungan,
+								 'tanggal'			=> $this->tanggal,
+								 'jam'				=> $this->jam,
+								 'aktivitas'		=> $this->aktivitas);
+				
+	            $messageData = $this->load->model('trx_timesheet_model', 'ModelTimesheet');
+	            $messageData = $this->ModelTimesheet->UbahTimesheet($arrData);
+	            echo $messageData;
+			}	
+		}
+
+
+		public function TambahOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('proyek', 'Proyek', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('divisi', 'Divisi', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('pic', 'PIC', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('nama', 'Output', 'trim|required|min_length[1]|xss_clean');
+          
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('proyek').form_error('divisi').form_error('pic').form_error('nama'); 
+				$messageData 	= ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 	= $this->input->post('proyek', true);
+				$this->divisi 	= $this->input->post('divisi', true);
+				$this->pic 		= $this->input->post('pic', true);
+				$this->nama 	= $this->input->post('nama', true);
+				
+				$arrData = array('proyek'	=> $this->proyek,
+								 'divisi'	=> $this->divisi,
+								 'pic'		=> $this->pic,
+								 'nama'		=> $this->nama);
+
+	            $messageData = $this->load->model('trx_output_model', 'ModelOutput');
+	            $messageData = $this->ModelOutput->TambahOutput($arrData);
+	            echo $messageData;
+			}
+		}
+
+		public function TambahSubOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('proyek', 'Proyek', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('output', 'Output', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('nama', 'Sub Output', 'trim|required|min_length[1]|xss_clean');
+          
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('proyek').form_error('output').form_error('nama');
+				$messageData 	= ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 		= $this->input->post('proyek', true);
+				$this->divisi 		= $this->input->post('output', true);
+				$this->nama 		= $this->input->post('nama', true);
+				$this->deskripsi	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('proyek'		=> $this->proyek,
+								 'output'		=> $this->divisi,
+								 'nama'			=> $this->nama,
+								 'deskripsi'	=> $this->deskripsi);
+
+	            $messageData = $this->load->model('trx_sub_output_model', 'ModelSubOutput');
+	            $messageData = $this->ModelSubOutput->TambahSubOutput($arrData);
+	            echo $messageData;
+			}
+		}
+
+
+		public function TambahProgramKerja()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('proyek', 'Proyek', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('output', 'Output', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('tahapan[]','Tahapan', 'trim|required|min_length[1]|xss_clean');
+            
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('proyek').form_error('output').form_error('tahapan[]'); 
+				$messageData 	= ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 	 = $this->input->post('proyek', true);
+				$this->output 	 = $this->input->post('output', true);
+				$this->tahapan 	 = $this->input->post('tahapan', true);
+				$this->deadline  = $this->input->post('deadline', true);
+				$this->realisasi = $this->input->post('realisasi', true);
+				$this->status 	 = $this->input->post('status', true);
+				
+				$arrData = array('proyek'	=> $this->proyek,
+								 'output'	=> $this->output,
+								 'tahapan'	=> $this->tahapan,
+								 'deadline'	=> $this->deadline,
+								 'realisasi'	=> $this->realisasi,
+								 'status'	=> $this->status);
+
+	            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+	            $messageData = $this->ModelProgramKerja->TambahProgramKerja($arrData);
+	            echo $messageData;
+			}
+		}
+
+		
+		public function UbahProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+  			$this->form_validation->set_rules('IDProyek', 'ID Proyek', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('clientUbah', 'client', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('programUbah', 'Program', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('divisiUbah', 'divisi', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('kodeUbah', 'Kode', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('namaUbah', 'Nama', 'trim|required|min_length[1]|xss_clean');
+          
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('IDProyek').form_error('clientUbah').
+								  form_error('divisiUbah').form_error('kodeUbah').
+								  form_error('programUbah').form_error('namaUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 	= $this->input->post('IDProyek', true);
+				$this->client 	= $this->input->post('clientUbah', true);
+				$this->divisi 	= $this->input->post('divisiUbah', true);
+				$this->program 	= $this->input->post('programUbah', true);
+				$this->kode 	= $this->input->post('kodeUbah', true);
+				$this->nama 	= $this->input->post('namaUbah', true);
+				$this->nomor 	= $this->input->post('nomorUbah', true);
+				$this->status 	= $this->input->post('statusUbah', true);
+				$this->aktif 	= $this->input->post('aktifUbah', true);
+				$this->checklist = $this->input->post('checkListUbah', true);
+				
+				$arrData = array('proyek'	=> $this->proyek,
+								 'divisi'	=> $this->divisi,
+								 'program'	=> $this->program,
+								 'client'	=> $this->client,	
+								 'nomor' 	=> $this->nomor,
+								 'kode'		=> $this->kode,
+								 'nama'		=> $this->nama,
+								 'status'	=> $this->status,
+								 'aktif'	=> $this->aktif,
+								 'checklist' => $this->checklist);
+
+	            $messageData = $this->load->model('trx_proyek_model', 'ModelProyek');
+	            $messageData = $this->ModelProyek->UbahProyek($arrData);
+	            echo $messageData;
+			}
+		}
+
+		public function UbahProgramKerja()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+  			$this->form_validation->set_rules('IDProgramKerja', 'ID Program Kerja', 'trim|required|min_length[1]|xss_clean');
+  			$this->form_validation->set_rules('output', 'Output', 'trim|required|min_length[1]|xss_clean');
+		
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('IDProgramKerja').form_error('output');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDProgramKerja 	= $this->input->post('IDProgramKerja', true);
+				$this->IDOutput 		= $this->input->post('output', true);
+				$this->deadline 		= $this->input->post('deadline', true);
+				$this->realisasi 		= $this->input->post('realisasi', true);
+				$this->status 			= $this->input->post('status', true);
+				
+				$arrData = array('IDProgramKerja'	=> $this->IDProgramKerja,
+								 'IDOutput'			=> $this->IDOutput,
+								 'deadline'			=> $this->deadline,
+								 'realisasi'		=> $this->realisasi,	
+								 'status' 			=> $this->status);				
+
+	            $messageData = $this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+	            $messageData = $this->ModelProgramKerja->UbahProgramKerja($arrData);
+	            echo $messageData;
+			}
+		}
+
+		public function UbahOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('proyekUbah', 'Proyek', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('divisiUbah', 'Divisi', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('pic', 'PIC', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('IDOutput', 'Output', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('namaUbah', 'Nama', 'trim|required|min_length[1]|xss_clean');
+          
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('proyekUbah').form_error('divisiUbah').form_error('pic').form_error('IDOutput').form_error('namaUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 	= $this->input->post('proyekUbah', true);
+				$this->divisi 	= $this->input->post('divisiUbah', true);
+				$this->pic 		= $this->input->post('pic', true);
+				$this->output 	= $this->input->post('IDOutput', true);
+				$this->nama 	= $this->input->post('namaUbah', true);
+				
+				$arrData = array('proyek'	=> $this->proyek,
+								 'divisi' 	=> $this->divisi,
+								 'pic'		=> $this->pic,
+								 'output'	=> $this->output,
+								 'nama'		=> $this->nama);
+
+	            $messageData = $this->load->model('trx_output_model', 'ModelOutput');
+	            $messageData = $this->ModelOutput->UbahOutput($arrData);
+	            echo $messageData;
+			}
+		}
+
+		public function UbahSubOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->form_validation->set_rules('proyekUbah', 'Proyek', 'trim|required|min_length[1]|xss_clean');	
+			$this->form_validation->set_rules('output', 'Output', 'trim|required|min_length[1]|xss_clean');	
+            $this->form_validation->set_rules('namaUbah','Sub Output', 'trim|required|min_length[1]|xss_clean');
+          	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage 	= form_error('proyekUbah').form_error('output').form_error('namaUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->proyek 		= $this->input->post('proyekUbah', true);
+				$this->output 		= $this->input->post('output', true);
+				$this->suboutput 	= $this->input->post('namaUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				$this->IDSubOutput  = $this->input->post('IDSubOutput', true);
+
+				$arrData = array('IDSubOutput'  => $this->IDSubOutput,
+								 'proyek'		=> $this->proyek,
+								 'output' 		=> $this->output,
+								 'subOutput'	=> $this->suboutput,
+								 'deskripsi'	=> $this->deskripsi);
+
+	            $messageData = $this->load->model('trx_sub_output_model', 'ModelSubOutput');
+	            $messageData = $this->ModelSubOutput->UbahSubOutput($arrData);
+	            echo $messageData;
+			}
+		}
+
+		public function HapusProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDProyek = $this->input->post('IDProyek', true);
+			
+            $messageData = $this->load->model('trx_proyek_model', 'ModelHapusProyek');
+            $messageData = $this->ModelHapusProyek->HapusProyek($this->IDProyek);
+            echo $messageData;
+			
+		}
+
+		public function HapusTimesheet()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDTimesheet 	= $this->input->post('IDTimesheet', true);
+			$this->tglAwal 		= $this->input->post('tglAwal', true);
+			$this->tglAkhir 	= $this->input->post('tglAkhir', true);
+			
+            $messageData = $this->load->model('trx_timesheet_model', 'ModelHapusTimesheet');
+            $messageData = $this->ModelHapusTimesheet->HapusTimesheet($this->IDTimesheet, $this->tglAwal, $this->tglAkhir);
+            echo $messageData;
+		}
+		
+		public function HapusProgramKerja()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->form_validation->set_rules('IDOutput', 'ID Output', 'trim|required|xss_clean');
+            $this->form_validation->set_rules('IDProyek', 'ID Proyek', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDOutput').form_error('IDProyek');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDOutput = $this->input->post('IDOutput', true);
+				$this->IDProyek = $this->input->post('IDProyek', true);
+				
+				$arrData = array('output' 	=> $this->IDOutput,
+								 'proyek'	=> $this->IDProyek);
+
+				$this->load->model('trx_program_kerja_model', 'ModelProgramKerja');
+        		$messageData = $this->ModelProgramKerja->HapusProgramKerja($arrData);
+        		echo $messageData;
+			}
+		}
+
+		public function HapusOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDOutput', 'ID Output', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDOutput');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDOutput = $this->input->post('IDOutput', true);
+				$this->load->model('trx_output_model', 'ModelOutput');
+        		$messageData = $this->ModelOutput->HapusOutput($this->IDOutput);
+        		echo $messageData;
+			}
+		}
+
+		public function HapusSubOutput()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDSubOutput', 'ID Sub Output', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDSubOutput');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDSubOutput = $this->input->post('IDSubOutput', true);
+				$this->load->model('trx_sub_output_model', 'ModelSubOutput');
+        		$messageData = $this->ModelSubOutput->HapusSubOutput($this->IDSubOutput);
+        		echo $messageData;
+			}
+		}
+
+		public function GetDaftarMemberProyek()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+		
+			$this->IDProyek = $this->input->post('IDProyek', true);
+			
+			$arrData = array('IDProyek' => $this->IDProyek);
+            $messageData = $this->load->model('trx_member_proyek_model', 'ModelMemberProyek');
+            $messageData = $this->ModelMemberProyek->GetDaftarMemberProyek($arrData);
+            echo $messageData;
+		}
+
+		public function GetDaftarTimesheetRekapExcel()
+		{
+			$this->checkCredentialAccess();
+			
+			$this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('tanggalAwal', 'Tanggal Awal', 'trim|required|xss_clean');
+            $this->form_validation->set_rules('tanggalAkhir', 'Tanggal Akhir', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('tanggalAwal').form_error('tanggalAkhir');
+				$messageData  = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+			
+	            $this->tglAwal 	  = $this->input->post('tanggalAwal', true);
+	            $this->tglAkhir  = $this->input->post('tanggalAkhir', true);
+
+	            $this->load->model('trx_timesheet_model', 'ModeTimesheet');
+	            $this->dataLaporan = $this->ModeTimesheet->GetDaftarTimesheetRekapExcel($this->tglAwal, $this->tglAkhir);
+
+	            if ( (is_array($this->dataLaporan) && count($this->dataLaporan) == 0) ) exit;
+
+	            require_once APPPATH.'libraries/PHPExcel/Classes/PHPExcel.php';
+		
+				$objPHPExcel =  PHPExcel_IOFactory::load(APPPATH."/template/timesheet_rekap.xlsx");
+
+				$objPHPExcel->getProperties()->setCreator("SyncoreIndonesia")
+											 ->setTitle("Cetak Timesheet Rekap")
+											 ->setSubject("Cetak Timesheet Rekap")
+											 ->setDescription("Cetak Timesheet Rekap");
+				
+				//SET HEADER TABEL
+				$objPHPExcel->setActiveSheetIndex(0)
+							->setCellValue('A1', 'PIC')
+							->setCellValue('B1', 'Divisi')
+							->setCellValue('C1', 'Bulan')
+							->setCellValue('D1', 'Bidang')
+							->setCellValue('E1', 'Program/Produk')
+							->setCellValue('F1', 'Project/Kegiatan')
+							->setCellValue('G1', 'Klien')
+							->setCellValue('H1', 'Prosedur')
+							->setCellValue('I1', 'Output')
+							->setCellValue('J1', 'Sub Output')
+							->setCellValue('K1', 'Aktivitas')
+							->setCellValue('L1', 'Kunjungan')
+							->setCellValue('M1', 'Tanggal')
+							->setCellValue('N1', 'Jam');
+				$i=2;
+				foreach($this->dataLaporan as $data){		
+
+					$objPHPExcel->setActiveSheetIndex(0)
+							->setCellValue('A'.$i, $data['NamaKaryawan'])
+							->setCellValue('B'.$i, $data['NamaDivisi'])
+							->setCellValue('C'.$i, $data['Bulan'])
+							->setCellValue('D'.$i, $data['NamaBidang'])
+							->setCellValue('E'.$i, $data['NamaProgram'])
+							->setCellValue('F'.$i, $data['NamaProyek'])
+							->setCellValue('G'.$i, $data['NamaClient'])
+							->setCellValue('H'.$i, $data['Tahapan'])
+							->setCellValue('I'.$i, $data['NamaOutput'])
+							->setCellValue('J'.$i, $data['NamaSubOutput'])
+							->setCellValue('K'.$i, $data['NamaAktivitas'])
+							->setCellValue('L'.$i, $data['NamaKunjungan'])
+							->setCellValue('M'.$i, $data['Tanggal'])
+							->setCellValue('N'.$i, $data['Jam']);
+					$i++;
+				}
+
+				$objPHPExcel->getActiveSheet()->setTitle('Cetak Rekap Timesheet');
+
+				$objPHPExcel->setActiveSheetIndex(0);
+
+				$namaFile = 'LaporanTimesheetRekap'.GenerateNewCRSFHash().'.xlsx';
+
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+
+				$filePath = 'temp/'.$namaFile;
+
+				$objWriter->save($filePath);
+
+				echo "<script>window.location='".$filePath."';</script>";	
+			}	
+		}
+
+		public function GetDaftarTimesheetPerStaffExcel()
+		{
+			
+			$this->checkCredentialAccess();
+			
+			$this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('karyawan', 'Karyawan', 'trim|required|xss_clean');
+            $this->form_validation->set_rules('tanggalAwal', 'Tanggal Awal', 'trim|required|xss_clean');
+            $this->form_validation->set_rules('tanggalAkhir', 'Tanggal Akhir', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('tanggalAwal').form_error('tanggalAkhir').form_error('karyawan');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+			
+	            $this->IDKaryawan 		= $this->input->post('karyawan', true);
+	            $this->tanggalAwal	  	= $this->input->post('tanggalAwal', true);
+	            $this->tanggalAkhir 	= $this->input->post('tanggalAkhir', true);
+
+	            $this->load->model('trx_timesheet_model', 'ModeTimesheet');
+	            $this->dataLaporan = $this->ModeTimesheet->GetDaftarTimesheetPerStaffExcel($this->IDKaryawan, $this->tanggalAwal, $this->tanggalAkhir);
+
+	            if ( (is_array($this->dataLaporan) && count($this->dataLaporan) == 0) ) exit;
+
+	            require_once APPPATH.'libraries/PHPExcel/Classes/PHPExcel.php';
+			
+				//$objPHPExcel = new PHPExcel();
+
+				$objPHPExcel =  PHPExcel_IOFactory::load(APPPATH."/template/timesheet_per_staff.xlsx");
+
+				$objPHPExcel->getProperties()->setCreator("SyncoreIndonesia")
+											 ->setTitle("Cetak Timesheet Per Staff")
+											 ->setSubject("Cetak Timesheet Per Staff")
+											 ->setDescription("Cetak Timesheet Per Staff");
+			
+	           	$CI = &get_instance();
+	           	$selectQuery = $CI->db->query("select nama_karyawan as NamaKaryawan,
+			           						   nama_divisi as NamaDivisi
+			           						   from mst_karyawan mstKaryawan inner join ref_divisi refDivisi 
+			           						   on mstKaryawan.id_divisi = refDivisi.id_divisi
+			           						   where mstKaryawan.id_karyawan = '".$this->IDKaryawan."'");
+
+	           	$this->arrData = $selectQuery->row_array();
+
+				//SET HEADER LAPORAN
+				$objPHPExcel->setActiveSheetIndex(0)
+							->setCellValue('A1', 'Nama')
+							->setCellValue('A2', 'Divisi')
+							->setCellValue('B1', $this->arrData['NamaKaryawan'])
+							->setCellValue('B2', $this->arrData['NamaDivisi']); 
+				
+				//SET HEADER TABEL
+				$objPHPExcel->setActiveSheetIndex(0)
+							->setCellValue('A3', 'PIC')
+							->setCellValue('B3', 'Divisi')
+							->setCellValue('C3', 'Bulan')
+							->setCellValue('D3', 'Bidang')
+							->setCellValue('E3', 'Program/Produk')
+							->setCellValue('F3', 'Project/Kegiatan')
+							->setCellValue('G3', 'Klien')
+							->setCellValue('H3', 'Prosedur')
+							->setCellValue('I3', 'Output')
+							->setCellValue('J3', 'Sub Output')
+							->setCellValue('K3', 'Aktivitas')
+							->setCellValue('L3', 'Kunjungan')
+							->setCellValue('M3', 'Tanggal')
+							->setCellValue('N3', 'Jam');
+				$i=4;
+				foreach($this->dataLaporan as $data){		
+
+					$objPHPExcel->setActiveSheetIndex(0)
+							->setCellValue('A'.$i, $data['NamaKaryawan'])
+							->setCellValue('B'.$i, $data['NamaDivisi'])
+							->setCellValue('C'.$i, $data['Bulan'])
+							->setCellValue('D'.$i, $data['NamaBidang'])
+							->setCellValue('E'.$i, $data['NamaProgram'])
+							->setCellValue('F'.$i, $data['NamaProyek'])
+							->setCellValue('G'.$i, $data['NamaClient'])
+							->setCellValue('H'.$i, $data['Tahapan'])
+							->setCellValue('I'.$i, $data['NamaOutput'])
+							->setCellValue('J'.$i, $data['NamaSubOutput'])
+							->setCellValue('K'.$i, $data['NamaAktivitas'])
+							->setCellValue('L'.$i, $data['NamaKunjungan'])
+							->setCellValue('M'.$i, $data['Tanggal'])
+							->setCellValue('N'.$i, $data['Jam']);
+					$i++;
+				}
+
+				$objPHPExcel->getActiveSheet()->setTitle('Cetak Timesheet Per Staff');
+
+				$objPHPExcel->setActiveSheetIndex(0);
+
+				$namaFile = 'LaporanTimesheetPerStaff'.GenerateNewCRSFHash().'.xlsx';
+
+				$objWriter = new PHPExcel_Writer_Excel2007($objPHPExcel);
+
+				$filePath = 'temp/'.$namaFile;
+
+				$objWriter->save($filePath);
+
+				echo "<script>window.location='".$filePath."';</script>";	
+			}	
+		}
+
+		public function LaporanTimesheetPerStaff()
+		{
+
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->load->view('laporan_timesheet_per_staff_view');
+		}
+
+		public function LaporanRekapTimesheet()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->load->view('laporan_timesheet_rekap_view');
+		}
+
+
+	}
+
+/* End of file anggaran.php */

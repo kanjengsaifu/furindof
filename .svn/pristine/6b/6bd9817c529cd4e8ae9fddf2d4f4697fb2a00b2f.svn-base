@@ -1,0 +1,301 @@
+<div class="content-header">   
+	<h1>Daftar Indikator</h1>
+</div>
+
+<div class="content">
+	<div class="box box-warning">
+	  	<div class="box-body">
+	  		<div class="box-header">
+				<button type="button" class="btn btn-sm btn-success" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>	
+				<button type="button" class="btn btn-sm btn-success" id="btnCetakExcel"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>	
+			</div>
+	  		<div class="form-control" style="overflow:scroll;min-height:430px;">
+				<div id="ajaxTreeGrid"></div>
+			</div>
+		</div> <!-- <div class="box-body"> -->
+	  </div>
+	</div> <!-- <div class="box box-warning"> -->
+</div>
+
+ <div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormTambahData">Tambah Data Indikator</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="pesanBaru"></div>
+	      		<form id="formBaru" class="form-horizontal" action="admin/TambahIndikator" method="post">
+	      			<div class="form-group">
+					    <label for="tipeIndikator" class="col-sm-2 control-label">Tipe </label>
+					    <div class="col-sm-10">
+					       	<select name="tipeIndikator" class="form-control" onchange="fillKodeInduk(this, $('#kodeInduk'))">
+					       		<option value=''>:: Pilih Tipe Indikator ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_tipe_indikator as IDTipeIndikator, nama_tipe_indikator as NamaTipeIndikator 
+					       											from ref_tipe_indikator");
+					       			$arrTipeIndikator = $selectQuery->result_array();
+					       			foreach ($arrTipeIndikator as $row) {
+					       				echo "<option value='".$row['IDTipeIndikator']."'>".$row['NamaTipeIndikator']."</option>";
+					       			}
+					       		?>
+					       	</select>
+					    </div>
+				    </div>
+	      			<div class="form-group">
+					    <label for="kodeIndikator" class="col-sm-2 control-label">Kode</label>
+					    <div class="col-sm-10">
+				    	  	<div class="input-group">
+                                <span class="input-group-addon" id="kodeInduk"></span>
+				       			<input id="kodeIndikator" name="kodeIndikator" value="" type="text" class="form-control"/>
+				       		</div>		
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaIndikator" class="col-sm-2 control-label">Nama</label>
+					    <div class="col-sm-10">
+					       	<input id="namaIndikator" name="namaIndikator" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
+					    <div class="col-sm-10">
+					       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
+					    </div>
+				    </div>
+		        </form>  
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-success" id="btnTambahIndikator">Tambah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalTambahIndikator">Batal</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+ <div class="modal hide" id="dialogFormUbah" tabindex="2" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormUbahData">Ubah Data Indikator</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="pesanUbah"></div>
+	      		<form id="formUbah" class="form-horizontal" action="admin/UbahIndikator" method="post">
+	      			<div class="form-group">
+					    <label for="tipeIndikatorUbah" class="col-sm-2 control-label">Tipe </label>
+					    <div class="col-sm-10">
+					       	<select name="tipeIndikatorUbah" id="tipeIndikatorUbah" class="form-control" onchange="fillKodeInduk(this, $('#kodeIndukUbah'))">
+					       		<option value=''>:: Pilih Tipe Indikator ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_tipe_indikator as IDTipeIndikator, nama_tipe_indikator as NamaTipeIndikator 
+					       											from ref_tipe_indikator");
+					       			$arrTipeIndikator = $selectQuery->result_array();
+					       			foreach ($arrTipeIndikator as $row) {
+					       				echo "<option value='".$row['IDTipeIndikator']."'>".$row['NamaTipeIndikator']."</option>";
+					       			}
+					       		?>
+					       	</select>
+					    </div>
+				    </div>
+	      			<div class="form-group">
+					    <label for="kodeIndikatorUbah" class="col-sm-2 control-label">Kode</label>
+					    <div class="col-sm-10">
+					    	<div class="input-group">
+                                <span class="input-group-addon" id="kodeIndukUbah"></span>
+				       			<input id="kodeIndikatorUbah" name="kodeIndikatorUbah" value="" type="text" class="form-control"/>
+				       		</div>	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaIndikatorUbah" class="col-sm-2 control-label">Nama</label>
+					    <div class="col-sm-10">
+					       	<input id="namaIndikatorUbah" name="namaIndikatorUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="deskripsiUbah" class="col-sm-2 control-label">Deskripsi</label>
+					    <div class="col-sm-10">
+					       	<textarea id="deskripsiUbah" name="deskripsiUbah" class="form-control"></textarea>
+					    </div>
+				    </div>
+				    <input type="hidden" name="IDIndikator" id="IDIndikator"/>
+		        </form>  
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-success" id="btnUbahIndikator">Ubah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalUbahIndikator">Batal</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+	
+<script>
+	$(document).ready(function () {
+                     
+    	$('#btnTambahBaru').click(function(e)
+        {
+			e.preventDefault(); 
+			resetForm();
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormBaru').attr('class', 'modal show');               
+        });
+
+        $('#btnBatalTambahIndikator').click( function(e){
+    		e.preventDefault(); 
+    		$('#dialogFormBaru').attr('class', 'modal hide');
+   		});        
+
+   		$('#btnBatalUbahIndikator').click( function(e){
+	    	e.preventDefault(); 
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormUbah').attr('class', 'modal hide');
+	    });
+
+   		$('#btnTambahIndikator').click( function(e){
+ 			e.preventDefault();
+	       	sendRequestForm($('#formBaru').attr('action'), $('#formBaru').serialize(), 'pesanBaru');
+	    });
+ 	
+	    $('#btnUbahIndikator').click( function(e){
+ 			e.preventDefault(); 
+	       	sendRequestForm($('#formUbah').attr('action'), $('#formUbah').serialize(), 'pesanUbah'); 
+	    });
+
+	    $('#btnCari').click( function(e){
+ 			e.preventDefault(); 
+	       	ajaxDataGrid($('#formCari').attr('action'),  $('#formCari').serialize(), 'ajaxTreeGrid'); 
+	    });
+	    
+        loadGridData();
+
+    });
+
+    function resetForm()
+	{
+		$('.input-group-addon').html('');
+		$('input[type="text"], input[type="password"], select').val('');
+		$('textarea').val('');
+		$('input:first').focus();
+
+		loadGridData();
+	}
+
+	function loadGridData(){
+
+	     var source =
+         {		
+             dataType: "json",
+             dataFields: [
+                  { name: "idx", 	type: "string" },
+                  { name: "kodeIndikator", 	type: "string" },
+                  { name: "kodeTipeIndikator", 	type: "string" },
+                  { name: "IDTipeIndikator", 	type: "string" },
+                  { name: "NamaTipeIndikator", 	type: "string" },
+                  { name: "kodeDisplay", 	type: "string" },
+                  { name: "nama", 	type: "string" },
+                  { name: "deskripsi", 	type: "string" },
+                  { name: "action", 	type: "string" }
+             ],
+            url : "admin/GetDaftarIndikator",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {		
+            }
+        });
+
+        // create jqxDataTable.
+        $("#ajaxTreeGrid").jqxDataTable(
+        {
+            source: dataAdapter,
+            pagerButtonsCount: 10,
+            altRows: true,
+            filterable: true,
+            height: '400px',
+            pageable : true,
+            pageSize : 50,
+            pagerPosition : 'bottom',
+            filterMode: 'simple',
+            theme: 'fresh',
+            width: '100%',
+            columns: [
+              { text: 'Kode', cellsAlign: 'center', align: 'center', dataField: 'kodeDisplay', width : '10%'},
+              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '32%'},
+              { text: 'Deskripsi', cellsAlign: 'left', align: 'center', dataField: 'deskripsi', width : '35%' },
+              { text: 'Tipe', cellsAlign: 'center', align: 'center', dataField: 'NamaTipeIndikator', width : '15%'},
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '8%' }
+            ]
+        }).on('rowDoubleClick', function(event)
+        {	          	
+        	dialogFormEditShow();
+	    });	
+	}
+
+	function dialogFormEditShow()
+	{ 
+		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+		var dataIndikator = selection[0];
+			
+		var	idx      		 = dataIndikator.idx,
+	 		kodeIndikator    = dataIndikator.kodeIndikator,
+	 		kodeTipeIndikator= dataIndikator.kodeTipeIndikator,
+	 		nama    		 = dataIndikator.nama,
+	 		deskripsi 		 = dataIndikator.deskripsi;
+			IDTipeIndikator  = dataIndikator.IDTipeIndikator;
+
+
+			$('#alertMessage').remove();
+
+		 	$('#kodeIndikatorUbah').val(kodeIndikator);
+		 	$('#kodeIndukUbah').html(kodeTipeIndikator);
+		 	$('#namaIndikatorUbah').val(nama);
+	 		$('#deskripsiUbah').val(deskripsi);
+	 		$('#IDIndikator').val(idx);
+	 		$('#tipeIndikatorUbah').val(IDTipeIndikator);
+	 		
+			$('#dialogFormUbah').attr('class', 'modal show');
+
+	}
+
+	function dialogFormUbahClose()
+	{
+		 $('#dialogFormUbah').attr('class', 'modal close');	
+	}
+
+	function dialogFormBaruClose()
+	{
+		 $('#dialogFormBaru').attr('class', 'modal close');	
+	}
+
+	function deleteConfirmShow()
+	{ 
+
+	 	var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+		var dataIndikator = selection[0];
+		
+		var idx	 = dataIndikator.idx;
+		var nama = dataIndikator.nama;
+		
+	   	isDelete = confirm('Yakin Indikator '+ nama +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('admin/HapusIndikator', {IDIndikator : idx}, 'box-body');
+	}
+
+
+	function fillKodeInduk(objSource, objReference)
+	{
+		
+		var IDTipeIndikator = $(objSource).val();
+		kodeTipeIndikator = ajaxFillGridJSON('admin/GetKodeTipeIndikator', {IDTipeIndikator : IDTipeIndikator}); 
+		$(objReference).html(kodeTipeIndikator);
+	}
+            		
+</script>
+
+ 

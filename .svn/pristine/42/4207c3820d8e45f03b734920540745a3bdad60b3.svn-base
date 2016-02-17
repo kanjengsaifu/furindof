@@ -1,0 +1,388 @@
+<div class="content-header">   
+	<h1>Daftar Program</h1>
+</div>
+
+<div class="content">
+	<div class="box box-warning">
+	  	<div class="box-body">
+	  		<div class="box-header">
+				<button type="button" class="btn btn-sm btn-success" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+				<button type="button" class="btn btn-sm btn-success" id="btnCetakExcel"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Excel</button>		
+			</div>
+	  		<div class="form-control" style="overflow:scroll;min-height:430px;">
+				<div id="ajaxTreeGrid"></div>
+			</div>
+		</div> <!-- <div class="box-body"> -->
+	  </div>
+	</div> <!-- <div class="box box-warning"> -->
+</div>
+
+ <div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormTambahData">Tambah Data Program</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="pesanBaru"></div>
+	      		<form id="formBaru" class="form-horizontal" action="admin/TambahProgram" method="post">
+	      			<div class="form-group">
+					    <label for="divisi" class="col-sm-2 control-label">Divisi </label>
+					    <div class="col-sm-10">
+					       	<select name="divisi" class="form-control" onchange="fillKodeDivisi(this, $('#kodeDivisi'))">
+					       		<option value=''>:: Pilih Divisi ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_divisi as IDDivisi, 
+					       											concat(kode_divisi,' - ', nama_divisi) as NamaDivisi   
+					       											from ref_divisi");
+					       			$arrTipeProgram = $selectQuery->result_array();
+					       			foreach ($arrTipeProgram as $row) {
+					       				echo "<option value='".$row['IDDivisi']."'>".$row['NamaDivisi']."</option>";
+					       			}
+					       		?>
+					       	</select>
+					    </div>
+				    </div>
+	      			<div class="form-group">
+					    <label for="bidang" class="col-sm-2 control-label">Bidang </label>
+					    <div class="col-sm-10">
+					       	<select name="bidang" class="form-control" onchange="fillKodeBidang(this, $('#kodeBidang'))">
+					       		<option value=''>:: Pilih Bidang ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_bidang as IDBidang, 
+					       											concat(kode_bidang,' - ', nama_bidang) as NamaBidang   
+					       											from ref_bidang ");
+					       			$arrTipeProgram = $selectQuery->result_array();
+					       			foreach ($arrTipeProgram as $row) {
+					       				echo "<option value='".$row['IDBidang']."'>".$row['NamaBidang']."</option>";
+					       			}
+					       		?>
+					       	</select>
+					    </div>
+				    </div>
+	      			<div class="form-group">
+					    <label for="kodeProgram" class="col-sm-2 control-label">Kode</label>
+					    <div class="col-sm-10">
+				    	  	<div class="input-group">
+				    	  		<span class="input-group-addon" id="kodeDivisi"></span>
+                                <span class="input-group-addon" id="kodeBidang"></span>
+				       			<input id="kodeProgram" name="kodeProgram" value="" type="text" class="form-control"/>
+				       		</div>		
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProgram" class="col-sm-2 control-label">Nama</label>
+					    <div class="col-sm-10">
+					       	<input id="namaProgram" name="namaProgram" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				     <div class="form-group">
+					    <label for="status" class="col-sm-2 control-label">Status</label>
+					    <div class="col-sm-10">
+					       <select name="status" id="status" class="form-control">
+					       		<option value=''>:: Pilih Status ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_status as IDStatus, 
+					       											concat(kode_status,' - ', nama_status) as NamaStatus    
+					       											from ref_status ");
+					       			$arrTipeProgram = $selectQuery->result_array();
+					       			foreach ($arrTipeProgram as $row) {
+					       				echo "<option value='".$row['IDStatus']."'>".$row['NamaStatus']."</option>";
+					       			}
+					       		?>
+					       </select>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
+					    <div class="col-sm-10">
+					       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
+					    </div>
+				    </div>
+		        </form>  
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-success" id="btnTambahProgram">Tambah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalTambahProgram">Batal</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+ <div class="modal hide" id="dialogFormUbah" tabindex="2" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormUbahData">Ubah Data Program</h4>
+	      </div>
+	      <div class="modal-body">
+	      	<div class="pesanUbah"></div>
+	      		<form id="formUbah" class="form-horizontal" action="admin/UbahProgram" method="post">
+	      			<div class="form-group">
+					    <label for="divisiUbah" class="col-sm-2 control-label">Divisi </label>
+					    <div class="col-sm-10">
+					       	<select name="divisiUbah" id="divisiUbah" class="form-control" onchange="fillKodeDivisi(this, $('#kodeDivisiUbah'))">
+					       		<option value=''>:: Pilih Divisi ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_divisi as IDDivisi, concat(kode_divisi,' - ', nama_divisi) as NamaDivisi   
+					       											from ref_divisi");
+					       			$arrTipeProgram = $selectQuery->result_array();
+					       			foreach ($arrTipeProgram as $row) {
+					       				echo "<option value='".$row['IDDivisi']."'>".$row['NamaDivisi']."</option>";
+					       			}
+					       		?>
+					       	</select>
+					    </div>
+				    </div>
+	      			<div class="form-group">
+					    <label for="bidangUbah" class="col-sm-2 control-label">Bidang </label>
+					    <div class="col-sm-10">
+					       	<select name="bidangUbah" id="bidangUbah" class="form-control" onchange="fillKodeBidang(this, $('#kodeBidangUbah'))">
+					       		<option value=''>:: Pilih Bidang ::</option>
+					       		<?php  
+					       			$selectQuery =  $CI->db->query("select id_bidang as IDBidang, concat(kode_bidang,' - ', nama_bidang) as NamaBidang  
+					       											from ref_bidang ");
+					       			$arrTipeProgram = $selectQuery->result_array();
+					       			foreach ($arrTipeProgram as $row) {
+					       				echo "<option value='".$row['IDBidang']."'>".$row['NamaBidang']."</option>";
+					       			}
+					       		?>
+					       	</select>
+					    </div>
+				    </div>
+	      			<div class="form-group">
+					    <label for="kodeProgramUbah" class="col-sm-2 control-label">Kode</label>
+					    <div class="col-sm-10">
+					    	<div class="input-group">
+					    		<span class="input-group-addon" id="kodeDivisiUbah"></span>
+                                <span class="input-group-addon" id="kodeBidangUbah"></span>
+				       			<input id="kodeProgramUbah" name="kodeProgramUbah" value="" type="text" class="form-control"/>
+				       		</div>	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="namaProgramUbah" class="col-sm-2 control-label">Nama</label>
+					    <div class="col-sm-10">
+					       	<input id="namaProgramUbah" name="namaProgramUbah" value="" type="text" class="form-control"/>
+					    </div>
+				    </div>
+				     <div class="form-group">
+					    <label for="statusUbah" class="col-sm-2 control-label">Status</label>
+					    <div class="col-sm-10">
+					       <select name="statusUbah" id="statusUbah" class="form-control">
+					       		<option value=''>:: Pilih Status ::</option>
+					       		<?php  
+					       			$CI = get_instance();
+					       			$selectQuery =  $CI->db->query("select id_status as IDStatus, concat(kode_status,' - ', nama_status) as NamaStatus       
+					       											from ref_status ");
+					       			$arrTipeProgram = $selectQuery->result_array();
+					       			foreach ($arrTipeProgram as $row) {
+					       				echo "<option value='".$row['IDStatus']."'>".$row['NamaStatus']."</option>";
+					       			}
+					       		?>
+					       </select>
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="deskripsiUbah" class="col-sm-2 control-label">Deskripsi</label>
+					    <div class="col-sm-10">
+					       	<textarea id="deskripsiUbah" name="deskripsiUbah" class="form-control"></textarea>
+					    </div>
+				    </div>
+				    <input type="hidden" name="IDProgram" id="IDProgram"/>
+		        </form>  
+	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-success" id="btnUbahProgram">Ubah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalUbahProgram">Batal</button>
+	      </div>
+	    </div>
+	  </div>
+	</div>
+</div>
+	
+<script>
+	$(document).ready(function () {
+                     
+    	$('#btnTambahBaru').click(function(e)
+        {
+			e.preventDefault(); 
+			resetForm();
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormBaru').attr('class', 'modal show');               
+        });
+
+        $('#btnBatalTambahProgram').click( function(e){
+    		e.preventDefault(); 
+    		$('#dialogFormBaru').attr('class', 'modal hide');
+   		});        
+
+   		$('#btnBatalUbahProgram').click( function(e){
+	    	e.preventDefault(); 
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormUbah').attr('class', 'modal hide');
+	    });
+
+   		$('#btnTambahProgram').click( function(e){
+ 			e.preventDefault();
+	       	sendRequestForm($('#formBaru').attr('action'), $('#formBaru').serialize(), 'pesanBaru');
+	    });
+ 	
+	    $('#btnUbahProgram').click( function(e){
+ 			e.preventDefault(); 
+	       	sendRequestForm($('#formUbah').attr('action'), $('#formUbah').serialize(), 'pesanUbah'); 
+	    });
+
+	    $('#btnCari').click( function(e){
+ 			e.preventDefault(); 
+	       	ajaxDataGrid($('#formCari').attr('action'),  $('#formCari').serialize(), 'ajaxTreeGrid'); 
+	    });
+	    
+        loadGridData();
+
+    });
+
+    function resetForm()
+	{
+		$('.input-group-addon').html('');
+		$('input[type="text"], input[type="password"], select').val('');
+		$('textarea').val('');
+		$('input:first').focus();
+
+		loadGridData();
+	}
+
+	function loadGridData(){
+	     var source =
+         {		
+             dataType: "json",
+             dataFields: [
+                  { name: "idx", 	type: "string" },
+                  { name: "IDDivisi", 	type: "string" },
+                  { name: "IDBidang", 	type: "string" },
+                  { name: "IDStatus", 	type: "string" },
+                  { name: "KodeDivisi", 	type: "string" },
+                  { name: "KodeBidang", 	type: "string" },               
+                  { name: "kodeDisplay", 	type: "string" },
+                  { name: "kode", 	type: "string" },
+                  { name: "nama", 	type: "string" },
+                  { name: "deskripsi", 	type: "string" },
+                  { name: "NamaStatus", 	type: "string" },
+                  { name: "action", 	type: "string" }
+             ],
+            url : "admin/GetDaftarProgram",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {		
+            }
+        });
+
+        // create jqxDataTable.
+        $("#ajaxTreeGrid").jqxDataTable(
+        {
+            source: dataAdapter,
+            pagerButtonsCount: 10,
+            altRows: true,
+            filterable: true,
+            height: '400px',
+            pageable : true,
+            pageSize : 50,
+            pagerPosition : 'bottom',
+            filterMode: 'simple',
+            theme: 'fresh',
+            width: '100%',
+            columns: [
+              { text: 'Kode', cellsAlign: 'center', align: 'center', dataField: 'kodeDisplay', width : '10%'},
+              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '47%'},
+              { text: 'Deskripsi', cellsAlign: 'left', align: 'center', dataField: 'deskripsi', width : '25%' },
+              { text: 'Status', cellsAlign: 'center', align: 'center', dataField: 'NamaStatus', width : '10%'},
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '8%' }
+            ]
+        }).on('rowDoubleClick', function(event)
+        {	          	
+        	dialogFormEditShow();
+	    });	
+	}
+
+	function dialogFormEditShow()
+	{ 
+		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+		var dataProgram = selection[0];
+			
+		var	idx      		= dataProgram.idx,
+	 		kodeDivisi		= dataProgram.KodeDivisi,
+	 		kodeBidang 		= dataProgram.KodeBidang,
+	 		kode 			= dataProgram.kode,	
+	 		nama    		= dataProgram.nama,
+	 		deskripsi 		= dataProgram.deskripsi;
+			IDDivisi   		= dataProgram.IDDivisi;
+			IDBidang   		= dataProgram.IDBidang;
+			IDStatus  		= dataProgram.IDStatus;
+
+			$('#alertMessage').remove();
+
+		 	$('#kodeDivisiUbah').html(kodeDivisi);
+		 	$('#kodeBidangUbah').html(kodeBidang);
+		 	$('#kodeProgramUbah').val(kode);
+		 	$('#namaProgramUbah').val(nama);
+	 		$('#deskripsiUbah').val(deskripsi);
+	 		$('#IDProgram').val(idx);
+	 		$('#divisiUbah').val(IDDivisi);
+	 		$('#bidangUbah').val(IDBidang);
+	 		$('#statusUbah').val(IDStatus);
+
+			$('#dialogFormUbah').attr('class', 'modal show');
+
+	}
+
+	function dialogFormUbahClose()
+	{
+		 $('#dialogFormUbah').attr('class', 'modal close');	
+	}
+
+	function dialogFormBaruClose()
+	{
+		 $('#dialogFormBaru').attr('class', 'modal close');	
+	}
+
+	function deleteConfirmShow()
+	{ 
+
+	 	var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+		var dataProgram = selection[0];
+		
+		var idx	 = dataProgram.idx;
+		var nama = dataProgram.nama;
+		
+	   	isDelete = confirm('Yakin Program '+ nama +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('admin/HapusProgram', {IDProgram : idx}, 'box-body');
+	}
+
+
+	function fillKodeBidang(objSource, objReference)
+	{
+		
+		var IDBidang = $(objSource).val();
+		kodeTipeProgram = ajaxFillGridJSON('admin/GetKodeBidangAJax', {IDBidang : IDBidang}); 
+		$(objReference).html(kodeTipeProgram);
+	}
+
+	function fillKodeDivisi(objSource, objReference)
+	{
+		
+		var IDDivisi = $(objSource).val();
+		kodeTipeProgram = ajaxFillGridJSON('admin/GetKodeDivisiAJax', {IDDivisi : IDDivisi}); 
+		$(objReference).html(kodeTipeProgram);
+	}
+            		
+</script>
+
+ 

@@ -1,0 +1,76 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Trx_member_proyek_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahMemberProyek($dataMemberProyek)
+        {
+
+          $this->IDUser      = $_SESSION['IDUser'];
+          $this->IDKaryawan  = $this->security->xss_clean($dataMemberProyek['karyawan']);
+          $this->IDProyek    = $this->security->xss_clean($dataMemberProyek['proyek']);
+         
+          $this->userEntry  = $this->IDUser;
+          $this->dateEntry  = RealDateTime();
+          
+          //hapus 
+          $this->selectQuery = $this->db->query("delete from trx_proyek_member where id_proyek = '".$this->IDProyek."'");
+
+          foreach ($this->IDKaryawan as $value) {
+
+            $this->db->query("insert into trx_proyek_member (id_proyek, id_karyawan, date_entry, user_entry, last_update, user_update) 
+                              values('".$this->IDProyek."','".$value."', '".$this->dateEntry."','".$this->userEntry."','','0')");
+
+          }
+
+          $strMessage  = 'Tambah Member Proyek telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>alert('".$strMessage."');window.resetForm();</script>";
+        }
+        
+        public function GetDaftarMemberProyek($arrData)
+        {
+            
+            $this->IDProyek = $this->security->xss_clean($arrData['IDProyek']);
+
+       
+            $this->selectQuery =  $this->db->query("select id_karyawan as IDKaryawan, nama_karyawan as NamaKaryawan
+                                                    from mst_karyawan order by NamaKaryawan asc");
+      
+
+            $strOutput =  "<div class='form-group'>
+                          <label for='karyawan' class='col-sm-2 control-label'>Karyawan</label>
+                              <div class='col-sm-8'>
+                                <div class='checkbox' onchange='pilihSemua(\"pilihAll\")'>
+                                  <label>
+                                    <input type='checkbox' id='pilihAll'><strong>Pilih Semua Karyawan</strong>
+                                  </label>
+                                </div>";
+
+            foreach ($this->selectQuery->result_array() as $row) 
+            {
+              
+              $this->IDKaryawan = $row['IDKaryawan'];
+
+              $this->selectQuery2 =  $this->db->query("select id_karyawan as IDKaryawan  
+                                                    from trx_proyek_member where id_karyawan='".$this->IDKaryawan."'  
+                                                    and id_proyek='".$this->IDProyek ."' ");
+             
+              $strChecked = $this->selectQuery2->num_rows() > 0 ? 'checked' : '';
+
+              $strOutput .= "<div class='checkbox'>
+                      <label>
+                        <input type='checkbox' ".$strChecked." name='karyawan[]' value='".$row['IDKaryawan']."'> ".$row['NamaKaryawan']."
+                      </label>
+                    </div>";
+            }
+
+            $strOutput.= "</div><div class='col-sm-2'>";
+           return $strOutput;
+        }
+
+    }

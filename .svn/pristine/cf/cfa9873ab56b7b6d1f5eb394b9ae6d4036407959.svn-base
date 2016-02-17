@@ -1,0 +1,206 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+    class Trx_output_model extends CI_Model{
+
+        public function __construct() {
+            parent::__construct();
+        }
+
+        public function TambahOutput($dataOutput)
+        {
+
+          $this->IDUser  = $_SESSION['IDUser'];
+
+          $this->IDProyek  = $this->security->xss_clean($dataOutput['proyek']);
+          $this->IDDivisi  = $this->security->xss_clean($dataOutput['divisi']);
+          $this->IDPIC     = $this->security->xss_clean($dataOutput['pic']); 
+          $this->nama      = $this->security->xss_clean($dataOutput['nama']); 
+           
+          $this->userEntry  = $this->IDUser;
+          $this->dateEntry  = RealDateTime();
+
+          //check nama output
+          $this->selectQuery =  $this->db->query("select id_output from trx_output where id_proyek='".$this->IDProyek."' and id_divisi= '".$this->IDDivisi."' 
+                                                  and id_karyawan='".$this->IDPIC."' and nama_output='".$this->nama."' limit 1 ");
+
+          if ($this->selectQuery->num_rows () > 0)
+          {
+            $strMessage  = 'Nama output sudah tercatat di database, silahkan gunakan nama output yang lain';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("insert into trx_output (id_proyek, id_divisi, id_karyawan, nama_output, date_entry, user_entry, last_update, user_update) 
+                            values('".$this->IDProyek."','".$this->IDDivisi."','".$this->IDPIC."','".$this->nama."',
+                                    '".$this->dateEntry."','".$this->userEntry."','','0')");
+
+          $strMessage  = 'Tambah Output telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>window.loadGridData();alert('".$strMessage."');window.resetForm();</script>";
+        }
+
+        public function GetDaftarOutput()
+        {
+
+          //ambil data proyek
+          $this->selectQuery =  $this->db->query("select trxOutput.id_output as IDOutput, nama_client as NamaClient,
+                                                    trxOutput.nomor as NomorOutput,
+                                                    trxOutput.id_proyek as IDProyek, nama_proyek as NamaProyek,
+                                                    nama_output as NamaOutput, 
+                                                    trxOutput.id_divisi as IDDivisi, nama_divisi as NamaDivisi, 
+                                                    trxOutput.id_karyawan as IDPIC, nama_karyawan as NamaPIC 
+                                                    from trx_output trxOutput left join trx_proyek trxProyek 
+                                                    on trxOutput.id_proyek = trxProyek.id_proyek   
+                                                    left join mst_client mstClient 
+                                                    on trxProyek.id_client = mstClient.id_client
+                                                    left join mst_karyawan mstKaryawan 
+                                                    on mstKaryawan.id_karyawan = trxOutput.id_karyawan
+                                                    left join ref_divisi refDivisi 
+                                                    on refDivisi.id_divisi = trxOutput.id_divisi 
+                                                    order by NamaProyek, IDOutput asc");
+          
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+
+          $arrData = array();
+          
+          $prevIDProyek = '';
+          $prevClient = '';
+         
+          $i=0;
+          foreach ($this->selectQuery->result_array() as $row)
+          {
+
+            $pencarian = $row['NamaClient']. ' '.$row['NamaProyek'].' '.$row['NamaDivisi']. ' '.$row['NamaPIC']. ' '.$row['NamaOutput'];
+            $namaClient = $row['IDProyek'] <> $prevIDProyek ? $row['NamaClient'] : '';
+            $NamaProyek = $row['IDProyek'] <> $prevIDProyek ? $row['NamaProyek'] : '';
+
+            $i = ($row['IDProyek'] <> $prevIDProyek) ? 1 : $i;
+
+            $arrData[] = array('idx'   => $row['IDOutput'],
+                               'IDProyek'   => $row['IDProyek'],
+                               'NamaProyek' => $NamaProyek, 
+                               'NamaClient' => $namaClient,
+                               'IDDivisi'   => $row['IDDivisi'],
+                               'NamaDivisi' => $row['NamaDivisi'],
+                               'IDPIC'      => $row['IDPIC'],
+                               'NamaPIC'    => $row['NamaPIC'],
+                               'nomor'      => $i,
+                               'pencarian'  => $pencarian,
+                               'output'     => $row['NamaOutput'],
+                               'action' => $strDataAction);
+            $i++;
+            $prevClient = $row['NamaClient'];
+            $prevIDProyek = $row['IDProyek'];
+
+          }  
+          
+
+          return json_encode($arrData);
+        }
+
+        public function UbahOutput($arrData)
+        {
+
+          $this->IDProyek   = $this->security->xss_clean($arrData['proyek']);
+          $this->IDOutput   = $this->security->xss_clean($arrData['output']);
+          $this->IDDivisi   = $this->security->xss_clean($arrData['divisi']);
+          $this->IDPIC      = $this->security->xss_clean($arrData['pic']);
+          $this->nama       = $this->security->xss_clean($arrData['nama']);
+
+          $this->lastUpdate = RealDateTime();
+          $this->userUpdate = $_SESSION['IDUser'];
+          
+          //check nama yang sama
+          $this->selectQuery =  $this->db->query("select id_output from trx_output where id_proyek='".$this->IDProyek."' and id_divisi= '".$this->IDDivisi."' 
+                                                  and id_karyawan='".$this->IDPIC."' and nama_output='".$this->nama."' 
+                                                  and id_output <>'".$this->IDOutput."' limit 1");
+          
+          if ($this->selectQuery->num_rows () > 0)
+          {
+            $strMessage  = 'Nama output sudah tercatat di database, silahkan gunakan nama output yang lain';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+
+          $this->db->query("update trx_output set id_proyek ='".$this->IDProyek."',
+                            id_divisi='".$this->IDDivisi."',id_karyawan='".$this->IDPIC."', 
+                            nama_output = '".$this->nama."' ,
+                            last_update = '".$this->lastUpdate."', user_update = '".$this->userUpdate."' 
+                            where id_output = '".$this->IDOutput."' ");
+
+          $this->db->query("update trx_program_kerja set id_proyek='".$this->IDProyek."' 
+                            where id_output = '".$this->IDOutput."'");
+
+          $strMessage  = 'Ubah Output telah berhasil';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+            
+          echo $messageData."<script>loadGridData();alert('".$strMessage."');window.dialogFormUbahClose();</script>";    
+
+        }
+
+
+        public function HapusOutput($IDOutput)
+        {
+
+          $this->IDOutput    = $this->security->xss_clean($IDOutput);
+          $this->userEntry   = $_SESSION['IDUser'];
+          
+          //cek di tabeL2 tertentu yang berhubungan dengan proses ini
+          $this->arrData = array();
+          $this->arrData[] = array("tableName" => "trx_sub_output", "SQLWhere" => "id_output = '".$this->IDOutput."'");
+
+          if (!isCheckTransactionOK($this->arrData))
+          {
+            $strMessage  = 'Hapus output tidak berhasil, terdapat beberapa transaksi dengan referensi yang sama';
+            $messageData = ConstructMessageResponse($strMessage , 'danger');
+            echo $messageData;
+            exit;
+          }
+          
+          $this->db->query("delete from trx_output  where id_output = '".$this->IDOutput."' ");
+        
+
+          $strMessage  = 'Hapus output telah berhasil ';
+          $messageData = ConstructMessageResponse($strMessage , 'success');
+
+          echo $messageData."<script>loadGridData();</script>";
+          exit;    
+        }    
+
+
+      public function GetComboPICAjax($IDProyek)
+      {
+
+        $this->IDProyek  = $this->security->xss_clean($IDProyek);
+
+        $this->selectQuery = $this->db->query("select trxProyekMember.id_karyawan as IDKaryawan, kode_karyawan as KodeKaryawan,
+                                                nama_karyawan as NamaKaryawan
+                                                from trx_proyek_member trxProyekMember left join
+                                                mst_karyawan mstKaryawan
+                                                on trxProyekMember.id_karyawan = mstKaryawan.id_karyawan 
+                                                where trxProyekMember.id_proyek='".$this->IDProyek."'");
+      
+        $strComboAjax = '';
+
+        if ($this->selectQuery->num_rows() > 0)
+        {
+          $strComboAjax = "<div class=\"form-group\">
+                            <label for=\"pic\" class=\"col-sm-3 control-label\">PIC</label>
+                              <div class=\"col-sm-9\">
+                                    <select id=\"pic\" name=\"pic\" class=\"form-control\">
+                                      <option value=\"\" >:: Pilih PIC ::</option>";
+
+          foreach ($this->selectQuery->result_array() as $row) 
+          {
+            $strComboAjax.= "<option value='".$row['IDKaryawan']."'>".$row['KodeKaryawan']." - ". $row['NamaKaryawan'] ."</option>";
+          }
+
+          $strComboAjax .= "</select></div></div>";
+        }
+
+        return $strComboAjax;
+      }
+    }

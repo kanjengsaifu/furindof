@@ -1,0 +1,1117 @@
+<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+
+	class Admin extends MY_Controller {
+		
+ 	    public function __construct() 
+	    {
+			parent::__construct();
+		}
+	         
+		public function index()
+		{	
+			$this->checkCredentialAccess();
+
+			$this->checkIsAjaxRequest();
+
+	        $this->load->model('admin_model', 'ModelAdmin');
+	        $dataMenu = array('dataMenu' => $this->ModelAdmin->GetMenuAdmin());
+
+	        $menu 	  = $this->load->view('menu_admin_view', $dataMenu, true);
+	        $content  = $this->load->view('admin_view', '', true);
+
+	        $arrData = array('menu' 	=> $menu,
+	        			   	 'content'  => $content);
+
+	        echo json_encode($arrData);
+
+		}
+
+		public function Divisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_divisi_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarDivisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_divisi_model", "ModelMasterDivisi");
+            
+            echo $this->ModelMasterDivisi->GetDaftarDivisi(); 
+		}
+
+		public function TambahDivisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+    		$this->form_validation->set_rules('kodeDivisi', 'Kode Divisi', 'trim|is_unique[ref_divisi.kode_divisi]|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaDivisi', 'Nama Divisi', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeDivisi').form_error('namaDivisi');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->kodeDivisi 	= $this->input->post('kodeDivisi', true); 	
+				$this->namaDivisi 	= $this->input->post('namaDivisi', true);
+				$this->deskripsi 	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('kode' => $this->kodeDivisi,
+								 'nama'	=> $this->namaDivisi,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_divisi_model', 'ModelTambahDivisi');
+	            $messageData = $this->ModelTambahDivisi->TambahDivisi($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahDivisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDDivisi', 'ID Divisi', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('kodeDivisiUbah', 'Kode Divisi', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaDivisiUbah', 'Nama Divisi', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDDivisi').form_error('kodeDivisiUbah').form_error('namaDivisiUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDDivisi 	= $this->input->post('IDDivisi', true); 	
+				$this->kodeDivisi 	= $this->input->post('kodeDivisiUbah', true); 	
+				$this->namaDivisi 	= $this->input->post('namaDivisiUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('Idx'	=> $this->IDDivisi,
+								 'kode' => $this->kodeDivisi,
+								 'nama'	=> $this->namaDivisi,
+								 'deskripsi' => $this->deskripsi);
+	
+	            $messageData = $this->load->model('master_divisi_model', 'ModelUbahDivisi');
+	            $messageData = $this->ModelUbahDivisi->UbahDivisi($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusDivisi()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDDivisi = $this->input->post('IDDivisi', true);
+			
+            $messageData = $this->load->model('master_divisi_model', 'ModelHapusDivisi');
+            $messageData = $this->ModelHapusDivisi->HapusDivisi($this->IDDivisi);
+            echo $messageData;
+			
+		}
+
+
+		public function Bidang()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_bidang_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarBidang()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_bidang_model", "ModelMasterBidang");
+            
+            echo $this->ModelMasterBidang->GetDaftarBidang(); 
+		}
+
+		public function TambahBidang()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+    		$this->form_validation->set_rules('kodeBidang', 'Kode Bidang', 'trim|is_unique[ref_bidang.kode_bidang]|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaBidang', 'Nama Bidang', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeBidang').form_error('namaBidang');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->kodeBidang 	= $this->input->post('kodeBidang', true); 	
+				$this->namaBidang 	= $this->input->post('namaBidang', true);
+				$this->deskripsi 	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('kode' => $this->kodeBidang,
+								 'nama'	=> $this->namaBidang,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_Bidang_model', 'ModelTambahBidang');
+	            $messageData = $this->ModelTambahBidang->TambahBidang($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahBidang()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDBidang', 'ID Bidang', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('kodeBidangUbah', 'Kode Bidang', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaBidangUbah', 'Nama Bidang', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDBidang').form_error('kodeBidangUbah').form_error('namaBidangUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDBidang 	= $this->input->post('IDBidang', true); 	
+				$this->kodeBidang 	= $this->input->post('kodeBidangUbah', true); 	
+				$this->namaBidang 	= $this->input->post('namaBidangUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('Idx'	=> $this->IDBidang,
+								 'kode' => $this->kodeBidang,
+								 'nama'	=> $this->namaBidang,
+								 'deskripsi' => $this->deskripsi);
+	
+	            $messageData = $this->load->model('master_bidang_model', 'ModelUbahBidang');
+	            $messageData = $this->ModelUbahBidang->UbahBidang($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusBidang()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDBidang = $this->input->post('IDBidang', true);
+			
+            $messageData = $this->load->model('master_bidang_model', 'ModelHapusBidang');
+            $messageData = $this->ModelHapusBidang->HapusBidang($this->IDBidang);
+            echo $messageData;
+			
+		}
+
+		public function Prosedur()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_prosedur_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarProsedur()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_Prosedur_model", "ModelMasterProsedur");
+            
+            echo $this->ModelMasterProsedur->GetDaftarProsedur(); 
+		}
+
+		public function TambahProsedur()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+    		$this->form_validation->set_rules('kodeProsedur', 'Kode Prosedur', 'trim|is_unique[ref_prosedur.kode_Prosedur]|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurKonsultan', 'Nama Prosedur Konsultan', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurTraining', 'Nama Prosedur Training', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurSystem', 'Nama Prosedur System', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurMedia', 'Nama Prosedur Media', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeProsedur').form_error('namaProsedurKonsultan').
+								form_error('namaProsedurMedia').form_error('namaProsedurTraining').
+								form_error('namaProsedurSystem');
+
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->kodeProsedur = $this->input->post('kodeProsedur', true); 	
+				$this->namaKonsultan= $this->input->post('namaProsedurKonsultan', true);
+				$this->namaTraining = $this->input->post('namaProsedurTraining', true);
+				$this->namaSystem 	= $this->input->post('namaProsedurSystem', true);
+				$this->namaMedia 	= $this->input->post('namaProsedurMedia', true);
+				$this->deskripsi 	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('kode' 		=> $this->kodeProsedur,
+								 'namaKonsultan'=> $this->namaKonsultan,
+								 'namaTraining'	=> $this->namaTraining,
+								 'namaSystem'	=> $this->namaSystem,
+								 'namaMedia'	=> $this->namaMedia,
+								 'deskripsi' 	=> $this->deskripsi);
+
+	            $messageData = $this->load->model('master_prosedur_model', 'ModelTambahProsedur');
+	            $messageData = $this->ModelTambahProsedur->TambahProsedur($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahProsedur()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDProsedur', 'ID Prosedur', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('kodeProsedurUbah', 'Kode Prosedur', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurKonsultanUbah', 'Nama Prosedur Konsultan', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurTrainingUbah', 'Nama Prosedur Training', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurMediaUbah', 'Nama Prosedur Media', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('namaProsedurSystemUbah', 'Nama Prosedur System', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDProsedur').form_error('kodeProsedurUbah').
+								form_error('namaProsedurKonsultanUbah').form_error('namaProsedurTrainingUbah').
+								form_error('namaProsedurMediaUbah').form_error('namaProsedurSystemUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDProsedur 	= $this->input->post('IDProsedur', true); 	
+				$this->kodeProsedur = $this->input->post('kodeProsedurUbah', true); 	
+				$this->namaKonsultan= $this->input->post('namaProsedurKonsultanUbah', true);
+				$this->namaTraining = $this->input->post('namaProsedurTrainingUbah', true);
+				$this->namaMedia 	= $this->input->post('namaProsedurMediaUbah', true);
+				$this->namaSystem 	= $this->input->post('namaProsedurSystemUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('Idx'	=> $this->IDProsedur,
+								 'kode' => $this->kodeProsedur,
+								 'namaKonsultan'=> $this->namaKonsultan,
+								 'namaTraining'	=> $this->namaTraining,
+								 'namaMedia'	=> $this->namaMedia,
+								 'namaSystem'	=> $this->namaSystem,
+								 'deskripsi' => $this->deskripsi);
+	
+	            $messageData = $this->load->model('master_Prosedur_model', 'ModelUbahProsedur');
+	            $messageData = $this->ModelUbahProsedur->UbahProsedur($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusProsedur()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDProsedur = $this->input->post('IDProsedur', true);
+			
+            $messageData = $this->load->model('master_prosedur_model', 'ModelHapusProsedur');
+            $messageData = $this->ModelHapusProsedur->HapusProsedur($this->IDProsedur);
+            echo $messageData;
+			
+		}
+
+		public function Kunjungan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_kunjungan_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarKunjungan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_kunjungan_model", "ModelMasterKunjungan");
+            
+            echo $this->ModelMasterKunjungan->GetDaftarKunjungan(); 
+		}
+
+		public function TambahKunjungan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+    		$this->form_validation->set_rules('kodeKunjungan', 'Kode Kunjungan', 'trim|is_unique[ref_kunjungan.kode_Kunjungan]|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaKunjungan', 'Nama Kunjungan', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeKunjungan').form_error('namaKunjungan');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->kodeKunjungan 	= $this->input->post('kodeKunjungan', true); 	
+				$this->namaKunjungan 	= $this->input->post('namaKunjungan', true);
+				$this->deskripsi 	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('kode' => $this->kodeKunjungan,
+								 'nama'	=> $this->namaKunjungan,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_kunjungan_model', 'ModelTambahKunjungan');
+	            $messageData = $this->ModelTambahKunjungan->TambahKunjungan($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahKunjungan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDKunjungan', 'ID Kunjungan', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('kodeKunjunganUbah', 'Kode Kunjungan', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaKunjunganUbah', 'Nama Kunjungan', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDKunjungan').form_error('kodeKunjunganUbah').form_error('namaKunjunganUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDKunjungan 	= $this->input->post('IDKunjungan', true); 	
+				$this->kodeKunjungan 	= $this->input->post('kodeKunjunganUbah', true); 	
+				$this->namaKunjungan 	= $this->input->post('namaKunjunganUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('Idx'	=> $this->IDKunjungan,
+								 'kode' => $this->kodeKunjungan,
+								 'nama'	=> $this->namaKunjungan,
+								 'deskripsi' => $this->deskripsi);
+	
+	            $messageData = $this->load->model('master_kunjungan_model', 'ModelUbahKunjungan');
+	            $messageData = $this->ModelUbahKunjungan->UbahKunjungan($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusKunjungan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDKunjungan = $this->input->post('IDKunjungan', true);
+			
+            $messageData = $this->load->model('master_kunjungan_model', 'ModelHapusKunjungan');
+            $messageData = $this->ModelHapusKunjungan->HapusKunjungan($this->IDKunjungan);
+            echo $messageData;
+			
+		}
+
+		public function Indikator()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_indikator_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarIndikator()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_indikator_model", "ModelMasterIndikator");
+            
+            echo $this->ModelMasterIndikator->GetDaftarIndikator(); 
+		}
+
+		public function TambahIndikator()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+    		$this->form_validation->set_rules('kodeIndikator', 'Kode Indikator', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaIndikator', 'Nama Indikator', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('tipeIndikator', 'Tipe Indikator', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('tipeIndikator').form_error('kodeIndikator').form_error('namaIndikator');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->tipeIndikator 	= $this->input->post('tipeIndikator', true); 
+				$this->kodeIndikator 	= $this->input->post('kodeIndikator', true); 	
+				$this->namaIndikator 	= $this->input->post('namaIndikator', true);
+				$this->deskripsi 	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('tipeIndikator' => $this->tipeIndikator,
+								 'kode' => $this->kodeIndikator,
+								 'nama'	=> $this->namaIndikator,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_indikator_model', 'ModelTambahIndikator');
+	            $messageData = $this->ModelTambahIndikator->TambahIndikator($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahIndikator()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('IDIndikator', 'ID Indikator', 'trim|required|xss_clean');
+             $this->form_validation->set_rules('tipeIndikatorUbah', 'Tipe Indikator', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('kodeIndikatorUbah', 'Kode Indikator', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaIndikatorUbah', 'Nama Indikator', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDIndikator').form_error('tipeIndikatorUbah').
+								form_error('kodeIndikatorUbah').form_error('namaIndikatorUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDIndikator 		= $this->input->post('IDIndikator', true); 	
+				$this->tipeIndikator 	= $this->input->post('tipeIndikatorUbah', true); 	
+				$this->kodeIndikator 	= $this->input->post('kodeIndikatorUbah', true); 	
+				$this->namaIndikator 	= $this->input->post('namaIndikatorUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('Idx'	=> $this->IDIndikator,
+								 'tipeIndikator'	=> $this->tipeIndikator,
+								 'kode' => $this->kodeIndikator,
+								 'nama'	=> $this->namaIndikator,
+								 'deskripsi' => $this->deskripsi);
+	
+	            $messageData = $this->load->model('master_indikator_model', 'ModelUbahIndikator');
+	            $messageData = $this->ModelUbahIndikator->UbahIndikator($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusIndikator()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDIndikator = $this->input->post('IDIndikator', true);
+			
+            $messageData = $this->load->model('master_indikator_model', 'ModelHapusIndikator');
+            $messageData = $this->ModelHapusIndikator->HapusIndikator($this->IDIndikator);
+            echo $messageData;
+			
+		}
+
+		public function GetKodeTipeIndikator()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDTipeIndikator = $this->input->post('IDTipeIndikator', true);
+			
+            $messageData = $this->load->model('master_indikator_model', 'ModelTipeIndikator');
+            $messageData = $this->ModelTipeIndikator->GetKodeTipeIndikator($this->IDTipeIndikator);
+            echo $messageData;
+		}
+
+		public function Program()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_program_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarProgram()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_program_model", "ModelMasterProgram");
+            
+            echo $this->ModelMasterProgram->GetDaftarProgram(); 
+		}
+
+		public function TambahProgram()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            $this->form_validation->set_rules('divisi', 'Divisi', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('bidang', 'Bidang', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('kodeProgram', 'Kode Program', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaProgram', 'Nama Program', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('status', 'Status Program', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('divisi').form_error('bidang').form_error('status').
+								form_error('kodeProgram').form_error('namaProgram');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->divisi 		= $this->input->post('divisi', true); 
+				$this->bidang 		= $this->input->post('bidang', true); 	
+				$this->kodeProgram 	= $this->input->post('kodeProgram', true);
+				$this->namaProgram 	= $this->input->post('namaProgram', true);
+				$this->status 		= $this->input->post('status', true);
+				$this->deskripsi 	= $this->input->post('deskripsi', true);
+				
+				$arrData = array('divisi' => $this->divisi,
+								 'bidang' => $this->bidang,
+								 'kode' => $this->kodeProgram,
+								 'nama'	=> $this->namaProgram,
+								 'status'	=> $this->status,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_program_model', 'ModelTambahProgram');
+	            $messageData = $this->ModelTambahProgram->TambahProgram($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahProgram()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+          	$this->form_validation->set_rules('IDProgram', 'Program', 'trim|required|min_length[1]|xss_clean');
+          	$this->form_validation->set_rules('divisiUbah', 'Divisi', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('bidangUbah', 'Bidang', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('kodeProgramUbah', 'Kode Program', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaProgramUbah', 'Nama Program', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('statusUbah', 'Status Program', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('divisiUbah').form_error('bidangUbah').form_error('statusUbah').
+								form_error('kodeProgramUbah').form_error('namaProgramUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDProgram	= $this->input->post('IDProgram', true); 
+				$this->divisi 		= $this->input->post('divisiUbah', true); 
+				$this->bidang 		= $this->input->post('bidangUbah', true); 	
+				$this->kodeProgram 	= $this->input->post('kodeProgramUbah', true);
+				$this->namaProgram 	= $this->input->post('namaProgramUbah', true);
+				$this->status 		= $this->input->post('statusUbah', true);
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('IDProgram'	=> $this->IDProgram,
+								  'divisi' => $this->divisi,
+								 'bidang' => $this->bidang,
+								 'kode' => $this->kodeProgram,
+								 'nama'	=> $this->namaProgram,
+								 'status'	=> $this->status,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_program_model', 'ModelUbahProgram');
+	            $messageData = $this->ModelUbahProgram->UbahProgram($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusProgram()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDProgram = $this->input->post('IDProgram', true);
+			
+            $messageData = $this->load->model('master_Program_model', 'ModelHapusProgram');
+            $messageData = $this->ModelHapusProgram->HapusProgram($this->IDProgram);
+            echo $messageData;
+			
+		}
+
+		public function GetKodeBidangAJax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDBidang = $this->input->post('IDBidang', true);
+			
+            $messageData = $this->load->model('master_program_model', 'ModelBidang');
+            $messageData = $this->ModelBidang->GetKodeBidangAJax($this->IDBidang);
+            echo $messageData;
+		}
+
+		public function GetKodeDivisiAJax()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDDivisi = $this->input->post('IDDivisi', true);
+			
+            $messageData = $this->load->model('master_program_model', 'ModelDivisi');
+            $messageData = $this->ModelDivisi->GetKodeDivisiAJax($this->IDDivisi);
+            echo $messageData;
+		}
+
+		public function Client()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_client_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarClient()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_client_model", "ModelMasterClient");
+            
+            echo $this->ModelMasterClient->GetDaftarClient(); 
+		}
+
+		public function TambahClient()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            $this->form_validation->set_rules('bidang', 'Bidang', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('nomor', 'Nomor', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaClient', 'Nama Client', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsi', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('bidang').form_error('nomor').form_error('namaClient');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->bidang 	= $this->input->post('bidang', true); 
+				$this->nomor 	= $this->input->post('nomor', true); 	
+				$this->nama 	= $this->input->post('namaClient', true);
+				$this->alamat 	= $this->input->post('alamatClient', true);
+				$this->telp 	= $this->input->post('telpClient', true);
+				$this->email 	= $this->input->post('emailClient', true);
+				$this->deskripsi = $this->input->post('deskripsi', true);
+				
+				$arrData = array('bidang' 	=> $this->bidang,
+								 'nomor' 	=> $this->nomor,
+								 'nama' 	=> $this->nama,
+								 'alamat'	=> $this->alamat,
+								 'telp'		=> $this->telp,
+								 'email'	=> $this->email,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_client_model', 'ModelTambahClient');
+	            $messageData = $this->ModelTambahClient->TambahClient($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahClient()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+          	$this->form_validation->set_rules('IDClient', 'Client', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('bidangUbah', 'Bidang', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('nomorUbah', 'Nomor', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaClientUbah', 'Nama Client', 'trim|required|xss_clean');
+			$this->form_validation->set_rules('deskripsiUbah', 'Deskripsi', 'trim|xss_clean');
+	
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('bidangUbah').form_error('nomorUbah').form_error('namaClientUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+				$this->IDClient = $this->input->post('IDClient', true); 
+				$this->bidang 	= $this->input->post('bidangUbah', true); 
+				$this->nomor 	= $this->input->post('nomorUbah', true); 	
+				$this->nama 	= $this->input->post('namaClientUbah', true);
+				$this->alamat 	= $this->input->post('alamatClientUbah', true);
+				$this->telp 	= $this->input->post('telpClientUbah', true);
+				$this->email 	= $this->input->post('emailClientUbah', true);
+				$this->deskripsi = $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('IDClient' => $this->IDClient,
+								 'bidang' 	=> $this->bidang,
+								 'nomor' 	=> $this->nomor,
+								 'nama' 	=> $this->nama,
+								 'alamat'	=> $this->alamat,
+								 'telp'		=> $this->telp,
+								 'email'	=> $this->email,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_client_model', 'ModelUbahClient');
+	            $messageData = $this->ModelUbahClient->UbahClient($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusClient()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDClient = $this->input->post('IDClient', true);
+			
+            $messageData = $this->load->model('master_client_model', 'ModelHapusClient');
+            $messageData = $this->ModelHapusClient->HapusClient($this->IDClient);
+            echo $messageData;
+			
+		}
+
+		public function Karyawan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_karyawan_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarKaryawan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_karyawan_model", "ModelMasterKaryawan");
+            
+            echo $this->ModelMasterKaryawan->GetDaftarKaryawan(); 
+		}
+
+		public function TambahKaryawan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('kodeKaryawan', 'Kode Karyawan', 'trim|required|is_unique[mst_karyawan.kode_karyawan]|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaKaryawan', 'Nama Karyawan', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('divisi', 'Divisi', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('jabatan', 'Jabatan', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('group', 'Group Pengguna', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('emailKaryawan', 'Email', 'trim|required|valid_email|is_unique[mst_karyawan.email]|xss_clean');
+			$this->form_validation->set_rules('kataSandiKaryawan', 'Kata Sandi', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeKaryawan').form_error('namaKaryawan').form_error('divisi').form_error('group').
+								form_error('jabatan').form_error('emailKaryawan').form_error('kataSandiKaryawan');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+
+				$this->kode 	= $this->input->post('kodeKaryawan', true); 
+				$this->nama		= $this->input->post('namaKaryawan', true); 	
+				$this->divisi 	= $this->input->post('divisi', true);
+				$this->jabatan 	= $this->input->post('jabatan', true);
+				$this->group 	= $this->input->post('group', true);
+				$this->alamat 	= $this->input->post('alamatKaryawan', true);
+				$this->telp 	= $this->input->post('telpKaryawan', true);
+				$this->email 	= $this->input->post('emailKaryawan', true);
+				$this->kataSandi = $this->input->post('kataSandiKaryawan', true);
+				$this->deskripsi = $this->input->post('deskripsi', true);
+				
+				$arrData = array('kode' 	=> $this->kode,
+								 'nama' 	=> $this->nama,
+								 'divisi' 	=> $this->divisi,
+								 'jabatan' 	=> $this->jabatan,
+								 'group' 	=> $this->group,
+								 'alamat'	=> $this->alamat,
+								 'telp'		=> $this->telp,
+								 'email'	=> $this->email,
+								 'kataSandi'=> $this->kataSandi,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_karyawan_model', 'ModelTambahKaryawan');
+	            $messageData = $this->ModelTambahKaryawan->TambahKaryawan($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahKaryawan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+          	$this->form_validation->set_rules('IDKaryawan', 'Karyawan', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('kodeKaryawanUbah', 'Kode Karyawan', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaKaryawanUbah', 'Nama Karyawan', 'trim|required|xss_clean');
+    		$this->form_validation->set_rules('divisiUbah', 'Divisi', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('jabatanUbah', 'Jabatan', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('groupUbah', 'Group Pengguna', 'trim|required|min_length[1]|xss_clean');
+			$this->form_validation->set_rules('emailKaryawanUbah', 'Email', 'trim|required|valid_email|xss_clean');
+			$this->form_validation->set_rules('kataSandiKaryawanUbah', 'Kata Sandi', 'trim|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeKaryawanUbah').form_error('namaKaryawanUbah').form_error('divisiUbah').form_error('groupUbah').
+								form_error('jabatanUbah').form_error('emailKaryawanUbah').form_error('kataSandiKaryawanUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+
+				$this->IDKaryawan 	= $this->input->post('IDKaryawan', true);
+				$this->kode 	= $this->input->post('kodeKaryawanUbah', true); 
+				$this->nama		= $this->input->post('namaKaryawanUbah', true); 	
+				$this->divisi 	= $this->input->post('divisiUbah', true);
+				$this->jabatan 	= $this->input->post('jabatanUbah', true);
+				$this->group 	= $this->input->post('groupUbah', true);
+				$this->alamat 	= $this->input->post('alamatKaryawanUbah', true);
+				$this->telp 	= $this->input->post('telpKaryawanUbah', true);
+				$this->email 	= $this->input->post('emailKaryawanUbah', true);
+				$this->kataSandi = $this->input->post('kataSandiKaryawanUbah', true);
+				$this->deskripsi = $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('IDKaryawan'=> $this->IDKaryawan,
+								 'IDDivisi'  => $this->divisi,
+								 'IDJabatan' => $this->jabatan,
+								 'IDGroup' 	=> $this->group,
+								 'kode' 	=> $this->kode,
+								 'nama' 	=> $this->nama,
+								 'alamat'	=> $this->alamat,
+								 'telp'		=> $this->telp,
+								 'email'	=> $this->email,
+								 'kataSandi'=> $this->kataSandi,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_karyawan_model', 'ModelUbahKaryawan');
+	            $messageData = $this->ModelUbahKaryawan->UbahKaryawan($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusKaryawan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDKaryawan = $this->input->post('IDKaryawan', true);
+			
+            $messageData = $this->load->model('master_karyawan_model', 'ModelHapusKaryawan');
+            $messageData = $this->ModelHapusKaryawan->HapusKaryawan($this->IDKaryawan);
+            echo $messageData;
+			
+		}
+
+		public function Jabatan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+           	$content = $this->load->view('master_jabatan_view', true);                
+
+            echo  $content;
+		}
+
+		public function GetDaftarJabatan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_jabatan_model", "ModelMasterJabatan");
+            
+            echo $this->ModelMasterJabatan->GetDaftarJabatan(); 
+		}
+
+		public function TambahJabatan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+            $this->form_validation->set_rules('kodeJabatan', 'Kode Jabatan', 'trim|required|is_unique[ref_jabatan.kode_jabatan]|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaJabatan', 'Nama Jabatan', 'trim|required|xss_clean');
+    		
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('kodeJabatan').form_error('namaJabatan');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+
+				$this->kode 	= $this->input->post('kodeJabatan', true); 
+				$this->nama		= $this->input->post('namaJabatan', true); 	
+				$this->deskripsi = $this->input->post('deskripsi', true);
+				
+				$arrData = array('kode' 	=> $this->kode,
+								 'nama' 	=> $this->nama,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_jabatan_model', 'ModelTambahJabatan');
+	            $messageData = $this->ModelTambahJabatan->TambahJabatan($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function UbahJabatan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+          	$this->form_validation->set_rules('IDJabatan', 'Jabatan', 'trim|required|min_length[1]|xss_clean');
+            $this->form_validation->set_rules('kodeJabatanUbah', 'Kode Jabatan', 'trim|required|min_length[1]|xss_clean');
+    		$this->form_validation->set_rules('namaJabatanUbah', 'Nama Jabatan', 'trim|required|xss_clean');
+
+			if ( ! $this->form_validation->run() )
+			{				
+				$errorMessage = form_error('IDJabatan').form_error('kodeJabatanUbah').form_error('namaJabatanUbah');
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+				echo $messageData;
+			}
+			else
+			{
+
+				$this->IDJabatan 	= $this->input->post('IDJabatan', true);
+				$this->kode 	= $this->input->post('kodeJabatanUbah', true); 
+				$this->nama		= $this->input->post('namaJabatanUbah', true); 	
+				$this->deskripsi = $this->input->post('deskripsiUbah', true);
+				
+				$arrData = array('IDJabatan'=> $this->IDJabatan,
+								 'kode' 	=> $this->kode,
+								 'nama' 	=> $this->nama,
+								 'deskripsi' => $this->deskripsi);
+
+	            $messageData = $this->load->model('master_jabatan_model', 'ModelUbahJabatan');
+	            $messageData = $this->ModelUbahJabatan->UbahJabatan($arrData);
+	            echo $messageData;
+        	}
+		}
+
+		public function HapusJabatan()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+			$this->IDJabatan = $this->input->post('IDJabatan', true);
+			
+            $messageData = $this->load->model('master_jabatan_model', 'ModelHapusJabatan');
+            $messageData = $this->ModelHapusJabatan->HapusJabatan($this->IDJabatan);
+            echo $messageData;
+			
+		}
+
+		public function GetClientAutoCode()
+		{
+			$this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->bidang 	= $this->input->post('IDBidang', true);
+
+            $messageData = $this->load->model('master_client_model', 'ModelClient');
+            $messageData = $this->ModelClient->GetClientAutoCode($this->bidang);
+            echo $messageData;
+		}
+
+	}
+
+/* End of file admin.php */
