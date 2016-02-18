@@ -214,7 +214,7 @@
                 
                 $code = "'".$row->sales_order_ref_no."'";
                 $nama = "'".str_replace(" ","_",$row->sales_order_ref_no)."'";                
-                $strContent.='<tr class="record">   
+                $strContent.='<tr class="record" data-sr'.$row->sales_order_id.'="'.$row->sales_order_status.'">   
                 					  <td>'.$row->sales_order_id.'</td>                                                                         
                                       <td>'.$row->sales_order_ref_no.'</td>                                      
                                       <td>'.$row->sales_order_date.'</td>
