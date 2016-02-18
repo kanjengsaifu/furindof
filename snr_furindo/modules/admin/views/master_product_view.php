@@ -21,208 +21,154 @@
 	 <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h4 class="modal-title" id="FormTambahData">Tambah Data Product</h4>
+	        <h4 class="modal-title" id="FormTambahData">Tambah Data Bom</h4>
 	      </div>
+	      <form id="formBaru" class="form-horizontal" onsubmit="simpanreg(); return false;">
 	      <div class="modal-body">
 	      	<div class="pesanBaru"></div>
-	      		<form id="formBaru" class="form-horizontal" action="admin/TambahKaryawan" method="post">
+	      		
 	      			<div class="form-group">
-					    <label for="kodeKaryawan" class="col-sm-2 control-label">Kode</label>
-					    <div class="col-sm-10">
-				    	  	<input type="text" name="kodeKaryawan" id="kodeKaryawan" class="form-control"/> 	
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Item COde</label>
+					    <div class="col-sm-8">
+				    	  	<input type="text" oninput="lookUpUsername(this.value)" placeholder="Product Code" name="code" id="code" class="form-control" required/> 
+				    	  	<span id="error3" style="margin-top:4px; color: Red; display: none">* kode sudah ada</span>
+                			<span id="error2"  style="margin-top:4px; color: green; display: none">* kode tersedia</span>	
 					    </div>
 				    </div>
-				    
 				    <div class="form-group">
-					    <label for="namaKaryawan" class="col-sm-2 control-label">Nama</label>
-					    <div class="col-sm-10">
-					       	<input id="namaKaryawan" name="namaKaryawan" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Name</label>
+					    <div class="col-sm-8">
+				    	  	<input type="text" placeholder="Product Name" name="name" id="name" class="form-control" required/> 	
 					    </div>
-				    </div>				    
-				    
-
+				    </div>
 				    <div class="form-group">
-					    <label for="jabatan" class="col-sm-2 control-label">Jabatan </label>
-					    <div class="col-sm-10">
-					       	<select name="jabatan" class="form-control">
-					       		<option value=''>:: Pilih Jabatan ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_jabatan as IDJabatan, nama_jabatan as NamaJabatan   
-					       											from ref_jabatan ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDJabatan']."'>".$row['NamaJabatan']."</option>";
-					       			}
-					       		?>
-					       	</select>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Deafault Product COst</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Cost" name="cost" id="cost" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="alamatKaryawan" class="col-sm-2 control-label">Alamat</label>
-					    <div class="col-sm-10">
-					       	<input id="alamatKaryawan" name="alamatKaryawan" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product Price</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Price USD" name="price" id="price" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="telpKaryawan" class="col-sm-2 control-label">Telp</label>
-					    <div class="col-sm-10">
-					       	<input id="telpKaryawan" name="telpKaryawan" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product Cubic Meter</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product CBM" name="cbm" id="cbm" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="emailKaryawan" class="col-sm-2 control-label">Email</label>
-					    <div class="col-sm-10">
-					       	<input id="emailKaryawan" name="emailKaryawan" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Weight</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Weight" name="weight" id="weight" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="kataSandiKaryawan" class="col-sm-2 control-label">Kata Sandi</label>
-					    <div class="col-sm-10">
-					       	<input id="kataSandiKaryawan" name="kataSandiKaryawan" value="" type="password" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Bundle</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Bundle" name="bundle" id="bundle" class="form-control"/> 	
 					    </div>
 				    </div>
-
-				     <div class="form-group">
-					    <label for="group" class="col-sm-2 control-label">Group Pengguna </label>
-					    <div class="col-sm-10">
-					       	<select name="group" id="group" class="form-control">
-					       		<option value=''>:: Pilih Group ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_group as IDGroup, nama_group as NamaGroup     
-					       											from sys_group where id_group not in (select id_group from sys_group where id_group = 1) ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDGroup']."'>".$row['NamaGroup']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
-
 				    <div class="form-group">
-					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
-					    <div class="col-sm-10">
-					       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Biaya Labor</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Biaya Labor" name="labor" id="labor" class="form-control"/> 	
 					    </div>
 				    </div>
-		        </form>  
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Biaya Overhead</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Biaya Overhead" name="overhead" id="overhead" class="form-control"/> 	
+					    </div>
+				    </div>
+		          
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-primary" id="btnTambahKaryawan">Tambah</button>
+	        <button type="submit" id="tbh" class="btn btn-primary">Tambah</button>
 	        <button type="button" class="btn btn-warning" id="btnBatalTambahKaryawan">Batal</button>
 	      </div>
+	      </form>
 	    </div>
 	  </div>
 	</div>
 </div>
 
- <div class="modal hide" id="dialogFormUbah" tabindex="2" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+<div class="modal hide" id="dialogFormUbah" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
 	 <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h4 class="modal-title" id="FormUbahData">Ubah Data Karyawan</h4>
+	        <h4 class="modal-title" id="FormUbahData">Ubah Data Bom</h4>
 	      </div>
+	      <form id="formUbah" class="form-horizontal" onsubmit="updatereg(); return false;">
+	      <input type="hidden" name="idx" id="idx" class="form-control"/> 
 	      <div class="modal-body">
-	      	<div class="pesanUbah"></div>
-	      		<form id="formUbah" class="form-horizontal" action="admin/UbahKaryawan" method="post">
+	      	<div class="pesanBaru"></div>
+	      		
 	      			<div class="form-group">
-					    <label for="kodeKaryawanUbah" class="col-sm-2 control-label">Kode</label>
-					    <div class="col-sm-10">
-				    	  	<input type="text" name="kodeKaryawanUbah" id="kodeKaryawanUbah" class="form-control"/> 	
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Item COde</label>
+					    <div class="col-sm-8">
+				    	  	<input type="text" oninput="lookUpUsername(this.value)" placeholder="Product Code" name="code" id="codeubah" class="form-control" required/> 
+				    	  	<span id="error0" style="margin-top:4px; color: Red; display: none">* kode sudah ada</span>
+                			<span id="error1"  style="margin-top:4px; color: green; display: none">* kode tersedia</span>	
 					    </div>
 				    </div>
-				    
 				    <div class="form-group">
-					    <label for="namaKaryawanUbah" class="col-sm-2 control-label">Nama</label>
-					    <div class="col-sm-10">
-					       	<input id="namaKaryawanUbah" name="namaKaryawanUbah" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Name</label>
+					    <div class="col-sm-8">
+				    	  	<input type="text" placeholder="Product Name" name="name" id="nameubah" class="form-control" required/> 	
 					    </div>
 				    </div>
-				    
-				    
 				    <div class="form-group">
-					    <label for="jabatanUbah" class="col-sm-2 control-label">Jabatan </label>
-					    <div class="col-sm-10">
-					       	<select name="jabatanUbah" id="jabatanUbah" class="form-control">
-					       		<option value=''>:: Pilih Jabatan ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_jabatan as IDJabatan, nama_jabatan as NamaJabatan   
-					       											from ref_jabatan ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDJabatan']."'>".$row['NamaJabatan']."</option>";
-					       			}
-					       		?>
-					       	</select>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Deafault Product COst</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Cost" name="cost" id="costubah" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="alamatKaryawanUbah" class="col-sm-2 control-label">Alamat</label>
-					    <div class="col-sm-10">
-					       	<input id="alamatKaryawanUbah" name="alamatKaryawanUbah" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product Price</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Price USD" name="price" id="priceubah" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="telpKaryawan" class="col-sm-2 control-label">Telp</label>
-					    <div class="col-sm-10">
-					       	<input id="telpKaryawanUbah" name="telpKaryawanUbah" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product CBM</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" step="0.001" placeholder="Product CBM" name="cbm" id="cbmubah" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="emailKaryawan" class="col-sm-2 control-label">Email</label>
-					    <div class="col-sm-10">
-					       	<input id="emailKaryawanUbah" name="emailKaryawanUbah" value="" type="text" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Weight</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Weight" name="weight" id="weightUbah" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="kataSandiKaryawan" class="col-sm-2 control-label">Kata Sandi</label>
-					    <div class="col-sm-10">
-					       	<input id="kataSandiKaryawanUbah" placeholder="Abaikan jika tidak ada perubahan kata sandi" name="kataSandiKaryawanUbah" value="" type="password" class="form-control"/>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Bundle</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Bundle" name="bundle" id="bundleubah" class="form-control"/> 	
 					    </div>
 				    </div>
-				    
 				    <div class="form-group">
-					    <label for="groupUbah" class="col-sm-2 control-label">Group Pengguna </label>
-					    <div class="col-sm-10">
-					       	<select name="groupUbah" id="groupUbah" class="form-control">
-					       		<option value=''>:: Pilih Group ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_group as IDGroup, nama_group as NamaGroup     
-					       											from sys_group ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDGroup']."'>".$row['NamaGroup']."</option>";
-					       			}
-					       		?>
-					       	</select>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Biaya Labor</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Biaya Labor" name="labor" id="laborubah" class="form-control"/> 	
 					    </div>
 				    </div>
-
 				    <div class="form-group">
-					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
-					    <div class="col-sm-10">
-					       	<textarea id="deskripsiUbah" name="deskripsiUbah" class="form-control"></textarea>
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Biaya Overhead</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Biaya Overhead" name="overhead" id="overheadubah" class="form-control"/> 	
 					    </div>
 				    </div>
-				    <input type="hidden" name="IDKaryawan" id="IDKaryawan"/>
-		        </form>  
+		          
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-primary" id="btnUbahKaryawan">Ubah</button>
-	        <button type="button" class="btn btn-warning" id="btnBatalUbahKaryawan">Batal</button>
+	        <button type="submit" id="tbh1" class="btn btn-primary">Tambah</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalUbah">Batal</button>
 	      </div>
+	      </form>
 	    </div>
 	  </div>
 	</div>
@@ -244,7 +190,7 @@
     		$('#dialogFormBaru').attr('class', 'modal hide');
    		});        
 
-   		$('#btnBatalUbahKaryawan').click( function(e){
+   		$('#btnBatalUbah').click( function(e){
 	    	e.preventDefault(); 
 	    	$('#alertMessage').remove();
 	    	$('#dialogFormUbah').attr('class', 'modal hide');
@@ -292,12 +238,17 @@
          {		
              dataType: "json",
              dataFields: [
-                  { name: "idx", 	type: "string" },
-                  { name: "kode", 	type: "string" },
-                  { name: "foto", 	type: "string" },
-                  { name: "nama", 	type: "string" },
-                  { name: "harga", 	type: "string" },
-                  { name: "cost", 	type: "string" },                  
+                  { name: "idx", 		type: "string" },
+                  { name: "kode", 		type: "string" },
+                  { name: "foto", 		type: "string" },
+                  { name: "nama", 		type: "string" },
+                  { name: "harga", 		type: "string" },
+                  { name: "cost", 		type: "string" },
+                  { name: "cbm", 		type: "string" },
+                  { name: "weight", 	type: "string" },
+                  { name: "bundle", 	type: "string" },
+                  { name: "labor", 		type: "string" },
+                  { name: "overhead", 	type: "string" },                  
                   { name: "action", 	type: "string" }
              ],
             url : "admin/GetDaftarProduct",
@@ -342,29 +293,30 @@
 	{ 
 		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
 
-		var dataKaryawan = selection[0];
+		var data = selection[0];
 
-		var	idx      		= dataKaryawan.idx,			
-			IDJabatan 		= dataKaryawan.IDJabatan,
-			IDGroup 		= dataKaryawan.IDGroup,
-	 		kode 			= dataKaryawan.kode,	
-	 		nama    		= dataKaryawan.nama,
-	 		alamat 			= dataKaryawan.alamat,
-	 		telp 			= dataKaryawan.telp,
-	 		email 			= dataKaryawan.email,
-	 		deskripsi 		= dataKaryawan.deskripsi;
+		var	idx      		= data.idx,	
+	 		kode 			= data.kode,	
+	 		nama    		= data.nama,
+	 		harga 			= data.harga,
+	 		cost 			= data.cost,
+	 		cbm 			= data.cbm,
+	 		weight 			= data.weight,
+	 		bundle 			= data.bundle,
+	 		labor 			= data.labor,
+	 		overhead		= data.overhead;
 
 			$('#alertMessage').remove();
-
-		 	$('#kodeKaryawanUbah').val(kode);
-		 	$('#namaKaryawanUbah').val(nama);
-		 	$('#alamatKaryawanUbah').val(alamat);
-		 	$('#telpKaryawanUbah').val(telp);
-		 	$('#emailKaryawanUbah').val(email);
-	 		$('#deskripsiUbah').val(deskripsi);
-	 		$('#IDKaryawan').val(idx);	 		
-	 		$('#jabatanUbah').val(IDJabatan);
-			$('#groupUbah').val(IDGroup);
+			$('#idx').val(idx);
+		 	$('#codeubah').val(kode);
+		 	$('#nameubah').val(nama);
+		 	$('#priceubah').val(harga);
+		 	$('#costubah').val(cost);
+		 	$('#cbmubah').val(cbm);
+	 		$('#weightUbah').val(weight);
+	 		$('#bundleubah').val(bundle);	 		
+	 		$('#laborubah').val(labor);
+			$('#overheadubah').val(overhead);
 
 			$('#dialogFormUbah').attr('class', 'modal show');
 
@@ -389,8 +341,11 @@
 		var idx	 = dataKaryawan.idx;
 		var nama = dataKaryawan.nama;
 		
-	   	isDelete = confirm('Yakin Karyawan '+ nama +' akan dihapus ?');
-	  	if (isDelete) sendRequestForm('admin/HapusKaryawan', {IDKaryawan : idx}, 'box-body');
+	   	isDelete = confirm('Yakin Product '+ nama +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('admin/HapusProduct', {ID : idx}, 'box-body');
+	  	var htmlOut = ajaxFillGridJSON('admin/Product'); 
+	    //alert("Data berhasil disimpan.");
+	   	$('.content-wrapper').html(htmlOut);
 	}
 
 
@@ -409,6 +364,64 @@
 		kodeTipeKaryawan = ajaxFillGridJSON('admin/GetKodeDivisiAJax', {IDDivisi : IDDivisi}); 
 		$(objReference).html(kodeTipeKaryawan);
 	}
+
+	function simpanreg()
+	{
+		var target = "<?php echo site_url("admin/saveproduct")?>";
+			data = $("#formBaru").serialize();
+		$.post(target, data, function(e){
+			//$(".content-wrapper").html(e);
+			//console.log(e);
+			//return false;
+			//tinymce.triggerSave();
+			
+			//alert("Kode barang sudah digunakan , silahkan ganti yang lain !!!");
+			
+				var htmlOut = ajaxFillGridJSON('admin/Product'); 
+	    		alert("Data berhasil disimpan.");
+	   			$('.content-wrapper').html(htmlOut);
+				// loadhtml = "<?php echo site_url("admin/Bom")?>";
+				// alert("Data berhasil disimpan.");
+				// $(".content-wrapper").load(loadhtml);		
+	
+		});
+	}
+
+	function updatereg()
+	{
+		var target = "<?php echo site_url("admin/updateproduct")?>";
+			data = $("#formUbah").serialize();
+		$.post(target, data, function(e){
+			//$(".content-wrapper").html(e);
+			//console.log(e);
+			//return false;		
+			
+				var htmlOut = ajaxFillGridJSON('admin/Product'); 
+	    		alert("Data berhasil disimpan.");
+	   			$('.content-wrapper').html(htmlOut);
+					
+	
+		});
+	}
+
+	function lookUpUsername(name){
+    $.post( 
+        '<?php echo base_url();?>admin/ajax_lookUpUsername',
+         { code: name },
+         function(response) {  
+            if (response == 1) {
+                //alert('username ok');
+                  document.getElementById("error2").style.display = "inline";
+                  document.getElementById("error3").style.display = "none";
+                $('#tbh').prop('disabled', false);
+            } else {
+                document.getElementById("error2").style.display = "none";
+                document.getElementById("error3").style.display = "inline";
+                $('#tbh').prop('disabled', true);
+            }
+         }  
+    );
+}
             		
 </script>
 

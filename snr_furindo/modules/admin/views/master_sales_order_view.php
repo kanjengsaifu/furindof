@@ -23,9 +23,9 @@
 		                    <th style="text-align:center; width:10%"> Ref No</th>
 		                    <th style="text-align:center; width:10%"> Tanggal</th>                    
 		                    <th style="text-align:center; width:10%"> Customer </th>
-		                    <th style="text-align:center; width:45%"> Alamat </th>
+		                    <th style="text-align:center; width:40%"> Alamat </th>
 		                    <th style="text-align:center; width:10%"> Categories </th>
-		                    <th style="text-align:center; width:8%"> Action </th>
+		                    <th style="text-align:center; width:15%"> Action </th>
 		                </tr>
 		            </thead>
 		            <tbody id="ajaxTreeGrid">                   
@@ -59,7 +59,14 @@
 	    var loadhtml = "<?php echo site_url("admin/ImportSales")?>"; 
 	    
 	    $('.content-wrapper').load(loadhtml);
-	  }   
+	  } 
+	function dialogFormEditShow(idx, FR)
+	{
+		//var IDBidang = $(objSource).val();
+		kodeTipeKaryawan = ajaxFillGridJSON('admin/DetailSO', {IDBidang : idx}); 
+		$('.content-wrapper').html(kodeTipeKaryawan);
+
+	}  
             		
 </script>
 

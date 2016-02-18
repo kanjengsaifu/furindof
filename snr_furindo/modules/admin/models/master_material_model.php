@@ -129,7 +129,7 @@
   
         public function GetDaftarMaterial()
         {
-          $this->selectQuery = $this->db->query("SELECT * from tbl_material inner join tbl_provider on tbl_material.material_provider_id =tbl_provider.provider_id
+          $this->selectQuery = $this->db->query("SELECT * from tbl_material LEFT join tbl_provider on tbl_material.material_provider_id =tbl_provider.provider_id
             order by material_id desc");
        
           $arrSelectQuery = array();
@@ -142,8 +142,13 @@
                                       'kode'   => $row['material_code'],                                      
                                       'nama'   => $row['material_name'],
                                       'cbm'    => $row['material_cbm'],
-                                      'harga'  => $row['material_price_usd'],                                      
-                                      'provider'   => $row['provider_name'],                                      
+                                      'harga'  => $row['material_price'], 
+                                      'usd'    => $row['material_price_usd'],                                      
+                                      'provider'   => $row['material_provider_id'],
+                                      'unit'   => $row['material_unit_id'],
+                                      'stock'   => $row['material_minimal_stock'],
+                                      'categories' => $row['material_material_categories_id'], 
+                                      'group'   => $row['material_material_categories_group_id'],                                      
                                       'action' => $strDataAction);
           }
 

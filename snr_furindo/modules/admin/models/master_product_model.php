@@ -142,7 +142,12 @@
                                       'nama'   => $row['product_name'],
                                       'foto'   => $row['product_photo'],
                                       'harga'  => $row['product_price_usd'],                                      
-                                      'cost'   => $row['product_cost'],                                      
+                                      'cost'   => $row['product_cost'], 
+                                      'cbm'    => $row['product_cbm'], 
+                                      'weight' => $row['product_weight'],
+                                      'bundle' => $row['product_bundle'], 
+                                      'labor'  => $row['product_labor'], 
+                                      'overhead'=> $row['product_overhead'],                                       
                                       'action' => $strDataAction);
           }
 

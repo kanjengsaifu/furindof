@@ -23,210 +23,215 @@
 	      <div class="modal-header">
 	        <h4 class="modal-title" id="FormTambahData">Tambah Data Material</h4>
 	      </div>
+	      <form id="formBaru" class="form-horizontal" onsubmit="simpanreg(); return false;">
 	      <div class="modal-body">
-	      	<div class="pesanBaru"></div>
-	      		<form id="formBaru" class="form-horizontal" action="admin/TambahKaryawan" method="post">
-	      			<div class="form-group">
-					    <label for="kodeKaryawan" class="col-sm-2 control-label">Kode</label>
-					    <div class="col-sm-10">
-				    	  	<input type="text" name="kodeKaryawan" id="kodeKaryawan" class="form-control"/> 	
-					    </div>
-				    </div>
-				    
-				    <div class="form-group">
-					    <label for="namaKaryawan" class="col-sm-2 control-label">Nama</label>
-					    <div class="col-sm-10">
-					       	<input id="namaKaryawan" name="namaKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>				    
-				    
-
-				    <div class="form-group">
-					    <label for="jabatan" class="col-sm-2 control-label">Jabatan </label>
-					    <div class="col-sm-10">
-					       	<select name="jabatan" class="form-control">
-					       		<option value=''>:: Pilih Jabatan ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_jabatan as IDJabatan, nama_jabatan as NamaJabatan   
-					       											from ref_jabatan ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDJabatan']."'>".$row['NamaJabatan']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="alamatKaryawan" class="col-sm-2 control-label">Alamat</label>
-					    <div class="col-sm-10">
-					       	<input id="alamatKaryawan" name="alamatKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="telpKaryawan" class="col-sm-2 control-label">Telp</label>
-					    <div class="col-sm-10">
-					       	<input id="telpKaryawan" name="telpKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="emailKaryawan" class="col-sm-2 control-label">Email</label>
-					    <div class="col-sm-10">
-					       	<input id="emailKaryawan" name="emailKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="kataSandiKaryawan" class="col-sm-2 control-label">Kata Sandi</label>
-					    <div class="col-sm-10">
-					       	<input id="kataSandiKaryawan" name="kataSandiKaryawan" value="" type="password" class="form-control"/>
-					    </div>
-				    </div>
-
-				     <div class="form-group">
-					    <label for="group" class="col-sm-2 control-label">Group Pengguna </label>
-					    <div class="col-sm-10">
-					       	<select name="group" id="group" class="form-control">
-					       		<option value=''>:: Pilih Group ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_group as IDGroup, nama_group as NamaGroup     
-					       											from sys_group where id_group not in (select id_group from sys_group where id_group = 1) ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDGroup']."'>".$row['NamaGroup']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
-					    <div class="col-sm-10">
-					       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
-					    </div>
-				    </div>
-		        </form>  
+	      	<div class="pesanBaru"></div>	      		
+  			<div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Material Item COde</label>
+			    <div class="col-sm-8">
+		    	  	<input type="text" oninput="lookUpUsername(this.value)" placeholder="Material Code" name="code" id="code" class="form-control" required/> 
+		    	  	<span id="error3" style="margin-top:4px; color: Red; display: none">* kode sudah ada</span>
+        			<span id="error2"  style="margin-top:4px; color: green; display: none">* kode tersedia</span>	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Material Name</label>
+			    <div class="col-sm-8">
+		    	  	<input type="text" placeholder="Material Name" name="name" id="" class="form-control" required/> 	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="jabatan" class="col-sm-4 control-label">Categories </label>
+			    <div class="col-sm-8">
+			       	<select name="categories" class="form-control">
+			       		<option value=''>:: Pilih MATERIAL CATEGORIES ::</option>
+			       		<?php  
+			       			$CI = get_instance();
+			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories ");
+			       			$arrTipeKaryawan = $selectQuery->result_array();
+			       			foreach ($arrTipeKaryawan as $row) {
+			       				echo "<option value='".$row['material_categories_id']."'>".$row['material_categories_name']."</option>";
+			       			}
+			       		?>
+			       	</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="jabatan" class="col-sm-4 control-label">Categories Group </label>
+			    <div class="col-sm-8">
+			       	<select name="Group" class="form-control">
+			       		<option value=''>:: Pilih MATERIAL CATEGORIES GROUP::</option>
+			       		<?php  
+			       			$CI = get_instance();
+			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories_group ");
+			       			$arrTipeKaryawan = $selectQuery->result_array();
+			       			foreach ($arrTipeKaryawan as $row) {
+			       				echo "<option value='".$row['material_categories_group_id']."'>".$row['material_categories_group_name']."</option>";
+			       			}
+			       		?>
+			       	</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="jabatan" class="col-sm-4 control-label">Satuan </label>
+			    <div class="col-sm-8">
+			       	<select name="Satuan" class="form-control">
+			       		<option value=''>:: Pilih Satuan::</option>
+			       		<?php  
+			       			$CI = get_instance();
+			       			$selectQuery =  $CI->db->query("SELECT * from tbl_unit ");
+			       			$arrTipeKaryawan = $selectQuery->result_array();
+			       			foreach ($arrTipeKaryawan as $row) {
+			       				echo "<option value='".$row['unit_id']."'>".$row['unit_name']."</option>";
+			       			}
+			       		?>
+			       	</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Deafault Material Usd</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Material Price USD" name="usd" id="" class="form-control"/> 	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Material Price</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Price USD" name="price" id="" class="form-control"/> 	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Material CBM</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Material CBM" name="cbm" id="" class="form-control"/> 	
+			    </div>
+		    </div>				    
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Minimal Stock</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Minimal Stock" name="stock"  class="form-control"/> 	
+			    </div>
+		    </div>		          
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-primary" id="btnTambahKaryawan">Tambah</button>
+	        <button type="submit" id="tbh" class="btn btn-primary">Tambah</button>
 	        <button type="button" class="btn btn-warning" id="btnBatalTambahKaryawan">Batal</button>
 	      </div>
+	      </form>
 	    </div>
 	  </div>
 	</div>
 </div>
 
- <div class="modal hide" id="dialogFormUbah" tabindex="2" role="dialog" aria-labelledby="FormUbahData" aria-hidden="true">
+ 
+<div class="modal hide" id="dialogFormUbah" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
 	 <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h4 class="modal-title" id="FormUbahData">Ubah Data Karyawan</h4>
+	        <h4 class="modal-title" id="FormUbahData">Ubah Data Material</h4>
 	      </div>
+	      <form id="formUbah" class="form-horizontal" onsubmit="updatereg(); return false;">
+	      <input type="hidden" name="idx" id="idx" class="form-control"/> 
 	      <div class="modal-body">
-	      	<div class="pesanUbah"></div>
-	      		<form id="formUbah" class="form-horizontal" action="admin/UbahKaryawan" method="post">
-	      			<div class="form-group">
-					    <label for="kodeKaryawanUbah" class="col-sm-2 control-label">Kode</label>
-					    <div class="col-sm-10">
-				    	  	<input type="text" name="kodeKaryawanUbah" id="kodeKaryawanUbah" class="form-control"/> 	
-					    </div>
-				    </div>
-				    
-				    <div class="form-group">
-					    <label for="namaKaryawanUbah" class="col-sm-2 control-label">Nama</label>
-					    <div class="col-sm-10">
-					       	<input id="namaKaryawanUbah" name="namaKaryawanUbah" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-				    
-				    
-				    <div class="form-group">
-					    <label for="jabatanUbah" class="col-sm-2 control-label">Jabatan </label>
-					    <div class="col-sm-10">
-					       	<select name="jabatanUbah" id="jabatanUbah" class="form-control">
-					       		<option value=''>:: Pilih Jabatan ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_jabatan as IDJabatan, nama_jabatan as NamaJabatan   
-					       											from ref_jabatan ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDJabatan']."'>".$row['NamaJabatan']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="alamatKaryawanUbah" class="col-sm-2 control-label">Alamat</label>
-					    <div class="col-sm-10">
-					       	<input id="alamatKaryawanUbah" name="alamatKaryawanUbah" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="telpKaryawan" class="col-sm-2 control-label">Telp</label>
-					    <div class="col-sm-10">
-					       	<input id="telpKaryawanUbah" name="telpKaryawanUbah" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="emailKaryawan" class="col-sm-2 control-label">Email</label>
-					    <div class="col-sm-10">
-					       	<input id="emailKaryawanUbah" name="emailKaryawanUbah" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="kataSandiKaryawan" class="col-sm-2 control-label">Kata Sandi</label>
-					    <div class="col-sm-10">
-					       	<input id="kataSandiKaryawanUbah" placeholder="Abaikan jika tidak ada perubahan kata sandi" name="kataSandiKaryawanUbah" value="" type="password" class="form-control"/>
-					    </div>
-				    </div>
-				    
-				    <div class="form-group">
-					    <label for="groupUbah" class="col-sm-2 control-label">Group Pengguna </label>
-					    <div class="col-sm-10">
-					       	<select name="groupUbah" id="groupUbah" class="form-control">
-					       		<option value=''>:: Pilih Group ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_group as IDGroup, nama_group as NamaGroup     
-					       											from sys_group ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDGroup']."'>".$row['NamaGroup']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
-					    <div class="col-sm-10">
-					       	<textarea id="deskripsiUbah" name="deskripsiUbah" class="form-control"></textarea>
-					    </div>
-				    </div>
-				    <input type="hidden" name="IDKaryawan" id="IDKaryawan"/>
-		        </form>  
+	      	<div class="pesanBaru"></div>	      		
+  			<div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Material Item COde</label>
+			    <div class="col-sm-8">
+		    	  	<input type="text"  oninput="lookUpUsername2(this.value)" placeholder="Material Code" name="code" id="kode" class="form-control" required/> 
+		    	  	<span id="erd2" style="margin-top:4px; color: Red; display: none">* kode sudah ada</span>
+        			<span id="erd3"  style="margin-top:4px; color: green; display: none">* kode tersedia</span>	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Material Name</label>
+			    <div class="col-sm-8">
+		    	  	<input type="text" placeholder="Material Name" name="name" id="name" class="form-control" required/> 	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="jabatan" class="col-sm-4 control-label">Categories </label>
+			    <div class="col-sm-8">
+			       	<select name="categories" class="form-control">
+			       		<option value=''>:: Pilih MATERIAL CATEGORIES ::</option>
+			       		<?php  
+			       			$CI = get_instance();
+			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories ");
+			       			$arrTipeKaryawan = $selectQuery->result_array();
+			       			foreach ($arrTipeKaryawan as $row) {
+			       				echo "<option id='categories-".$row['material_categories_id']."' value='".$row['material_categories_id']."'>".$row['material_categories_name']."</option>";
+			       			}
+			       		?>
+			       	</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="jabatan" class="col-sm-4 control-label">Categories Group </label>
+			    <div class="col-sm-8">
+			       	<select name="Group" class="form-control">
+			       		<option value=''>:: Pilih MATERIAL CATEGORIES GROUP::</option>
+			       		<?php  
+			       			$CI = get_instance();
+			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories_group ");
+			       			$arrTipeKaryawan = $selectQuery->result_array();
+			       			$i=1;
+			       			foreach ($arrTipeKaryawan as $row) {
+			       				echo "<option id='gr-".$row['material_categories_group_id']."' value='".$row['material_categories_group_id']."'>".$row['material_categories_group_name']."</option>";
+			       			$i++; } 
+			       		?>
+			       	</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="jabatan" class="col-sm-4 control-label">Satuan </label>
+			    <div class="col-sm-8">
+			       	<select name="Satuan" class="form-control">
+			       		<option value=''>:: Pilih Satuan::</option>
+			       		<?php  
+			       			$CI = get_instance();
+			       			$selectQuery =  $CI->db->query("SELECT * from tbl_unit ");
+			       			$arrTipeKaryawan = $selectQuery->result_array();
+			       			foreach ($arrTipeKaryawan as $row) {
+			       				echo "<option id='unit-".$row['unit_id']."' value='".$row['unit_id']."'>".$row['unit_name']."</option>";
+			       			}
+			       		?>
+			       	</select>
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Deafault Material Usd</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Material Price USD" name="usd" id="usd" class="form-control"/> 	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Material Price</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Price USD" name="price" id="price" class="form-control"/> 	
+			    </div>
+		    </div>
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Material CBM</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" step="0.001" placeholder="Material CBM" name="cbm" id="cbm" class="form-control"/> 	
+			    </div>
+		    </div>				    
+		    <div class="form-group">
+			    <label for="kodeKaryawan" class="col-sm-4 control-label">Minimal Stock</label>
+			    <div class="col-sm-8">
+		    	  	<input type="number" placeholder="Minimal Stock" name="stock" id="stock" class="form-control"/> 	
+			    </div>
+		    </div>		          
 	      </div>
 	      <div class="modal-footer">
-	        <button type="button" class="btn btn-primary" id="btnUbahKaryawan">Ubah</button>
+	        <button type="submit" id="tbh" class="btn btn-primary">Tambah</button>
 	        <button type="button" class="btn btn-warning" id="btnBatalUbahKaryawan">Batal</button>
 	      </div>
+	      </form>
 	    </div>
 	  </div>
 	</div>
 </div>
+ 
 	
 <script>
 	$(document).ready(function () {
@@ -297,7 +302,12 @@
                   { name: "cbm", 	type: "string" },
                   { name: "nama", 	type: "string" },
                   { name: "harga", 	type: "string" },
-                  { name: "provider", 	type: "string" },                  
+                  { name: "usd", 	type: "string" },
+                  { name: "provider", 	type: "string" },
+                  { name: "unit", 	type: "string" },
+                  { name: "stock", 	type: "string" },
+                  { name: "group", 	type: "string" }, 
+                  { name: "categories",	type: "string" },                                   
                   { name: "action", 	type: "string" }
              ],
             url : "admin/GetDaftarMaterial",
@@ -342,29 +352,32 @@
 	{ 
 		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
 
-		var dataKaryawan = selection[0];
+		var data = selection[0];
 
-		var	idx      		= dataKaryawan.idx,			
-			IDJabatan 		= dataKaryawan.IDJabatan,
-			IDGroup 		= dataKaryawan.IDGroup,
-	 		kode 			= dataKaryawan.kode,	
-	 		nama    		= dataKaryawan.nama,
-	 		alamat 			= dataKaryawan.alamat,
-	 		telp 			= dataKaryawan.telp,
-	 		email 			= dataKaryawan.email,
-	 		deskripsi 		= dataKaryawan.deskripsi;
+		var	idx      	= data.idx,			
+			kode 		= data.kode,
+			nama 		= data.nama,
+	 		cbm 		= data.cbm,	
+	 		harga    	= data.harga,
+	 		usd 		= data.usd,
+	 		provider 	= data.provider,
+	 		unit 		= data.unit,
+	 		group 		= data.group,
+	 		categories 	= data.categories,
+	 		stock 		= data.stock;
 
 			$('#alertMessage').remove();
-
-		 	$('#kodeKaryawanUbah').val(kode);
-		 	$('#namaKaryawanUbah').val(nama);
-		 	$('#alamatKaryawanUbah').val(alamat);
-		 	$('#telpKaryawanUbah').val(telp);
-		 	$('#emailKaryawanUbah').val(email);
-	 		$('#deskripsiUbah').val(deskripsi);
-	 		$('#IDKaryawan').val(idx);	 		
-	 		$('#jabatanUbah').val(IDJabatan);
-			$('#groupUbah').val(IDGroup);
+			$('#idx').val(idx);
+		 	$('#kode').val(kode);
+		 	$('#name').val(nama);
+		 	$('#cbm').val(cbm);
+		 	$('#price').val(harga);
+		 	$('#usd').val(usd);
+	 		$('#provider').val(provider);
+	 		$('#unit-'+unit).attr('selected','selected');	 		
+	 		$('#gr-'+group).attr('selected','selected');
+	 		$('#categories-'+categories).attr('selected','selected');
+			$('#stock').val(stock);
 
 			$('#dialogFormUbah').attr('class', 'modal show');
 
@@ -389,8 +402,10 @@
 		var idx	 = dataKaryawan.idx;
 		var nama = dataKaryawan.nama;
 		
-	   	isDelete = confirm('Yakin Karyawan '+ nama +' akan dihapus ?');
-	  	if (isDelete) sendRequestForm('admin/HapusKaryawan', {IDKaryawan : idx}, 'box-body');
+	   	isDelete = confirm('Yakin Material '+ nama +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('admin/HapusMaterial', {ID : idx}, 'box-body');
+	  	var htmlOut = ajaxFillGridJSON('admin/Material'); 	    
+	   	$('.content-wrapper').html(htmlOut);
 	}
 
 
@@ -408,6 +423,87 @@
 		var IDDivisi = $(objSource).val();
 		kodeTipeKaryawan = ajaxFillGridJSON('admin/GetKodeDivisiAJax', {IDDivisi : IDDivisi}); 
 		$(objReference).html(kodeTipeKaryawan);
+	}
+
+	function lookUpUsername(name)
+	{
+		var idx = 0;
+	    $.post( 
+	        '<?php echo base_url();?>admin/ajax_lookUpMaterial',
+	         { code: name },
+	         function(response) {  
+	            if (response == 1) {
+	                //alert('username ok');
+	                  document.getElementById("error2").style.display = "inline";
+	                  document.getElementById("error3").style.display = "none";
+	                $('#tbh').prop('disabled', false);
+	            } else {
+	                document.getElementById("error2").style.display = "none";
+	                document.getElementById("error3").style.display = "inline";
+	                $('#tbh').prop('disabled', true);
+	            }
+	         }  
+	    );
+	}
+
+	function lookUpUsername(name)
+	{
+		var idx = $('#idx').val();
+	    $.post( 
+	        '<?php echo base_url();?>admin/ajax_lookUpMaterial',
+	         { kode: name, Idx : idx },
+	         function(response) {  
+	            if (response == 1) {
+	                //alert('username ok');
+	                  document.getElementById("error2").style.display = "inline";
+	                  document.getElementById("error3").style.display = "none";
+	                $('#tbh').prop('disabled', false);
+	            } else {
+	                document.getElementById("error2").style.display = "none";
+	                document.getElementById("error3").style.display = "inline";
+	                $('#tbh').prop('disabled', true);
+	            }
+	         }  
+	    );
+	}
+
+	function simpanreg()
+	{
+		var target = "<?php echo site_url("admin/savematerial")?>";
+			data = $("#formBaru").serialize();
+		$.post(target, data, function(e){
+			//$(".content-wrapper").html(e);
+			//console.log(e);
+			//return false;
+			//tinymce.triggerSave();
+			
+			//alert("Kode barang sudah digunakan , silahkan ganti yang lain !!!");
+			
+				var htmlOut = ajaxFillGridJSON('admin/Material'); 
+	    		alert("Data berhasil disimpan.");
+	   			$('.content-wrapper').html(htmlOut);
+				// loadhtml = "<?php echo site_url("admin/Bom")?>";
+				// alert("Data berhasil disimpan.");
+				// $(".content-wrapper").load(loadhtml);		
+	
+		});
+	}
+
+	function updatereg()
+	{
+		var target = "<?php echo site_url("admin/updatematerial")?>";
+			data = $("#formUbah").serialize();
+		$.post(target, data, function(e){
+			//$(".content-wrapper").html(e);
+			//console.log(e);
+			//return false;		
+			
+				var htmlOut = ajaxFillGridJSON('admin/Material'); 
+	    		alert("Data berhasil disimpan.");
+	   			$('.content-wrapper').html(htmlOut);
+					
+	
+		});
 	}
             		
 </script>

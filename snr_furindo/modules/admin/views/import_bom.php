@@ -59,6 +59,9 @@ require_once APPPATH.'libraries/PHPExcel/Classes/PHPExcel/IOFactory.php';
 					$no = 1;		
 					foreach($sheet as $row):
 						//foreach($row as $key => $val)
+					if($row['B'] == ''){
+
+					}else{
 				?>
 				<div class="form-horizontal">
 					<div class="row">
@@ -75,13 +78,14 @@ require_once APPPATH.'libraries/PHPExcel/Classes/PHPExcel/IOFactory.php';
 						  </div>
 					</div>
 				</div>
-				<?php	 
+				<?php
+					}	 
 					$no++;
 					endforeach;		
 				?>
 				<hr>
 				<?php 	
-				 	$file_path ='assets/export/liquid.xls';          
+				 	$file_path ='assets/export/bom.xls';          
 					$objPHPExcel = PHPExcel_IOFactory::load($file_path);		
 					$sheet = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 					$no = 1;		
@@ -94,10 +98,10 @@ require_once APPPATH.'libraries/PHPExcel/Classes/PHPExcel/IOFactory.php';
 							  <div class="form-group">
 								  <label for="kasbank" class="control-label col-sm-3">Kode Liquid :</label>
 								  <div class="col-sm-4">          
-									<input type="text" readonly="true" value="<?php echo $row['B']; ?>" class="form-control" name="noliquid[]"/>
+									<input type="text" readonly="true" value="<?php echo $row['D']; ?>" class="form-control" name="noliquid[]"/>
 								  </div>
 								  <div class="col-sm-4">          
-									<input type="text" readonly="true" value="<?php echo $row['C']; ?>" class="form-control" name="qtyliquid[]"/>
+									<input type="text" readonly="true" value="<?php echo $row['E']; ?>" class="form-control" name="qtyliquid[]"/>
 								  </div>
 							  </div>
 						  </div>
