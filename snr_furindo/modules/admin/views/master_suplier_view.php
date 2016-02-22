@@ -292,6 +292,25 @@
 		});
 	} 
 
+	function dialogFormEditShow(objReference)
+	{
+		var Id 		= $(objReference).parent().parent().find('td:eq(0)').html();
+		var Nama 		= $(objReference).parent().parent().find('td:eq(1)').html();
+		var Satuan 	= $(objReference).parent().parent().find('td:eq(2)').html();
+		var Biaya       	= $(objReference).parent().parent().find('td:eq(3)').html();
+		
+		
+		$('#alertMessage').remove();
+		$('#idUbah').val(Id);
+		$('#namaUbah').val(Nama);
+		$('#satuanUbah').val(Satuan);
+		$('#biayaUbah').val(Biaya);
+		
+	
+	    $('#dialogFormUbah').attr('class', 'modal show');
+	    $('body').attr('class', 'skin-green layout-boxed sidebar-collapse modal-open');
+	}
+
 	function deleteConfirmShow(idx)
 	{ 
 	 			
