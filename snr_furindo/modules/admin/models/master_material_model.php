@@ -144,7 +144,7 @@
                                       'cbm'    => $row['material_cbm'],
                                       'harga'  => $row['material_price'], 
                                       'usd'    => $row['material_price_usd'],                                      
-                                      'provider'   => $row['material_provider_id'],
+                                      'provider'   => $row['provider_name'],
                                       'unit'   => $row['material_unit_id'],
                                       'stock'   => $row['material_minimal_stock'],
                                       'categories' => $row['material_material_categories_id'], 

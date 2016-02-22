@@ -184,10 +184,11 @@
             source: dataAdapter,
             pagerButtonsCount: 10,
             altRows: true,
+            sortable: true,
             filterable: true,
             height: '600px',
             pageable : true,
-            pageSize : 15,
+            pageSize : 14,
             pagerPosition : 'bottom',
             filterMode: 'simple',
             theme: 'fresh',
@@ -199,7 +200,7 @@
               { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '37%'},
               { text: 'Harga', cellsAlign: 'left', align: 'center', dataField: 'harga', width : '13%'},
               { text: 'Cost', cellsAlign: 'left', align: 'center', dataField: 'cost', width : '12%'},
-              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '16%' }
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '15%' }
             ]
         }).on('rowDoubleClick', function(event)
         {	          	

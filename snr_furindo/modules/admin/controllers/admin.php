@@ -136,6 +136,21 @@
             echo  $content;
 		}
 
+    public function editso()
+    {
+      //echo "<pre>";print_r($_POST);"</pre>";exit();     
+      $idx = $this->input->post("IDBidang");
+      
+      
+      $data['order']=$this->db->query("SELECT * from tbl_sales_order where sales_order_id = '".$idx."'")->row();
+      $data['detail']=$this->db->query("SELECT * from tbl_sales_order_detail inner join tbl_product on tbl_product.product_id = tbl_sales_order_detail.sales_order_detail_product_id
+      where sales_order_detail_sales_order_id = '".$idx."'");
+      
+      $content = $this->load->view('edit_sales_order', $data, true);                
+
+            echo  $content;
+    }
+
 		public function bomcreate()
 		{
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
@@ -182,7 +197,7 @@
                                       <td>'.$row->product_code.'</td>                                      
                                       <td>'.$row->product_name.'</td>
                                       <td>'.$row->sales_order_detail_status.'</td> 
-                                      <td>'.$row->sales_order_detail_price.'</td>
+                                      <td>'.rp($row->sales_order_detail_price).'</td>
                                       <td>'.$row->sales_order_detail_qty.'</td>  
                                       <td>
                                         <button type="button" class="btn btn-xs btn-primary"  onclick="detailShow('.$row->product_id.','.$idx.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
@@ -231,6 +246,18 @@
             }     
             echo $strContent;            
           }
+
+    public function GetDaftarSales()
+    {
+      $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            
+            $this->load->model("master_sales_model", "ModelMasterSales");
+            
+            echo $this->ModelMasterSales->GetDaftarSales(); 
+    }
+    
 
 		function getDataVendor(){
             $this->checkCredentialAccess();
@@ -326,6 +353,35 @@
                                       <td>'.$row->product_price_usd.'</td> 
                                       <td>
                                         <button type="button" class="btn btn-xs btn-success"  onclick="dialogFormEditShow('.$row->product_id.','.$code.','.$nama.','.$row->product_price_usd.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                      </td>
+                                </tr>';
+              $i++;                      
+            }     
+            echo $strContent;            
+          }
+
+      function addTableProduct2(){
+            $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            $idproduct = $this->input->post("idx");
+            //$this->load->model('kasbank_model', 'ModelKasbank');
+            $arrContent = $this->db->query("SELECT * from tbl_product where product_code like '%".$idproduct."%' OR product_name like '%".$idproduct."%' LIMIT 10");           
+            
+            $i=1; 
+            $strContent = '';
+
+            foreach($arrContent->result() as $row){               
+                //$hh ='<td> <img width="20" src="upload/'.$row->nama_file.'"/></td> ';
+                $code = "'".$row->product_code."'";
+                $nama = "'".str_replace(" ","_",$row->product_name)."'";
+                $strContent.='<tr class="record">   
+                            <td>'.$row->product_id.'</td>                                                                         
+                                      <td>'.$row->product_code.'</td>                                      
+                                      <td>'.$row->product_name.'</td>
+                                      <td>'.$row->product_price_usd.'</td> 
+                                      <td>
+                                        <button type="button" class="btn btn-xs btn-success"  onclick="addProduct('.$row->product_id.','.$row->product_price_usd.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
                                       </td>
                                 </tr>';
               $i++;                      
@@ -429,6 +485,28 @@
             echo  $content;
     }
 
+    public function updateso()
+    {
+      //echo "<pre>";print_r($_POST);"</pre>";exit();
+      $c_kontak = count($this->input->post("idproduk"));
+      $idso = $this->input->post("so_id");
+      ////$iddet = $this->input->post("iddetail");
+          
+        for($i=0; $i<$c_kontak;$i++)
+        {
+          $data2['sales_order_detail_sales_order_id'] = $idso;
+          $data2['sales_order_detail_product_id'] = $_POST['idproduk'][$i];
+          $data2['sales_order_detail_price'] = $_POST['price'][$i];
+          $data2['sales_order_detail_qty'] = $_POST['qty'][$i];
+          $data2['sales_order_detail_last_updated'] = date("Y-m-d");
+          $data2['sales_order_detail_log'] = "update by dwi";
+          $data2['sales_order_detail_status'] = "reguler";
+          //$this->db->insert("tbl_sales_order_detail", $data2);
+          $this->db->where('sales_order_detail_id',$_POST['iddetail'][$i]);
+          $this->db->update("tbl_sales_order_detail", $data2);
+        }
+    }
+
 		public function saveso()
 		{
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
@@ -436,7 +514,7 @@
 			if($cek->num_rows() >0){
 				echo $cek->num_rows();
 				exit();
-			} else{
+			} else{        
 				$data['sales_order_categories'] = $this->input->post("categories");
 				$data['sales_order_costumer_id'] = $this->input->post("id_customer");
 				$data['sales_order_ref_no'] = $this->input->post("nomor");
@@ -466,6 +544,18 @@
 				}
 			}
 		}
+
+    public function insertDetailSo()
+    {
+          $data2['sales_order_detail_sales_order_id'] = $this->input->post("IDSo");
+          $data2['sales_order_detail_product_id'] = $this->input->post("IDproduct");
+          $data2['sales_order_detail_price'] =$this->input->post("price");
+          $data2['sales_order_detail_qty'] = 0;
+          $data2['sales_order_detail_date_created'] = date("Y-m-d");
+          $data2['sales_order_detail_log'] = "insert by dwi";
+          $data2['sales_order_detail_status'] = "reguler";
+          $this->db->insert("tbl_sales_order_detail", $data2);
+    }    
 
     public function savematerial()
     {
@@ -822,6 +912,20 @@
 			
 		}
 
+    public function HapusSales()
+    {
+      $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+      $idx = $this->input->post('ID');
+      
+      $idx =   $this->input->post('ID');
+      $this->db->delete('tbl_sales_order', array('sales_order_id' => $idx));
+      $this->db->delete('tbl_sales_order_detail', array('sales_order_detail_sales_order_id' => $idx)); 
+      
+    }
+
     public function HapusProduct()
     {
       $this->checkCredentialAccess();
@@ -869,6 +973,18 @@
             //echo $messageData;
 			
 		}
+
+    public function habusdataSo()
+    {
+      $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+      $id_bom =   $this->input->post('ID');
+            $this->db->delete('tbl_sales_order_detail', array('sales_order_detail_id' => $id_bom)); 
+            //echo $messageData;
+      
+    }
 
 		public function habusallbomliquid()
 		{

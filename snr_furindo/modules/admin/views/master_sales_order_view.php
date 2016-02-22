@@ -2,7 +2,7 @@
 	<h1>Daftar Sales Order</h1>
 </div>
 
-<div class="content">
+<!-- <div class="content">
 	<div class="box box-warning">
 	  	<div class="box-body">
 	  		<div class="box-header">
@@ -16,6 +16,7 @@
 	  			</div>
 	  		</div>
 	  		<div class="form-control" style="min-height:550px;">
+	  			<div id="ajaxTreeGrid"></div>
 				<table id="example2" class="table table-bordered table-striped">
 		            <thead style="">
 		                <tr>            
@@ -35,6 +36,20 @@
 		</div> 
 	  </div>
 	</div> 
+</div> -->
+<div class="content">
+	<div class="box box-warning">
+	  	<div class="box-body">
+	  		<div class="box-header">
+				<button type="button" class="btn btn-sm btn-primary" onclick="Addsales()"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
+				<button type="button" class="btn btn-sm btn-primary" id="btnCetak"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak PDF</button>		
+			</div>
+	  		<div class="form-control" style="min-height:610px;">
+				<div id="ajaxTreeGrid"></div>
+			</div>
+		</div> 
+	  </div>
+	</div> 
 </div>
 
  
@@ -43,15 +58,25 @@
 	$(document).ready(function () {
                      
     	    
-        loadGridData(1);
+        loadGridData();
 
     });
+    
+	
+	function deleteConfirmShow(ids)
+	{ 
 
-    function loadGridData(lmt){ 
-		var produk_id = $('#caridata').val();  
-        ajaxDataGrid('<?php echo base_url()?>admin/getDataSales', {idx : produk_id, limit : lmt}, 'ajaxTreeGrid');       
-    } 
-
+	 	var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+		var dataKaryawan = selection[0];
+		
+		var idx	 = dataKaryawan.idx;
+		var nama = dataKaryawan.kode;
+		
+	   	isDelete = confirm('Yakin SO '+ nama +' akan dihapus ?');
+	  	if (isDelete) sendRequestForm('admin/HapusSales', {ID : idx}, 'box-body');
+	  	kodeTipeKaryawan = ajaxFillGridJSON('admin/Sales'); 
+		$('.content-wrapper').html(kodeTipeKaryawan);
+	}
     function Addsales()
 
 	  {     
@@ -60,12 +85,77 @@
 	    
 	    $('.content-wrapper').load(loadhtml);
 	  } 
-	function dialogFormEditShow(idx, FR)
+	function dialogFormEditShow(idx)
 	{
 		//var IDBidang = $(objSource).val();
-		kodeTipeKaryawan = ajaxFillGridJSON('admin/DetailSO', {IDBidang : idx}); 
+		//kodeTipeKaryawan = ajaxFillGridJSON('admin/DetailSO', {IDBidang : idx});
+		kodeTipeKaryawan = ajaxFillGridJSON('admin/editso', {IDBidang : idx}); 
 		$('.content-wrapper').html(kodeTipeKaryawan);
 
+	}
+
+	function detailShow(idx)
+	{
+		//var IDBidang = $(objSource).val();
+		kodeTipeKaryawan = ajaxFillGridJSON('admin/DetailSO', {IDBidang : idx});
+		//kodeTipeKaryawan = ajaxFillGridJSON('admin/editso', {IDBidang : idx}); 
+		$('.content-wrapper').html(kodeTipeKaryawan);
+
+	}
+
+	function loadGridData(){
+	     var source =
+         {		
+             dataType: "json",
+             dataFields: [
+                  { name: "idx", 	type: "string" },
+                  { name: "kode", 	type: "string" },
+                  { name: "nama", 	type: "string" },
+                  { name: "date", 	type: "string" },
+                  { name: "address", 	type: "string" },
+                  { name: "status", 	type: "string" },
+                  { name: "action", 	type: "string" }
+             ],
+            url : "admin/GetDaftarSales",
+            id  : "idx"
+         };
+
+        var dataAdapter = new $.jqx.dataAdapter(source, {
+            loadComplete: function () {		
+            }
+        });
+
+        // create jqxDataTable.
+        $("#ajaxTreeGrid").jqxDataTable(
+        {
+            source: dataAdapter,
+            pagerButtonsCount: 10,
+            altRows: true,
+            sortable: true,
+            filterable: true,
+            columnsResize: true,
+            height: '600px',
+            pageable : true,
+            pageSize : 14,
+            pagerPosition : 'bottom',
+            filterMode: 'simple',
+            theme: 'fresh',
+            width: '100%',
+            columns: [
+              { text: 'PID', cellsAlign: 'center', align: 'center', dataField: 'idx', width : '10%'},
+              { text: 'Kode', cellsAlign: 'left', align: 'center', dataField: 'kode', width : '10%'},
+              // { text: 'Foto', cellsAlign: 'left', align: 'center', dataField: 'foto', width : '12%'},
+              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '10%'},
+              { text: 'Date', cellsAlign: 'left', align: 'center', dataField: 'date', width : '10%'},
+              { text: 'Address', cellsAlign: 'left', align: 'center', dataField: 'address', width : '30%'},
+              { text: 'Status', cellsAlign: 'left', align: 'center', dataField: 'status', width : '12%'},
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '18%' }
+            ]
+        }).on('rowDoubleClick', function(event)
+        {	  
+        	//var idx = dataAdapter['idx'];         	
+        	dialogFormEditShow(idx);
+	    });	
 	}  
             		
 </script>
