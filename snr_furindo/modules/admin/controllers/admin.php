@@ -287,7 +287,8 @@
                                       <td>'.$row->provider_phone.'</td>
                                       <td>'.$row->provider_email.'</td>  
                                       <td>
-                                        <button type="button" class="btn btn-xs btn-success"  onclick="dialogFormEditShow('.$row->provider_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                        <button type="button" class="btn btn-xs btn-success"  onclick="dialogFormEditShow('.$row->provider_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>&nbsp;
+                                        <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trush" aria-hidden="true"></span> Hapus</button>
                                       </td>
                                 </tr>';
               $i++;                      
@@ -323,7 +324,8 @@
                                       <td>'.$row->provider_phone.'</td>
                                       <td>'.$row->provider_email.'</td>  
                                       <td>
-                                        <button type="button" class="btn btn-xs btn-success"  onclick="dialogFormEditShow('.$row->provider_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                        <button type="button" class="btn btn-xs btn-success"  onclick="dialogFormEditShow('.$row->provider_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>&nbsp;
+                                        <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trush" aria-hidden="true"></span> Hapus</button>
                                       </td>
                                 </tr>';
               $i++;                      
@@ -444,6 +446,28 @@
             }     
             echo $strContent;            
           }
+
+
+    public function saveprovider()
+    {
+      //echo "<pre>";print_r($_POST);"</pre>";exit();
+        $data['provider_provider_categories_id'] = $this->input->post("tipe");
+        $data['provider_code'] = $this->input->post("kode");
+        $data['provider_name'] = $this->input->post("nama");
+        $data['provider_description'] = $this->input->post("deskripsi");
+        $data['provider_contact_person'] = $this->input->post("pic");
+        $data['provider_phone'] = $this->input->post("notelp1");
+        $data['provider_phone2'] = $this->input->post("notelp2");
+        $data['provider_fax'] = $this->input->post("fax");      
+        $data['provider_email'] = $this->input->post("email");
+        $data['provider_city'] = $this->input->post("city");
+        $data['provider_postal_code'] = $this->input->post("pos");
+        $data['provider_address'] = $this->input->post("alamat");
+        $data['provider_log'] = "insert by dwi";         
+        $data['provider_date_created'] = date("Y-m-d");    
+          
+        $this->db->insert("tbl_provider", $data);
+    }
 
 		public function detailbom()
 		{
@@ -946,6 +970,18 @@
 
       $idx =   $this->input->post('ID');
             $this->db->delete('tbl_material', array('material_id' => $idx)); 
+            //echo $messageData;
+      
+    }
+
+    public function HapusProvider()
+    {
+      $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+
+      $idx =   $this->input->post('ID');
+            $this->db->delete('tbl_provider', array('provider_id' => $idx)); 
             //echo $messageData;
       
     }
