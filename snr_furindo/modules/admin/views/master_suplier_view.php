@@ -3,7 +3,7 @@
 </div>
 
 <div class="content">
-	<div class="box box-warning">
+	<div class="box box-primary">
 	  	<div class="box-body">
 	  		<div class="box-header">
 				<button type="button" class="btn btn-sm btn-primary" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
@@ -26,11 +26,11 @@
 		                <tr>            
 		                    <th style="text-align:center; width:5%"> SID</th>
 		                    <th style="text-align:center; width:10%"> Kode Suplier</th>
-		                    <th style="text-align:center; width:17%"> Nama Suplier</th>                    
+		                    <th style="text-align:center; width:16%"> Nama Suplier</th>                    
 		                    <th style="text-align:center; width:30%"> Alamat </th>
 		                    <th style="text-align:center; width:10%"> Telepon </th>
 		                    <th style="text-align:center; width:17%"> Email </th>
-		                    <th style="text-align:center; width:10%"> Action </th>
+		                    <th style="text-align:center; width:12%"> Action </th>
 		                </tr>
 		            </thead>
 		            <tbody id="ajaxTreeGrid">                   
