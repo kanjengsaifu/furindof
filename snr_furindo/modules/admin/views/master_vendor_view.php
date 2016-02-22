@@ -25,7 +25,7 @@
 		            <thead style="">
 		                <tr>            
 		                    <th style="text-align:center; width:5%"> SID</th>
-		                    <th style="text-align:center; width:9%"> Kode Vendor</th>
+		                    <th style="text-align:center; width:10%"> Kode Vendor</th>
 		                    <th style="text-align:center; width:17%"> Nama Vendor</th>                    
 		                    <th style="text-align:center; width:30%"> Alamat </th>
 		                    <th style="text-align:center; width:9%"> Telepon </th>

@@ -200,7 +200,7 @@
                                       <td>'.rp($row->sales_order_detail_price).'</td>
                                       <td>'.$row->sales_order_detail_qty.'</td>  
                                       <td>
-                                        <button type="button" class="btn btn-xs btn-primary"  onclick="detailShow('.$row->product_id.','.$idx.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                        <button type="button" class="btn btn-xs btn-success"  onclick="detailShow('.$row->product_id.','.$idx.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
                                       </td>
                                 </tr>';
               $i++;                      
@@ -324,7 +324,7 @@
                                       <td>'.$row->provider_phone.'</td>
                                       <td>'.$row->provider_email.'</td>  
                                       <td>
-                                        <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow('.$row->provider_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
+                                        <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow(this)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
                                         <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Hapus</button>
                                       </td>
                                 </tr>';
