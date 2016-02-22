@@ -286,8 +286,14 @@
                                       <td>'.$row->provider_address.'</td> 
                                       <td>'.$row->provider_phone.'</td>
                                       <td>'.$row->provider_email.'</td>  
+                                      <td class="hidden">'.$row->provider_phone2.'</td>
+                                      <td class="hidden">'.$row->provider_fax.'</td>
+                                      <td class="hidden">'.$row->provider_city.'</td>
+                                      <td class="hidden">'.$row->provider_postal_code.'</td> 
+                                      <td class="hidden">'.$row->provider_contact_person.'</td> 
+                                      <td class="hidden">'.$row->provider_description.'</td> 
                                       <td>
-                                        <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow('.$row->provider_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
+                                        <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow(this)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
                                         <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Hapus</button>
                                       </td>
                                 </tr>';
@@ -322,7 +328,13 @@
                                       <td>'.$row->provider_name.'</td>
                                       <td>'.$row->provider_address.'</td> 
                                       <td>'.$row->provider_phone.'</td>
-                                      <td>'.$row->provider_email.'</td>  
+                                      <td>'.$row->provider_email.'</td>
+                                      <td class="hidden">'.$row->provider_phone2.'</td>
+                                      <td class="hidden">'.$row->provider_fax.'</td>
+                                      <td class="hidden">'.$row->provider_city.'</td>
+                                      <td class="hidden">'.$row->provider_postal_code.'</td> 
+                                      <td class="hidden">'.$row->provider_contact_person.'</td> 
+                                      <td class="hidden">'.$row->provider_description.'</td>  
                                       <td>
                                         <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow(this)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
                                         <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Hapus</button>
@@ -467,6 +479,28 @@
         $data['provider_date_created'] = date("Y-m-d");    
           
         $this->db->insert("tbl_provider", $data);
+    }
+
+    public function updateprovider()
+    {
+      //echo "<pre>";print_r($_POST);"</pre>";exit();
+        $data['provider_provider_categories_id'] = $this->input->post("tipe");
+        $data['provider_code'] = $this->input->post("kode");
+        $data['provider_name'] = $this->input->post("nama");
+        $data['provider_description'] = $this->input->post("deskripsi");
+        $data['provider_contact_person'] = $this->input->post("pic");
+        $data['provider_phone'] = $this->input->post("notelp1");
+        $data['provider_phone2'] = $this->input->post("notelp2");
+        $data['provider_fax'] = $this->input->post("fax");      
+        $data['provider_email'] = $this->input->post("email");
+        $data['provider_city'] = $this->input->post("city");
+        $data['provider_postal_code'] = $this->input->post("pos");
+        $data['provider_address'] = $this->input->post("alamat");
+        $data['provider_log'] = "update by dwi";         
+        $data['provider_last_updated'] = date("Y-m-d");    
+          
+        $this->db->where('provider_id',$this->input->post("idubah"));
+        $this->db->update("tbl_provider", $data);
     }
 
 		public function detailbom()
