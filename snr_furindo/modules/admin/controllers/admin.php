@@ -292,7 +292,7 @@
                                       <td class="hidden">'.$row->provider_postal_code.'</td> 
                                       <td class="hidden">'.$row->provider_contact_person.'</td> 
                                       <td class="hidden">'.$row->provider_description.'</td> 
-                                      <td>
+                                      <td style="text-align:center;">
                                         <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow(this)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
                                         <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Hapus</button>
                                       </td>
@@ -335,7 +335,7 @@
                                       <td class="hidden">'.$row->provider_postal_code.'</td> 
                                       <td class="hidden">'.$row->provider_contact_person.'</td> 
                                       <td class="hidden">'.$row->provider_description.'</td>  
-                                      <td>
+                                      <td style="text-align:center;">
                                         <button type="button" class="btn btn-xs btn-warning"  onclick="dialogFormEditShow(this)"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Edit</button>&nbsp;
                                         <button type="button" class="btn btn-xs btn-danger"  onclick="deleteConfirmShow('.$row->provider_id.')"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span> Hapus</button>
                                       </td>

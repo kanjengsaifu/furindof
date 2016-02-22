@@ -25,7 +25,7 @@
 		            <thead style="">
 		                <tr>            
 		                    <th class="sorting" tabindex='0' style="text-align:center; width:5%"> SID</th>
-		                    <th class="sorting" tabindex='1' style="text-align:center; width:10%"> Kode Suplier</th>
+		                    <th class="sorting" tabindex='1' style="text-align:center; width:7%"> Kode</th>
 		                    <th class="sorting" tabindex='2' style="text-align:center; width:16%"> Nama Suplier</th>                    
 		                    <th class="sorting" tabindex='3' style="text-align:center; width:30%"> Alamat </th>
 		                    <th class="sorting" tabindex='4' style="text-align:center; width:10%"> Telepon </th>
@@ -36,7 +36,7 @@
 		                    <th class="hidden" tabindex='9' style="text-align:center; width:10%"> Kode Pos </th>
 		                    <th class="hidden" tabindex='10' style="text-align:center; width:10%"> PIC </th>
 		                    <th class="hidden" tabindex='11' style="text-align:center; width:10%"> Descripsi </th>
-		                    <th style="text-align:center; width:12%"> Action </th>
+		                    <th style="text-align:center; width:15%"> Action </th>
 		                </tr>
 		            </thead>
 		            <tbody id="ajaxTreeGrid">                   

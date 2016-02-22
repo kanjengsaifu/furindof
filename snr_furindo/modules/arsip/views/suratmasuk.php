@@ -13,7 +13,7 @@
                         
             <div class="content">
                 <div style="padding:5px 0px">
-                    <button onclick="tambahdata()" class="btn btn-sm btn-success">
+                    <button onclick="tambahdata()" class="btn btn-sm btn-primary">
                     <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
                     Tambah Baru
                     </button>                    
@@ -79,7 +79,7 @@
       </div>
       <div class="modal-footer">
 
-        <button type="submit" class="btn btn-sm btn-success">Save</button>
+        <button type="submit" class="btn btn-sm btn-primary">Save</button>
         <button type="button" class="btn btn-sm btn-warning" id="btnBatalBaru">Batal</button>
 
       </div>

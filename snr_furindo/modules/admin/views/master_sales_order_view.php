@@ -147,9 +147,9 @@
               // { text: 'Foto', cellsAlign: 'left', align: 'center', dataField: 'foto', width : '12%'},
               { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '10%'},
               { text: 'Date', cellsAlign: 'left', align: 'center', dataField: 'date', width : '10%'},
-              { text: 'Address', cellsAlign: 'left', align: 'center', dataField: 'address', width : '30%'},
+              { text: 'Address', cellsAlign: 'left', align: 'center', dataField: 'address', width : '28%'},
               { text: 'Status', cellsAlign: 'left', align: 'center', dataField: 'status', width : '12%'},
-              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '18%' }
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '20%' }
             ]
         }).on('rowDoubleClick', function(event)
         {	  
