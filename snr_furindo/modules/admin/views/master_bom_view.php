@@ -102,10 +102,9 @@
                      
     	$('#btnTambahBaru').click(function(e)
         {
-			e.preventDefault(); 
-			resetForm();
-	    	$('#alertMessage').remove();
-	    	$('#dialogFormBaru').attr('class', 'modal show');               
+			var htmlOut = ajaxFillGridJSON('admin/addBom'); 
+	    
+	    	$('.content-wrapper').html(htmlOut);              
         });
 
         $('#btnBatalTambahKaryawan').click( function(e){

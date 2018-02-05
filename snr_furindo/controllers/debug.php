@@ -82,6 +82,56 @@ class Debug extends CI_Controller {
 		}
 	}
 
+	function puchase1()
+	{
+		
+		$data1 = $this->db->get('trx_purchase_order');
+
+		foreach ($data1->result() as $key => $value) 
+		{
+			$this->db->where(array("purchase_order_code"=>$value->purchase_order_code));
+			$cari = $this->db->get('tbl_purchase_order', 1);
+
+			if($cari->num_rows()>0)
+			{				
+				//$this->db->update('material', array("status"=>$cari->num_rows()), array("id"=>$value->id));
+				$this->db->update('trx_purchase_order', array("purchase_order_date"=>$cari->row()->purchase_order_date), array("purchase_order_id"=>$value->purchase_order_id));
+			}
+		}
+		echo "selesai";
+	}
+
+	function gudangan()
+	{
+		
+		$data1 = $this->db->get('gudang');
+
+		foreach ($data1->result() as $key => $value) 
+		{
+			$this->db->where(array("material_code"=>$value->code));
+			$cari = $this->db->get('mst_material', 1);
+
+			if($cari->num_rows()>0)
+			{
+			  $data3['warehouse_id'] = 1;
+              $data3['inventory_categories'] = 'stock';
+              $data3['material_id'] = $cari->row()->material_id;
+              $data3['inventory_item_categories'] = 'material';
+              $data3['inventory_jumlah_nominal'] = $cari->row()->material_price;
+              $data3['inventory_stock_qty'] = $value->qty;
+              $data3['inventory_jenis'] = "in";
+              $data3['inventory_date_transaction'] = date("Y-m-d");
+              $data3['inventory_date_created'] = date("Y-m-d");
+              $data3['inventory_description'] = '';
+              $data3['inventory_log'] = "insert by zakaria";
+              $this->db->insert("trx_inventory", $data3);
+				//$this->db->update('material', array("status"=>$cari->num_rows()), array("id"=>$value->id));
+				//$this->db->update('trx_purchase_order', array("purchase_order_date"=>$cari->row()->purchase_order_date), array("purchase_order_id"=>$value->purchase_order_id));
+			}
+		}
+		echo "selesai";
+	}
+
 	
 
 }

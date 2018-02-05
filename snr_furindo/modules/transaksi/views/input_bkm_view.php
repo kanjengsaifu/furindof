@@ -30,8 +30,7 @@
 	<h1>Input Bukti Kas Masuk</h1>
 </section>
 <div class="content">
-	
-	<div class="box box-primary">
+		<div class="box box-primary">
 		<div class="box-body">
 			<form id="addkasmasuk" onsubmit="simpanreg(); return false;">
 			<div class="form-horizontal">
@@ -48,18 +47,31 @@
 						<label for="Nomor" class="col-sm-3 control-label">Tanggal :</label>
 							<div class="col-sm-8">
 								<div class="input-group date">
-                                    <input type="text" readonly onblur="setMenuZIndex('')" onclick="setMenuZIndex(' noZIndex')" role="date" class="form-control" id="tanggal" name="tanggal" >
+                                    <input type="text" readonly  role="date" class="form-control" id="tanggal" name="tanggal" >
                                     <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span> 
                                   </div>
 							</div>
 						</div>
-						
+						<!-- <input type="hidden" class="form-control" value="Umum" id="rekanan" name="rekanan" > -->
+						<input type="hidden" id="id_rekanan" value="0" name="id_rekanan" >
+
 						<div class="form-group">
+			            <label for="Nomor" class="col-sm-3 control-label">Jenis Transaksi :</label>
+			              <div class="col-sm-8">
+			                <select id="transaksi" onchange="Show_rekanan('')" class="form-control">
+			                  <option value="0">:: PILIH JENIS TRANSAKSI ::</option>
+			                  <option value="hutang">HUTANG / DEPOSIT</option>
+			                  <option value="umum">UMUM</option>
+			                </select>
+			              </div>
+			            </div>
+
+						<div class="form-group hide" id="input_rekanan">
 						<label for="kegiatan" class="col-sm-3 control-label">Diterima Dari :</label>
 							<div class="col-sm-8" id="col-kontak">
 								<div class="input-group">
-                                    <input type="text" readonly  class="form-control" id="rekanan" name="rekanan" >
-                                    <input type="hidden" id="id_rekanan" name="id_rekanan" >
+                                    <input type="text" readonly  class="form-control" value="Umum" id="rekanan" name="rekanan" >
+                                    <!-- <input type="hidden" id="id_rekanan" name="id_rekanan" > -->
 									<span class="input-group-btn">
 						       			<button type="button" id="btnCariRekanan" class="btn btn-success"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Cari</button>
 						       		</span>
@@ -85,7 +97,7 @@
 			<div class="header1">
 				<h4>RINCIAN BUKTI KAS MASUK</h4>
 			</div>			
-				<div class="table-responsive" style="width:90%; margin:0px auto;">     
+				<div class="table-responsive" style="width:97%; margin:0px auto;">     
 					<table id="tables"  width="100%" cellspacing="0" aria-describedby="tabel transaksi" role="grid" class="table table-striped table-bordered">
 						<thead>
 							<tr role="row">
@@ -116,7 +128,7 @@
 							<div class="form-group">
 							<label for="Nomor" class="col-sm-3 col-sm-offset-1 control-label">Total :</label>
 								<div class="col-sm-7">
-									<input class="form-control" disabled="disabled" id="total" name="total" value=""/>
+									<input class="form-control" readonly id="total" name="total" value=""/>
 								</div>
 							</div>
 							<div class="form-group">
@@ -125,6 +137,7 @@
 									<div class="input-group">
                                     <input type="text" readonly  class="form-control" id="kasbank" name="kasbank" >
                                     <input type="hidden" id="id_kasbank" name="id_kasbank" >
+                                    <input type="hidden" id="bank_code" name="bank_code" >
 									<span class="input-group-btn">
 						       			<button type="button" id="btnCariKasbank" class="btn btn-warning"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Cari</button>
 						       		</span>	
@@ -137,10 +150,10 @@
 		
 			<div class="form-horizontal footer">
 				<div class="row" id="addcol">
-					<div class="col-sm-6">
+					<div class="col-sm-6" style="padding-left: 30px;">
 						<button type="submit" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus-sign"></span> Simpan Data</button>
-						<button onclick="adddataprint('<?php //echo  $idx ?>')" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-print"></span> Simpan Data dan Cetak</button>
-						<button onclick="batal()" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-minus-sign"></span> Batal</button>
+						<!-- <button onclick="adddataprint('<?php //echo  $idx ?>')" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-print"></span> Simpan Data dan Cetak</button>
+						<button onclick="batal()" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-minus-sign"></span> Batal</button> -->
 					</div>
 				</div>			
 			</div>		
@@ -151,7 +164,7 @@
 
 <div class="modal fade" id="myModal">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="width:750px;">
       <div class="modal-header">
         <button type="button" class="close Rekanan" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Data Rekanan</h4>
@@ -165,7 +178,7 @@
 
 <div class="modal fade" id="kasModal">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="width:750px;">
       <div class="modal-header">
         <button type="button" class="close Kasbank" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Data Kas Bank</h4>
@@ -179,7 +192,7 @@
 
 <div class="modal fade" id="pemasukanModal">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="width:750px;">
       <div class="modal-header">
         <button type="button" class="close Pemasukan" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title">Data Kas Bank</h4>
@@ -195,7 +208,12 @@
 
 <script type="text/javascript">	
 $(document).ready(function () {
-
+	$(".date").datepicker({
+			format : "dd-mm-yyyy",
+			//startDate : new Date('<?php echo date('Y-m-d', strtotime("-".$_SESSION['Akses']." days"))?>'),
+		   //endDate : new Date('<?php echo date('Y-m-d', strtotime("+90 days"))?>'),
+			autoclose : true,
+		});	
 	var tglreg = "<?php echo date("d-m-Y")?>";
 		$("#tanggal").val(tglreg);		
 		getnobkm("<?php echo $bkm ?>");
@@ -260,6 +278,16 @@ $(document).ready(function () {
 
 });
 
+function Show_rekanan(){
+  var asd = $('#transaksi').val();
+  if (asd == 'umum') {
+    $('#input_rekanan').attr('class','form-group hide');
+  }else{
+    $('#input_rekanan').attr('class','form-group show');
+  }
+  //alert(asd);
+}
+
 function loadGridData(tipe){
 
 		 
@@ -286,7 +314,7 @@ function loadGridData(tipe){
 
              ],
 
-            url : "transaksi/GetKontak/"+tipe,
+            url : "transaksi/GetKontak1/"+tipe,
 
             id  : "idx"
 
@@ -322,7 +350,7 @@ function loadGridData(tipe){
 
             pageable : true,
 
-            pageSize : 10,
+            pageSize : 1000,
 
             pagerPosition : 'bottom',
 
@@ -330,19 +358,19 @@ function loadGridData(tipe){
 
             theme: 'fresh',
 
-            width: '570px',
+            width: '100%',
 
             columnsResize: true,
 
             columns: [
 
-              { text: 'Kode', cellsAlign: 'center', align: 'center', dataField: 'kode', width : '82px'},
+              { text: 'Kode', cellsAlign: 'center', align: 'center', dataField: 'kode', width : '20%'},
 
-              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '149px'},              
+              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '40%'},              
 
-              { text: 'No Telp', cellsAlign: 'left', align: 'center', dataField: 'notelp', width : '253px'},              
+              { text: 'No Telp', cellsAlign: 'left', align: 'center', dataField: 'notelp', width : '25%'},              
 
-              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '85px' }
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '15%' }
 
             ]
 
@@ -414,7 +442,7 @@ function loadGridData(tipe){
 
             pageable : true,
 
-            pageSize : 10,
+            pageSize : 1000,
 
             pagerPosition : 'bottom',
 
@@ -498,7 +526,7 @@ function loadGridData(tipe){
 
             pageable : true,
 
-            pageSize : 10,
+            pageSize : 1000,
 
             pagerPosition : 'bottom',
 
@@ -532,15 +560,16 @@ function loadGridData(tipe){
 		$('#myModal').attr('class', 'modal hide');
 	}
 
-	function pilihKasbank(nama, idx)
+	function pilihKasbank(nama, idx, bank)
 	{
 		var name = nama.replace(/_/g, " ");
 		$('#kasbank').val(name);
 		$('#id_kasbank').val(idx);
+		$('#bank_code').val(bank);
 		$('#kasModal').attr('class', 'modal hide');
 	}
 	
-	function PilihPemasukan(kode, nama, idx)
+	function PilihPemasukan(kode, idx, nama)
 	{
 		console.log($("#tabelContent tr").length);
 		//return false;
@@ -551,7 +580,7 @@ function loadGridData(tipe){
 			var row  = "<tr id='tmbinput-"+lengths+"'>";
 				row += "<td><input type='text' readonly='readonly' value='"+kode+"' name='kode[]' id='kode-"+lengths+"' class='form-control autocomplate'/></td>";
 				row += "<td><input type='text' readonly='readonly' value='"+name+"' name='uraian[]' id='uraian-"+lengths+"' class='form-control'/></td>";
-				row += "<td><input type='text' style='text-align:right;'name='nominal[]' id='nominal-"+lengths+"' onblur='calculates()' onkeyup='getnumeric(this)' class='form-control'/></td>";
+				row += "<td><input type='text' style='text-align:right;'name='nominal[]' id='nominal-"+lengths+"' onblur='calculates()' onkeyup='getnumeric(this)' class='form-control' required/></td>";
 				row += "<td><input type='text' name='memo[]' id='memo-"+lengths+"' class='form-control'/></td>";
 				row += "<td style='text-align:center;'><button type='button' onclick='deleterow("+lengths+")' id='"+idbutton+"' title='hapus data' class='btn btn-xs btn-danger'><span class='glyphicon glyphicon-minus-sign'></span></button></td>";
 				row += "</tr>";
@@ -602,18 +631,27 @@ function loadGridData(tipe){
 
 	function simpanreg()
 	{
+		var id = $('#kasbank').val();
+	    if(id == ''){
+	      alert('kasbank belum dipilih !!!');
+	      return false;
+	    }
 		var target = "<?php echo site_url("transaksi/savebkm")?>";
 			data = $("#addkasmasuk").serialize();
 		$.post(target, data, function(e){
-			//console.log(e);
+			//$(".content-wrapper").html(e);
 			//return false;
+			if(e!=1){
+				$(".box-body").append(e);
+			}else{
 			//tinymce.triggerSave();
 			
 			//alert("Kode barang sudah digunakan , silahkan ganti yang lain !!!");
 			
-			loadhtml = "<?php echo site_url("transaksi/Bkk")?>";
+			loadhtml = "<?php echo site_url("transaksi/Bkm")?>";
 			alert("Data berhasil disimpan.");
 			$(".content-wrapper").load(loadhtml);
+		}
 			//$(".content-wrapper").html(e);
 		
 		});
@@ -677,31 +715,36 @@ function loadGridData(tipe){
 		  		sisa = x%1000000;
 		  	return Terbilang(nilai)+" juta "+Terbilang(sisa);
 		  	}
+		 else if (x < 1000000000000){
+			var nilai1 = x/1000000000;
+				nilai = parseInt(nilai1);
+		  		sisa = x%1000000000;
+		  	return Terbilang(nilai)+" milyar "+Terbilang(sisa);
+		  	}
 		}
 
 	function getnobkm(param)
-	{
-		
+	{		
 		getNum = param.split("-");
 		Nums = parseInt(getNum[1]);
 		Num  = eval(Nums) + 1;
-		
+		tgl = "<?php echo date("y")?>";		
 		
 		if(Num <= 9)
 		{
-			code = getNum[0]+"-"+"000"+Num;
+			code = "BKM"+tgl+"-"+"000"+Num;
 		}
 		else if(Num > 9 && Num <= 99)
 		{
-			code = getNum[0]+"-"+"00"+Num;
+			code = "BKM"+tgl+"-"+"00"+Num;
 		}
 		else if(Num > 99 && Num <= 999)
 		{
-			code = getNum[0]+"-"+"0"+Num;
+			code = "BKM"+tgl+"-"+"0"+Num;
 		}
 		else
 		{
-			code = getNum[0]+"-"+Num;
+			code = "BKM"+tgl+"-"+Num;
 		}
 		$("#nomor").val(code);
 		return code;

@@ -20,14 +20,229 @@
             $dataMenu = array('dataMenu' => $this->ModelSetup->GetMenuSetup());
                     
             $menu    = $this->load->view('menu_setup_view', $dataMenu, true);
-            $content = $this->load->view('setup_view', '', true);
+            $content  = $this->load->view('dashboard_view', '', true);
         
             $arrData = array('menu'     => $menu,
                              'content'  => $content);
 
             echo json_encode($arrData);
 
+		}
+
+		public function KasBank()
+
+		{
+
+			$this->checkCredentialAccess();
+
+
+
+            $this->checkIsAjaxRequest();
+
+
+            $content = $this->load->view('master_kasbank_view', '', true);
+            // $content = $this->load->view('chart', '', true);
+
+                          
+
+            echo $content;
+
+		}
+
+
+
+		public function GetDaftarKasBank()
+
+		{
+
+			$this->checkCredentialAccess();
+
+
+
+            $this->checkIsAjaxRequest();
+
+            
+
+            $this->load->model('setup_model', 'ModelJenisPemda');
+
+            
+
+            echo $this->ModelJenisPemda->GetDaftarKasBank(); 
+
+		}
+
+		public function TambahKasBank()
+
+		{
+
+			$this->checkCredentialAccess();
+
+
+
+            $this->checkIsAjaxRequest();
+
+
+
+            //$this->form_validation->set_rules('matauang', 'Mata uang', 'trim|required|min_length[1]|xss_clean');
+
+    		$this->form_validation->set_rules('kodebaru', 'Kode Kas Bank', 'trim|is_unique[mst_kasbank.kode_kasbank]|required|min_length[1]|xss_clean');
+
+    		$this->form_validation->set_rules('namabaru', 'Nama Kas Bank', 'trim|required|xss_clean');
+
+    		
+
+			if ( ! $this->form_validation->run() )
+
+			{				
+
+				$errorMessage = form_error('kodebaru').form_error('namabaru');
+
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+
+				echo $messageData;
+
+			}
+
+			else
+
+			{
+
+				
+				$this->kode 		= $this->input->post('kodebaru', true); 	
+
+				$this->nama 		= $this->input->post('namabaru', true);
+
+				$this->induk 	= $this->input->post('induk', true);
+
+				$this->status 	= $this->input->post('status', true);
+
+				$this->deskripsi 	= $this->input->post('deskripsibaru', true);
+
+
+
+				$arrData = array('kode_kasbank' 	 => $this->kode,
+
+								 'nama_kasbank' 	 => $this->nama,
+
+								 'induk'	 => $this->induk,
+
+								 'status'	 => $this->status,
+
+								 'deskripsi_kasbank' => $this->deskripsi);
+
+
+
+	            $messageData = $this->load->model('setup_model', 'ModelJenisPemda');
+
+	            $messageData = $this->ModelJenisPemda->TambahKasBank($arrData);
+
+	            echo $messageData;
+
+        	}
+
+		}
+
+
+
+		public function UbahKasBank()
+
+		{
+
+			$this->checkCredentialAccess();
+
+
+
+            $this->checkIsAjaxRequest();
+
+
+
+            //$this->form_validation->set_rules('ID', 'ID KasBank', 'trim|required|xss_clean');            
+
+    		$this->form_validation->set_rules('kodeUbah', 'Kode KasBank', 'trim|required|xss_clean');
+
+    		$this->form_validation->set_rules('namaUbah', 'Nama KasBank', 'trim|required|xss_clean');
+
+	
+
+			if ( ! $this->form_validation->run() )
+
+			{				
+
+				$errorMessage = form_error('ID').form_error('mataUangUbah').form_error('kodeUbah').form_error('namaUbah');
+
+				$messageData = ConstructMessageResponse($errorMessage , 'warning');
+
+				echo $messageData;
+
+			}
+
+			else
+
+			{
+
+				$this->ID 			= $this->input->post('ID', true); 					
+
+				$this->kode 		= $this->input->post('kodeUbah', true); 	
+
+				$this->nama 		= $this->input->post('namaUbah', true);
+
+				$this->notAktif 	= $this->input->post('notAktifUbah', true);
+
+				$this->deskripsi 	= $this->input->post('deskripsiUbah', true);
+
+				
+
+				$arrData = array('idx' 	     => $this->ID,
+
+								 'kode' 	 => $this->kode,
+
+								 'nama' 	 => $this->nama,
+
+								 'notAktif'	 => $this->notAktif,
+
+								 'deskripsi' => $this->deskripsi);
+
+			
+
+	            $messageData = $this->load->model('setup_model', 'ModelJenisPemda');
+
+	            $messageData = $this->ModelJenisPemda->UbahKasBank($arrData);
+
+	            echo $messageData;
+
+        	}
+
+		}
+
+
+
+		public function HapusKasBank()
+
+		{
+
+			$this->checkCredentialAccess();
+
+
+
+            $this->checkIsAjaxRequest();
+
+
+
+			$this->ID = $this->input->post('ID', true);
+
+			
+
+            $messageData = $this->load->model('setup_model', 'ModelJenisPemda');
+
+            $messageData = $this->ModelJenisPemda->HapusKasBank($this->ID);
+
+            echo $messageData;
+
+			
+
 		}	
+
+//--------------------------------------------------END KAS BANK ---------------------------------------------------------------------------------
 	   
 	    public function GroupUser()
 		{

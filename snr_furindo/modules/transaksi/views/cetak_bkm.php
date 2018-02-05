@@ -12,12 +12,7 @@
 .tg .tg-yw4l{text-align:right;vertical-align:top}
 </style>
 <?php 
-  $cek = $this->db->query("SELECT * from trx_kas where id_kas = '".$kas."'")->row();
-  if ($cek->id_kontak == 0) {
-    $kas_data = $this->db->query("SELECT trx_kas.*,mst_ksm.nama_ksm as nama, mst_ksm.jenis_usaha as alamat from trx_kas inner join mst_ksm on trx_kas.id_ksm = mst_ksm.id_ksm where trx_kas.id_kas = '".$kas."'")->row();
-  } else{
-    $kas_data = $this->db->query("SELECT * from trx_kas inner join mst_kontak on trx_kas.id_kontak = mst_kontak.id where id_kas = '".$kas."'")->row();
-  }
+  $kas_data = $this->db->query("SELECT * from trx_jurnal left join mst_provider on mst_provider.provider_id = trx_jurnal.provider_id where  id_jurnal = '".$kas."'")->row();
 ?>
 
 <table class="tg" width="100%">
@@ -30,16 +25,17 @@
    
    <tr> 
    <th style="border-style:none; font-size:11px; height:-10px;">
-      <img src="<?php echo base_url().'assets/images/logo.png'?>" alt="Logo Bakti Husada"/>
+      <img src="<?php echo base_url().'assets/images/logo11.png'?>" alt="Logo Bakti Husada"/>
     </th>   
     <th colspan="2" style="border-style:none; font-size:11px; height:-10px;">
-      <label style="font-family:courier; font-size:11px; ">KOPERASI BINA SEJAHTERA</label><br>
-      <label style="font-family:courier; font-size:11px; ">Jogotirto Berbah Sleman Yogyakarta</label><br>
-      <label style="font-family:courier; font-size:11px; ">Telp : 085733299999</label>
+      <label style="font-family:courier; font-size:11px; ">C.V. SNR EKSPOR FURINDO</label><br>
+      <label style="font-family:courier; font-size:11px; ">JL. RING ROAD SELATAN, TLAJUK/WOJO RT.7/RW.11</label><br>
+      <label style="font-family:courier; font-size:11px; ">BANGUN HARJO, SEWON, BANTUL, YOGYAKARTA</label><br>
+      <label style="font-family:courier; font-size:11px; ">TEL/FAX: +62-274-3057199</label>
     </th>
     <th colspan="1" style="border-style:none; font-size:11px;">
-      <label style="font-family:courier; font-size:11px; ">Nomor : <?php echo $kas_data->nomor_kas; ?></label><br>
-      <label style="font-family:courier; font-size:11px; ">Tanggal : <?php echo date("d F Y", strtotime($kas_data->tgl_kas)); ?></label><br>
+      <label style="font-family:courier; font-size:11px; ">Nomor : <?php echo $kas_data->akun; ?></label><br>
+      <label style="font-family:courier; font-size:11px; ">Tanggal : <?php echo date("d F Y", strtotime($kas_data->tgl)); ?></label><br>
       <label style="font-family:courier; font-size:11px; ">Kas / Bank : Kas Kecil</label>
     </th>
   </tr>   
@@ -51,9 +47,9 @@
 
   <tr>
       <td colspan="4" style="border-style:none;border-bottom:1px solid black; font-size:11px;">
-        <label style="font-family:courier; font-size:11px; ">Telah Diterima Dari : <?php echo $kas_data->nama; ?> </label><br>
-        <label style="font-family:courier; font-size:11px; ">Alamat &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <?php echo $kas_data->alamat; ?></label><br>
-        <label style="font-family:courier; font-size:11px; ">Untuk Pembayaran &nbsp;&nbsp;&nbsp;: <?php echo $kas_data->uraian; ?></label>
+        <label style="font-family:courier; font-size:11px; ">Penerimaan : <?php echo $kas_data->memo; ?> </label><br>
+        <!-- <label style="font-family:courier; font-size:11px; ">Alamat &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: <?php echo $kas_data->provider_address; ?></label><br> -->
+        <!-- <label style="font-family:courier; font-size:11px; ">Untuk Pembayaran &nbsp;&nbsp;&nbsp;: <?php echo $kas_data->uraian; ?></label> -->
       </td>
   </tr> 
       
@@ -64,7 +60,7 @@
     <th class="tg-baqh">Jumlah</th>
   </tr>
   <?php 
-      $data = $this->db->query("SELECT * from trx_kas_det where id_kas = '".$kas."'");
+      $data = $this->db->query("SELECT * from trx_jurnal where id_induk = '".$kas."'");
       $i=1;
       $ttl=0;
       foreach ($data->result() as $row) {
@@ -73,9 +69,13 @@
   ?>
   <tr>
     <td class="tg-s6z2"><?php echo $i; ?></td>
-    <td class="tg-031e"><?php echo $row->kode; ?></td>
-    <td class="tg-031e"><?php echo $row->memo; ?></td>
-    <td class="tg-yw4l"><?php  $ttl += $row->nominal; echo rp($row->nominal); ?></td>
+    <td class="tg-031e"><?php echo $row->akun; ?></td>
+    <td class="tg-031e"><?php echo $row->uraian; ?></td>
+    <?php if ($row->nominal < 0) { ?>   
+      <td class="tg-yw4l"><?php  $ttl += $row->nominal*-1; echo 'Rp '.number_format($row->nominal*-1).'.00'; ?></td>
+    <?php }else{ ?>
+      <td class="tg-yw4l"><?php  $ttl += $row->nominal; echo 'Rp '.number_format($row->nominal).'.00'; ?></td>
+    <?php } ?>
   </tr>  
   <?php $i++; }?>
   <tr>

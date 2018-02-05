@@ -1,5 +1,5 @@
 <div class="content-wrapper" style="min-height: 500px;">
-	<?php $this->load->view('main_dashboard'); ?>
+	<?php $this->load->view('dashboard_view'); ?>
 	<?php
 		//untuk sementara di matikan dulu
 		$pilihTahunAnggaranAktif = 'aktif';

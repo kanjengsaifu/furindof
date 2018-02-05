@@ -35,7 +35,7 @@
             else
                 $this->sqlWhere = "email='".$this->email. "' and kata_sandi='".md5($this->kataSandi)."'";
                       
-            $this->selectQuery = $this->db->query("SELECT id_karyawan AS IDUser, id_group as IDGroup    
+            $this->selectQuery = $this->db->query("SELECT id_karyawan AS IDUser, id_group as IDGroup, user_entry as Akses    
                                                     FROM mst_karyawan   
                                                     WHERE aktif = TRUE AND ".$this->sqlWhere);
           
@@ -50,6 +50,7 @@
                 
                 $_SESSION['IDUser']     = $this->arrSelectQuery['IDUser'];
                 $_SESSION['IDGroup']    = $this->arrSelectQuery['IDGroup'];
+                $_SESSION['Akses']    = $this->arrSelectQuery['Akses'];
                 
                 $this->IDUser           =  $this->arrSelectQuery['IDUser'];
 

@@ -129,14 +129,18 @@
   
         public function GetDaftarMaterial()
         {
-          $this->selectQuery = $this->db->query("SELECT * from tbl_material LEFT join tbl_provider on tbl_material.material_provider_id =tbl_provider.provider_id
-            order by material_id desc");
+          $this->selectQuery = $this->db->query("SELECT * from mst_material LEFT join mst_provider on mst_material.provider_id =mst_provider.provider_id
+            inner join ref_unit on ref_unit.unit_id = mst_material.unit_id order by material_id desc");
        
           $arrSelectQuery = array();
 
           foreach ($this->selectQuery->result_array() as $row) {
-
-            $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+            if($row['material_categories_id'] == 1){
+              $cat = 'Raw';
+            }else{
+              $cat = 'Suport';
+            }
+            $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Edit</button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span> Delete</button>";
 
             $arrSelectQuery[] = array('idx'    => $row['material_id'],
                                       'kode'   => $row['material_code'],                                      
@@ -145,10 +149,11 @@
                                       'harga'  => $row['material_price'], 
                                       'usd'    => $row['material_price_usd'],                                      
                                       'provider'   => $row['provider_name'],
-                                      'unit'   => $row['material_unit_id'],
+                                      'unit'   => $row['unit_name'],
                                       'stock'   => $row['material_minimal_stock'],
-                                      'categories' => $row['material_material_categories_id'], 
-                                      'group'   => $row['material_material_categories_group_id'],                                      
+                                      'categories' => $cat, 
+                                      'cat' => $row['material_categories_id'], 
+                                      'group'   => $row['material_categories_group_id'],                                      
                                       'action' => $strDataAction);
           }
 

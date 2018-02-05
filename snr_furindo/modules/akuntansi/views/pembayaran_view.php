@@ -428,6 +428,12 @@
 						}
 					}
 				});
+				$(".date").datepicker({
+			      format : "dd-mm-yyyy",
+			      startDate : new Date('<?php echo date('Y-m-d', strtotime("-".$_SESSION['Akses']." days"))?>'),
+			        endDate : new Date('<?php echo date('Y-m-d', strtotime("+90 days"))?>'),
+			      autoclose : true,
+			    });
 			});
 		});
 		

@@ -1,4 +1,4 @@
-<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+	<?php if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
 
 	class Transaksi extends MY_Controller {
 		
@@ -17,7 +17,7 @@
 	        $dataMenu = array('dataMenu' => $this->ModelTransaksi->GetMenuTransaksi());
 
 	        $menu 	  = $this->load->view('menu_transaksi_view', $dataMenu, true);
-	        $content  = $this->load->view('transaksi_view', '', true);
+	        $content  = $this->load->view('dashboard_view', '', true);
 
 	        $arrData = array('menu' 	=> $menu,
 	        			   	 'content'  => $content);
@@ -53,6 +53,9 @@
 			return $this->Terbilang($x / 1000) . " ribu" . $this->Terbilang($x % 1000);
 		  elseif ($x < 1000000000)
 			return $this->Terbilang($x / 1000000) . " juta " . $this->Terbilang($x % 1000000);
+		  elseif ($x < 10000000000000)
+		  	$a = $x / 1000000000;
+			return $this->Terbilang($x / 1000000000) . " milyar ";
 		}
 
 		function tambahpinjaman()
@@ -135,6 +138,7 @@
             echo $content;
 
 		}
+		
 
 		public function Simpanan()
 
@@ -217,12 +221,12 @@
 
 		{
 
-			$cari = $this->db->query("SELECT nomor_kas from trx_kas where nomor_kas like '%BKK%' order by nomor_kas DESC");
+			$cari = $this->db->query("SELECT nobukti from trx_jurnal where nobukti like '%BKK%' order by nobukti DESC");
 
 			if ($cari->num_rows()==0) {
 				$data['bkk'] = 'BKK-0000';
 			}else{
-				$data['bkk'] = $cari->row()->nomor_kas;
+				$data['bkk'] = $cari->row()->nobukti;
 			}
 
             $content = $this->load->view('input_bkk_view', $data, true);
@@ -234,12 +238,12 @@
 		public function InputBkm()
 
 		{
-			$cari = $this->db->query("SELECT nomor_kas from trx_kas where nomor_kas like '%BKM%' order by nomor_kas DESC");
+			$cari = $this->db->query("SELECT nobukti from trx_jurnal where nobukti like '%BKM%' order by nobukti DESC");
 
 			if ($cari->num_rows()==0) {
 				$data['bkm'] = 'BKM-0000';
 			}else{
-				$data['bkm'] = $cari->row()->nomor_kas;
+				$data['bkm'] = $cari->row()->nobukti;
 			}
 			$content = $this->load->view('input_bkm_view', $data, true);
                           
@@ -264,6 +268,25 @@
 
 
             echo $this->ModelTransaksi->ChangeDaftarKontak($tipe); 
+
+		}
+
+		public function GetKontak1($tipe = null)
+
+		{
+
+			$this->checkCredentialAccess();
+
+
+
+            $this->checkIsAjaxRequest();
+
+            
+
+            $this->load->model("transaksi_model", "ModelTransaksi");
+
+
+            echo $this->ModelTransaksi->ChangeDaftarKontak1($tipe); 
 
 		}
 
@@ -327,9 +350,23 @@
 
 		}
 
+		public function edit_bkk()
+		{
+			$idx = $this->input->post("IDBidang");
+			$data['bkk'] = $this->db->query("SELECT * from trx_jurnal left join mst_provider on mst_provider.provider_id = trx_jurnal.provider_id where id_jurnal ='".$idx."'")->row();
+			$this->load->view('edit_bkk_view', $data); 
+		}
+
+		public function edit_bkm()
+		{
+			$idx = $this->input->post("IDBidang");
+			$data['bkk'] = $this->db->query("SELECT * from trx_jurnal left join mst_provider on mst_provider.provider_id = trx_jurnal.provider_id where id_jurnal ='".$idx."'")->row();
+			$this->load->view('edit_bkm_view', $data); 
+		}
+
 		public function printbkm($idx)
 		{
-			$cari = $this->db->query("SELECT sum(nominal) as nominal from trx_kas_det where id_kas = '".$idx."'")->row();
+			$cari = $this->db->query("SELECT sum(nominal) as nominal from trx_jurnal where id_jurnal = '".$idx."'")->row();
 
 			$data['kas'] = $idx;
 
@@ -342,11 +379,11 @@
 
 		public function printbkk($idx)
 		{
-			$cari = $this->db->query("SELECT sum(nominal) as nominal from trx_kas_det where id_kas = '".$idx."'")->row();
+			$cari = $this->db->query("SELECT nominal from trx_jurnal where id_jurnal = '".$idx."'")->row();
 
 			$data['kas'] = $idx;
 
-			$data['terbilang'] = $this->Terbilang($cari->nominal).' rupiah';
+			$data['terbilang'] = $this->Terbilang($cari->nominal*-1).' rupiah';
 
            	$this->load->view('cetak_bkk', $data);                
 
@@ -497,95 +534,9 @@
 
 		}
 
-		public function caridatanasabah()
-		{
-
-			//echo "<pre>";print_r($_POST);"</pre>";exit();
-            $kode = $this->input->post("kode");
-            $ksm1 = $this->input->post("ksm2");
-            //$namaB = $this->input->post("nama");
-            $param = $this->db->query("SELECT * from mst_nasabah inner join mst_kontak on mst_nasabah.id_kontak = mst_kontak.id
-                                              where id_ksm ='".$ksm1."' and (nama like '%".$kode."%' OR kode_nasabah like '%".$kode."%')
-                                			  order by kode_nasabah asc");
-    		if ($param->num_rows()>0) {
-    			$i=0;
-           	foreach($param->result() as $row)
-			{
-				$i++;
-				$data['NO'] = $i;
-				$data['ID'] = $row->id_nasabah;
-				$data['Kode'] = $row->kode_nasabah;
-				$data['Nama'] = $row->nama;				
-				//$data['Jumlah'] = $row->Jumlah;		
-				
-				$json['ksm'][] = $data;
-				
-			}
-			$json['status'] = true;
-			}else{
-				$json['status'] = false;
-			}
-			//$json['status'] = true;
-			
-			$dataJson = json_encode($json);
-			
-			echo $dataJson;
-
-		}
-
-		function changeksm()
-		{
-			//echo "<pre>";print_r($_POST);"</pre>";
-			
-			$jenisbarang = $this->db->query("SELECT * FROM mst_ksm 			
-			WHERE id_ksm = '".$this->input->post("id_ksm")."'")->row();
-		
-			$data['nama'] = $jenisbarang->nama_ksm;
-			$data['idksm'] = $jenisbarang->id_ksm;
-			$data['kode'] = $jenisbarang->kode_ksm;
-			
-			
-			echo json_encode($data);
-		}
-
 		function saveangsuran()
 		{
 			
-			//echo "<pre>";print_r($_POST);"</pre>"; exit();
-			// $cek1 = $this->db->query("SELECT nomor_kas from trx_kas where nomor_kas like '%BKM%' order by nomor_kas DESC");
-			// 	$jml1 = $cek1->num_rows();
-			// 	$jml_det1=0;
-			// 	if ($jml1 == 0) {
-			// 		$datax['nomor_kas']= 'BKM-0001';
-			// 	} else if($jml1 < 10){
-			// 		$jml_det1 = $jml1+1;
-			// 		$datax['nomor_kas']= 'BKM-000'.$jml_det1;
-			// 	} else if($jml1 < 100){
-			// 		$jml_det1 = $jml1+1;
-			// 		$datax['nomor_kas']= 'BKM-00'.$jml_det1;
-			// 	} else if($jml1 < 1000){
-			// 		$jml_det1 = $jml1+1;
-			// 		$datax['nomor_kas']= 'BKM-0'.$jml_det1;
-			// 	} else {
-			// 		$jml_det1 = $jml1+1;
-			// 		$datax['nomor_kas']= 'BKM-'.$jml_det1;
-			// 	}
-			
-			// $datax['id_ksm'] = $this->input->post("id_ksm");
-			// $datax['tgl_kas'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
-			// $datax['uraian'] = $this->input->post("catatan");
-			// $datax['id_kasbank'] = $this->input->post("id_kasbank");
-			// $datax['id_kategori'] = 1;
-			// $datax['acc'] = 0;
-			// $datax['jenis'] = 'um';
-			// $datax['dateentry'] = date("Y-m-d");
-			// $datax['userentry'] = $_SESSION['IDUser'];
-			
-			// $this->db->insert("trx_kas", $datax);
-			
-			// $idbank = $this->db->insert_id();
-
-
 			$data['nomor_kas'] = $this->input->post("nomor");
 			$data['id_ksm'] = $this->input->post("id_ksm");
 			$data['tgl_kas'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
@@ -673,10 +624,65 @@
 			
 		}
 
+		function updatebkk()
+		{
+		  //echo "<pre>";print_r($_POST);"</pre>"; exit();
+		  $idso = $this->input->post("id_jurnal");
+		  $data6['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+	      $data6['uraian'] = $this->input->post("kasbank");
+	      $data6['memo'] = $this->input->post("catatan");
+	      $data6['akun'] = $this->input->post("bank_code");
+	      $data6['nobukti'] = $this->input->post("nomor");       
+	      $data6['id_kategori'] = 1;
+	      $data6['id_lpb_liquid'] = 0;
+	      //$data6['provider_id'] = $cus;
+	      //$data6['dateentry'] = date("Y-m-d");
+	      $data6['userentry'] = $_SESSION['IDUser'];
+	      $data6['jenis'] = 'uk';
+	      $data6['nominal'] = '-'.strToCurrDB($this->input->post("total"));
+	      $this->db->where('id_jurnal',$idso);
+	      $this->db->update("trx_jurnal", $data6);
+
+	      $c_kontak = count($this->input->post("kode"));
+	      for($i=0; $i<$c_kontak;$i++)
+			{
+	      //$data7['id_induk'] = $idkas;
+	          $data7['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+	          $data7['uraian'] = $_POST['uraian'][$i];
+	          $data7['memo'] = $_POST['memo'][$i];
+	          $data7['akun'] = $_POST['kode'][$i];
+	          $data7['nobukti'] = $this->input->post("nomor");
+	          $data7['id_lpb_liquid'] = 0;
+	          //$data7['provider_id'] = $cus;
+	          //$data7['dateentry'] = date("Y-m-d");
+	          $cek_kode = $_POST['kode'][$i];
+	          $baru = substr($cek_kode, 0, 1);
+	          if ($baru == 5 || $baru == 6 || $baru == 9) {
+	          	$data7['jenis'] = 'uk';
+	          	$data7['nominal'] = '-'.strToCurrDB($_POST['nominal'][$i]);
+	          	$data7['id_kategori'] = 2;
+	          }else if ($baru == 3 || $baru == 2) {
+	          	$data7['jenis'] = 'uk';
+	          	$data7['nominal'] = '-'.strToCurrDB($_POST['nominal'][$i]);
+	          	$data7['id_kategori'] = 1;
+	          }else{
+	          	$data7['jenis'] = 'um';
+	          	$data7['nominal'] = strToCurrDB($_POST['nominal'][$i]);
+	          	$data7['id_kategori'] = 1;
+	          }	
+	          $data7['userentry'] = $_SESSION['IDUser'];
+	          $this->db->where('id_jurnal',$_POST['jurnal_id'][$i]);
+	          $this->db->update("trx_jurnal", $data7);
+	          }
+			$messageData =1;
+			echo $messageData;
+
+		}
+
 		function savebkk()
 		{
 			//echo "<pre>";print_r($_POST);"</pre>"; exit();
-			$this->form_validation->set_rules('rekanan', 'Dibayar ke', 'trim|required|xss_clean');
+			//$this->form_validation->set_rules('rekanan', 'Dibayar ke', 'trim|required|xss_clean');
     		$this->form_validation->set_rules('catatan', 'Catatan', 'trim|required|xss_clean');
 
     		
@@ -690,18 +696,41 @@
 			else
 			{
 				//echo "<pre>";print_r($_POST);"</pre>";exit();
-				$data['nomor_kas'] = $this->input->post("nomor");
-				$data['id_kontak'] = $this->input->post("id_rekanan");
-				$data['tgl_kas'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
-				$data['uraian'] = $this->input->post("catatan");
-				$data['id_kasbank'] = $this->input->post("id_kasbank");
-				$data['id_kategori'] = 1;
-				$data['acc'] = 1;
-				$data['jenis'] = 'uk';
-				$data['dateentry'] = date("Y-m-d");
-				$data['userentry'] = $_SESSION['IDUser'];
-				
-				$this->db->insert("trx_kas", $data);
+				  $cus = $this->input->post("id_rekanan");
+		          $profit = $this->db->query("SELECT * from mst_provider where provider_id = '".$cus."'");
+		          $ttl = strToCurrDB($this->input->post("total"));		          
+
+		          $cek1 = $this->db->query("SELECT * from trx_jurnal order by id_jurnal DESC");       
+		          $jml1 = $cek1->row()->id_jurnal;
+		          $jml_det1=0;
+		          if ($jml1 == 0) {
+		            $data6['nomor']= 'JU-0001';
+		          } else if($jml1 < 10){
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-000'.$jml_det1;
+		          } else if($jml1 < 100){
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-00'.$jml_det1;
+		          } else if($jml1 < 1000){
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-0'.$jml_det1;
+		          } else {
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-'.$jml_det1;
+		          }
+		          $data6['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+		          $data6['uraian'] = $this->input->post("kasbank");
+		          $data6['memo'] = $this->input->post("catatan");
+		          $data6['akun'] = $this->input->post("bank_code");
+		          $data6['nobukti'] = $this->input->post("nomor");       
+		          $data6['id_kategori'] = 1;
+		          $data6['id_lpb_liquid'] = 0;
+		          $data6['provider_id'] = $cus;
+		          $data6['dateentry'] = date("Y-m-d");
+		          $data6['userentry'] = $_SESSION['IDUser'];
+		          $data6['jenis'] = 'uk';
+		          $data6['nominal'] = '-'.$ttl;
+		          $this->db->insert("trx_jurnal", $data6);
 				
 				$idkas = $this->db->insert_id();
 				
@@ -710,18 +739,114 @@
 				$c_kontak = count($this->input->post("kode"));
 				
 				for($i=0; $i<$c_kontak;$i++)
-				{				
-					$data2['id_kas'] = $idkas;
-					$data2['kode'] = $_POST['kode'][$i];
-					$data2['uraian'] = $_POST['uraian'][$i];
-					$data2['memo'] = $_POST['memo'][$i];
-					$data2['nominal'] = strToCurrDB($_POST['nominal'][$i]);														
-					$this->db->insert("trx_kas_det", $data2);
-				}	            
+				{	
+				  $jml2 = $jml1+1;
+		          $jml_det2=0;
+		          if ($jml2 == 0) {
+		            $data7['nomor']= 'JU-0001';
+		          } else if($jml2 < 10){
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-000'.$jml_det2;
+		          } else if($jml2 < 100){
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-00'.$jml_det2;
+		          } else if($jml2 < 1000){
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-0'.$jml_det2;
+		          } else {
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-'.$jml_det2;
+		          }
+		          $data7['id_induk'] = $idkas;
+		          $data7['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+		          $data7['uraian'] = $_POST['uraian'][$i];
+		          $data7['memo'] = $_POST['memo'][$i];
+		          $data7['akun'] = $_POST['kode'][$i];
+		          $data7['nobukti'] = $this->input->post("nomor");
+		          $data7['pembayaran'] = $this->input->post("pembayaran");
+		          $data7['id_lpb_liquid'] = 0;
+		          $data7['provider_id'] = $cus;
+		          $data7['dateentry'] = date("Y-m-d");
+		          $cek_kode = $_POST['kode'][$i];
+		          $baru = substr($cek_kode, 0, 1);
+		          if ($baru == 5 || $baru == 6 || $baru == 9) {
+		          	$data7['jenis'] = 'uk';
+		          	$data7['nominal'] = '-'.strToCurrDB($_POST['nominal'][$i]);
+		          	$data7['id_kategori'] = 2;
+		          }else if ($baru == 3 || $baru == 2) {
+		          	$data7['jenis'] = 'uk';
+		          	$data7['nominal'] = '-'.strToCurrDB($_POST['nominal'][$i]);
+		          	$data7['id_kategori'] = 1;
+		          }else{
+		          	$data7['jenis'] = 'um';
+		          	$data7['nominal'] = strToCurrDB($_POST['nominal'][$i]);
+		          	$data7['id_kategori'] = 1;
+		          }	
+		          $data7['userentry'] = $_SESSION['IDUser'];
+		          $this->db->insert("trx_jurnal", $data7);
+					
+				}
+				$messageData =1;
+				echo $messageData;	            
 			
         	}
         			
 			
+		}
+
+		function updatebkm()
+		{
+		  //echo "<pre>";print_r($_POST);"</pre>"; exit();
+		  $idso = $this->input->post("id_jurnal");
+		  $data6['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+	      $data6['uraian'] = $this->input->post("kasbank");
+	      $data6['memo'] = $this->input->post("catatan");
+	      $data6['akun'] = $this->input->post("bank_code");
+	      $data6['nobukti'] = $this->input->post("nomor");       
+	      $data6['id_kategori'] = 1;
+	      $data6['id_lpb_liquid'] = 0;
+	      //$data6['provider_id'] = $cus;
+	      //$data6['dateentry'] = date("Y-m-d");
+	      $data6['userentry'] = $_SESSION['IDUser'];
+	      $data6['jenis'] = 'um';
+		  $data6['nominal'] = strToCurrDB($this->input->post("total"));
+	      $this->db->where('id_jurnal',$idso);
+	      $this->db->update("trx_jurnal", $data6);
+
+	      $c_kontak = count($this->input->post("kode"));
+	      for($i=0; $i<$c_kontak;$i++)
+			{
+	      //$data7['id_induk'] = $idkas;
+	          $data7['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+	          $data7['uraian'] = $_POST['uraian'][$i];
+	          $data7['memo'] = $_POST['memo'][$i];
+	          $data7['akun'] = $_POST['kode'][$i];
+	          $data7['nobukti'] = $this->input->post("nomor");
+	          $data7['id_lpb_liquid'] = 0;
+	          //$data7['provider_id'] = $cus;
+	          //$data7['dateentry'] = date("Y-m-d");
+	          $cek_kode = $_POST['kode'][$i];
+	          $baru = substr($cek_kode, 0, 1);
+	          if ($baru == 4 || $baru == 8) {
+	          	$data7['jenis'] = 'um';
+	          	$data7['nominal'] = strToCurrDB($_POST['nominal'][$i]);
+	          	$data7['id_kategori'] = 3;
+	          }else if ($baru == 3 || $baru == 2) {
+	          	$data7['jenis'] = 'um';
+	          	$data7['nominal'] = strToCurrDB($_POST['nominal'][$i]);
+	          	$data7['id_kategori'] = 1;
+	          }else{
+	          	$data7['jenis'] = 'uk';
+	          	$data7['nominal'] = '-'.strToCurrDB($_POST['nominal'][$i]);
+	          	$data7['id_kategori'] = 1;
+	          }
+	          $data7['userentry'] = $_SESSION['IDUser'];
+	          $this->db->where('id_jurnal',$_POST['jurnal_id'][$i]);
+	          $this->db->update("trx_jurnal", $data7);
+	          }
+			$messageData =1;
+			echo $messageData;
+
 		}
 
 		function savebkm()
@@ -741,18 +866,41 @@
 			else
 			{
 				//echo "<pre>";print_r($_POST);"</pre>";exit();
-				$data['nomor_kas'] = $this->input->post("nomor");
-				$data['id_kontak'] = $this->input->post("id_rekanan");
-				$data['tgl_kas'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
-				$data['uraian'] = $this->input->post("catatan");
-				$data['id_kasbank'] = $this->input->post("id_kasbank");
-				$data['id_kategori'] = 1;
-				$data['acc'] = 1;
-				$data['jenis'] = 'um';
-				$data['dateentry'] = date("Y-m-d");
-				$data['userentry'] = $_SESSION['IDUser'];
-				
-				$this->db->insert("trx_kas", $data);
+				$cus = $this->input->post("id_rekanan");
+		          $profit = $this->db->query("SELECT * from mst_provider where provider_id = '".$cus."'");
+		          $ttl = strToCurrDB($this->input->post("total"));		          
+
+		          $cek1 = $this->db->query("SELECT * from trx_jurnal order by id_jurnal DESC");       
+		          $jml1 = $cek1->row()->id_jurnal;
+		          $jml_det1=0;
+		          if ($jml1 == 0) {
+		            $data6['nomor']= 'JU-0001';
+		          } else if($jml1 < 10){
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-000'.$jml_det1;
+		          } else if($jml1 < 100){
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-00'.$jml_det1;
+		          } else if($jml1 < 1000){
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-0'.$jml_det1;
+		          } else {
+		            $jml_det1 = $jml1+1;
+		            $data6['nomor']= 'JU-'.$jml_det1;
+		          }
+		          $data6['tgl'] = date("Y-m-d", strtotime($this->input->post("tanggal")));
+		          $data6['uraian'] = $this->input->post("kasbank");
+		          $data6['memo'] = $this->input->post("catatan");
+		          $data6['akun'] = $this->input->post("bank_code");
+		          $data6['nobukti'] = $this->input->post("nomor");       
+		          $data6['id_kategori'] = 1;
+		          $data6['id_lpb_liquid'] = 0;
+		          $data6['provider_id'] = $cus;
+		          $data6['dateentry'] = date("Y-m-d");
+		          $data6['userentry'] = $_SESSION['IDUser'];
+		          $data6['jenis'] = 'um';
+		          $data6['nominal'] = $ttl;
+		          $this->db->insert("trx_jurnal", $data6);
 				
 				$idkas = $this->db->insert_id();
 				
@@ -761,14 +909,54 @@
 				$c_kontak = count($this->input->post("kode"));
 				
 				for($i=0; $i<$c_kontak;$i++)
-				{				
-					$data2['id_kas'] = $idkas;
-					$data2['kode'] = $_POST['kode'][$i];
-					$data2['uraian'] = $_POST['uraian'][$i];
-					$data2['memo'] = $_POST['memo'][$i];
-					$data2['nominal'] = strToCurrDB($_POST['nominal'][$i]);														
-					$this->db->insert("trx_kas_det", $data2);
-				}	            
+				{	
+				  $jml2 = $jml1+1;
+		          $jml_det2=0;
+		          if ($jml2 == 0) {
+		            $data7['nomor']= 'JU-0001';
+		          } else if($jml2 < 10){
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-000'.$jml_det2;
+		          } else if($jml2 < 100){
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-00'.$jml_det2;
+		          } else if($jml2 < 1000){
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-0'.$jml_det2;
+		          } else {
+		            $jml_det2 = $jml2+1;
+		            $data7['nomor']= 'JU-'.$jml_det2;
+		          }
+		          $data7['id_induk'] = $idkas;
+		          $data7['tgl'] = date("Y-m-d");
+		          $data7['uraian'] = $_POST['uraian'][$i];
+		          $data7['memo'] = $_POST['memo'][$i];
+		          $data7['akun'] = $_POST['kode'][$i];
+		          $data7['nobukti'] = $this->input->post("nomor");       
+		          //$data7['id_kategori'] = 3;
+		          $data7['id_lpb_liquid'] = 0;
+		          $data7['provider_id'] = $cus;
+		          $data7['dateentry'] = date("Y-m-d");
+		          $data7['userentry'] = $_SESSION['IDUser'];
+		          $cek_kode = $_POST['kode'][$i];
+		          $baru = substr($cek_kode, 0, 1);
+		          if ($baru == 4 || $baru == 8) {
+		          	$data7['jenis'] = 'um';
+		          	$data7['nominal'] = strToCurrDB($_POST['nominal'][$i]);
+		          	$data7['id_kategori'] = 3;
+		          }else if ($baru == 3 || $baru == 2) {
+		          	$data7['jenis'] = 'um';
+		          	$data7['nominal'] = strToCurrDB($_POST['nominal'][$i]);
+		          	$data7['id_kategori'] = 1;
+		          }else{
+		          	$data7['jenis'] = 'uk';
+		          	$data7['nominal'] = '-'.strToCurrDB($_POST['nominal'][$i]);
+		          	$data7['id_kategori'] = 1;
+		          }
+		          $this->db->insert("trx_jurnal", $data7);
+				}
+				$messageData =1;
+				echo $messageData;	            
 			
         	}
 			
@@ -942,54 +1130,7 @@
 			
         	}
 		}
-
-		public function savesimpanan()
-		{
-
-			
-
-           	$this->checkCredentialAccess();
-
-            $this->checkIsAjaxRequest();
-
-            $this->form_validation->set_rules('namaksm', 'Nama Nasabah', 'trim|required|xss_clean');
-    		//$this->form_validation->set_rules('lama', 'Lama', 'trim|required|xss_clean');
-
-    		
-    		
-			if ( ! $this->form_validation->run() )
-			{				
-				$errorMessage = form_error('namaksm');
-				$messageData = ConstructMessageResponse($errorMessage , 'warning');
-				echo $messageData;
-			}
-			else
-			{
-				//echo "<pre>";print_r($_POST);"</pre>";exit();
-				$data['kode_simpanan'] = $this->input->post("nomor");
-				$data['id_ksm'] = $this->input->post("idksm");
-				// $data['bunga'] = $this->input->post("bunga");
-				// $data['lama'] = $this->input->post("lama");
-				$data['tanggal'] = date("Y-m-d", strtotime($this->input->post("tglreg")));			
-				
-				$this->db->insert("trx_simpanan", $data);
-				
-				$idpinjam = $this->db->insert_id();
-				
-				// INSERT TO trx_reg_nasabah //
-				
-				$c_nasabah = count($this->input->post("idnasabah"));
-				
-				for($i=0; $i<$c_nasabah;$i++)
-				{				
-					$data2['id_simpanan'] = $idpinjam;
-					$data2['id_nasabah'] = $_POST['idnasabah'][$i];
-					$data2['nominal'] = $_POST['nominal'][$i];														
-					$this->db->insert("trx_simpanan_det", $data2);
-				}	            
-			
-        	}
-		}
+		
 		
 
 	}

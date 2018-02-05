@@ -112,26 +112,66 @@
           //echo "<pre>";print_r($tipe);"</pre>";
           
           if ($tipe != null) {
-            $this->selectQuery = $this->db->query("SELECT * from mst_kontak where idtipe like '%".$tipe."%' ORDER BY id asc");
+            $this->selectQuery = $this->db->query("SELECT * from mst_provider where provider_categories_id = 4 ORDER BY provider_id asc");
           }else{
-            $this->selectQuery = $this->db->query("SELECT * from mst_kontak ORDER BY id asc");
+            $this->selectQuery = $this->db->query("SELECT * from mst_provider where provider_categories_id != 4 ORDER BY provider_id asc");
           }
 
           $arrSelectQuery = array();
 
           foreach ($this->selectQuery->result_array() as $row) {
-            $id = $row['id'];
-            $name = $row['nama'];
+            $id = $row['provider_id'];
+            $name = $row['provider_name'];
             $nama = str_replace(" ","_",$name);
             $strDataAction = "<button type='button' class='btn btn-xs btn-success' onclick=dialogFormPilih('$nama',$id)><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Pilih</button>";
 
 
-            $arrSelectQuery[] = array('idx'   => $row['id'],
-                                      'kode'  => $row['kode'],
-                                      'nama'  => $row['nama'],
-                                      'alamat'=> $row['alamat'],  
-                                      'notelp'=> $row['notelp'], 
-                                      'pic'   => $row['pic'],
+            $arrSelectQuery[] = array('idx'   => $row['provider_id'],
+                                      'kode'  => $row['provider_code'],
+                                      'nama'  => $row['provider_name'],
+                                      'alamat'=> $row['provider_address'],  
+                                      'notelp'=> $row['provider_phone'], 
+                                      'pic'   => $row['provider_contact_person'],
+                                      'action'=> $strDataAction
+
+                                      );
+
+          }
+
+
+          //echo "<pre>";print_r($this->selectQuery);"</pre>";
+          return json_encode($arrSelectQuery);
+
+
+
+        }
+
+        public function ChangeDaftarKontak1($tipe= null)
+
+        {
+          //echo "<pre>";print_r($tipe);"</pre>";
+          
+          if ($tipe != null) {
+            $this->selectQuery = $this->db->query("SELECT * from mst_provider where provider_categories_id = 4 ORDER BY provider_id asc");
+          }else{
+            $this->selectQuery = $this->db->query("SELECT * from mst_provider where provider_categories_id = 4 ORDER BY provider_id asc");
+          }
+
+          $arrSelectQuery = array();
+
+          foreach ($this->selectQuery->result_array() as $row) {
+            $id = $row['provider_id'];
+            $name = $row['provider_name'];
+            $nama = str_replace(" ","_",$name);
+            $strDataAction = "<button type='button' class='btn btn-xs btn-success' onclick=dialogFormPilih('$nama',$id)><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Pilih</button>";
+
+
+            $arrSelectQuery[] = array('idx'   => $row['provider_id'],
+                                      'kode'  => $row['provider_code'],
+                                      'nama'  => $row['provider_name'],
+                                      'alamat'=> $row['provider_address'],  
+                                      'notelp'=> $row['provider_phone'], 
+                                      'pic'   => $row['provider_contact_person'],
                                       'action'=> $strDataAction
 
                                       );
@@ -152,7 +192,7 @@
 
 
 
-          $this->selectQuery = $this->db->query("SELECT * FROM mst_kasbank order by kode_kasbank asc limit 3 ");
+          $this->selectQuery = $this->db->query("SELECT * FROM mst_kasbank order by kode_kasbank asc");
 
 
 
@@ -168,12 +208,13 @@
              $name = $row['nama_kasbank'];
              $nama = str_replace(" ","_",$name);
              $id = $row['id_kasbank'];
+             $bank = $row['kode_kasbank'];
             if ($row['level'] == 0) {             
               $kode = "<span class='glyphicon glyphicon-home' aria-hidden='true'></span> ".$row['kode_kasbank'];
               $strDataAction ='';
             } else if ($row['level'] == 1) {              
               $kode = "&nbsp;&nbsp;<span class='glyphicon glyphicon-share' aria-hidden='true'></span> ".$row['kode_kasbank'];
-              $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick=pilihKasbank('$nama',$id)><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Pilih</button>";
+              $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick=pilihKasbank('$nama',$id,'$bank')><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Pilih</button>";
             } else if ($row['level'] == 2) {              
               $kode = "&nbsp;&nbsp;&nbsp;&nbsp;<span class='glyphicon glyphicon-share-alt' aria-hidden='true'></span> ".$row['kode_kasbank'];
             }
@@ -211,11 +252,11 @@
 
         {
 
-          $this->selectQuery = $this->db->query("SELECT id_pemasukan as ID, kode_pemasukan as kode, nama_pemasukan as nama, level as level   
+          $this->selectQuery = $this->db->query("SELECT id_kasbank as ID, kode_kasbank as kode, nama_kasbank as nama, level as level   
 
-                                                 FROM mst_pemasukan                                                     
+                                                 FROM mst_kasbank                                                     
 
-                                                 ORDER BY kode_pemasukan asc");
+                                                 ORDER BY kode_kasbank asc");
 
 
 
@@ -241,7 +282,7 @@
               if ($cek->num_rows() != 0) {
                 $strDataAction = "";
               }else{
-                $strDataAction = "<button type='button' class='btn btn-xs btn-success' onclick=PilihPemasukan('$kd','$nama',$id)><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Pilih</button>";
+                $strDataAction = "<button type='button' class='btn btn-xs btn-success' onclick=PilihPemasukan('$kd',$id,'$nama')><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Pilih</button>";
               }
             } else if ($row['level'] == 2) {
               $kode = "&nbsp;&nbsp;&nbsp;&nbsp;<span class='glyphicon glyphicon-share-alt' aria-hidden='true'></span> ".$row['kode'];
@@ -277,11 +318,11 @@
 
         {
 
-          $this->selectQuery = $this->db->query("SELECT id_pengeluaran as ID, kode_pengeluaran as kode, nama_pengeluaran as nama, level as level   
+          $this->selectQuery = $this->db->query("SELECT id_kasbank as ID, kode_kasbank as kode, nama_kasbank as nama, level as level   
 
-                                                 FROM mst_pengeluaran                                                    
+                                                 FROM mst_kasbank                                                    
 
-                                                 ORDER BY kode_pengeluaran asc");
+                                                 ORDER BY kode_kasbank asc");
 
 
 
@@ -340,21 +381,20 @@
         public function GetDaftarBkk()
         {
                      
-            $this->selectQuery = $this->db->query("SELECT trx_kas.id_kas, trx_kas.tgl_kas, trx_kas.nomor_kas, trx_kas.uraian, sum(trx_kas_det.nominal) as nominal
-                from trx_kas inner join trx_kas_det on trx_kas.id_kas=trx_kas_det.id_kas where trx_kas.jenis = 'uk'
-                group by trx_kas.id_kas order by tgl_kas ");
+            $this->selectQuery = $this->db->query("SELECT * from trx_jurnal where id_kategori = 1 AND nobukti like '%BKK%' group by nobukti desc ");
          
             $arrSelectQuery = array();
 
             foreach ($this->selectQuery->result_array() as $row) {
-              $idpinjam = $row['id_kas'];              
-              $strDataAction = "<button type='button' class='btn btn-xs btn-primary'  onclick='dialogFormPrint($idpinjam)'><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Print</button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='dialogFormDetailShow($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Detail</button>";
+              $idpinjam = $row['id_jurnal'];              
+              $strDataAction = "<button type='button' class='btn btn-xs btn-primary'  onclick='dialogFormPrint($idpinjam)'><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Print</button>&nbsp;<button type='button' class='btn btn-xs btn-warning'  onclick='EditData($idpinjam)'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Edit</button>";
 
-              $arrSelectQuery[] = array('idx'    => $row['id_kas'],
-                                        'tgl'   => date("d-m-Y", strtotime($row['tgl_kas'])),                                   
-                                        'nomor'   => $row['nomor_kas'],
-                                        'uraian'   => $row['uraian'],
-                                        'nominal' => rp($row['nominal']),                                      
+              $arrSelectQuery[] = array('idx'    => $row['id_jurnal'],
+                                        'tgl'   => date("d-m-Y", strtotime($row['tgl'])),                                   
+                                        'nomor'   => $row['nobukti'],
+                                        'uraian'   => $row['memo'],
+                                        'akun'   => $row['akun'],
+                                        'nominal' => rp($row['nominal']*-1),                                      
                                         'action'  => $strDataAction);
             }
 
@@ -366,20 +406,19 @@
         public function GetDaftarBkm()
         {
                      
-            $this->selectQuery = $this->db->query("SELECT trx_kas.id_kas, trx_kas.tgl_kas, trx_kas.nomor_kas, trx_kas.uraian, sum(trx_kas_det.nominal) as nominal
-                from trx_kas inner join trx_kas_det on trx_kas.id_kas=trx_kas_det.id_kas where trx_kas.jenis = 'um'
-                group by trx_kas.id_kas order by tgl_kas ");
+            $this->selectQuery = $this->db->query("SELECT * from trx_jurnal where id_kategori = 1 AND nobukti like '%BKM%' group by nobukti desc ");
          
             $arrSelectQuery = array();
 
             foreach ($this->selectQuery->result_array() as $row) {
-              $idpinjam = $row['id_kas'];              
-              $strDataAction = "<button type='button' class='btn btn-xs btn-primary'  onclick='dialogFormPrint($idpinjam)'><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Print</button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='dialogFormDetailShow($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Detail</button>";
+              $idpinjam = $row['id_jurnal'];              
+              $strDataAction = "<button type='button' class='btn btn-xs btn-primary'  onclick='dialogFormPrint($idpinjam)'><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Print</button>&nbsp;<button type='button' class='btn btn-xs btn-warning'  onclick='EditData($idpinjam)'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Edit</button>";
 
-              $arrSelectQuery[] = array('idx'    => $row['id_kas'],
-                                        'tgl'   => date("d-m-Y", strtotime($row['tgl_kas'])),                                   
-                                        'nomor'   => $row['nomor_kas'],
-                                        'uraian'   => $row['uraian'],
+              $arrSelectQuery[] = array('idx'    => $row['id_jurnal'],
+                                        'tgl'   => date("d-m-Y", strtotime($row['tgl'])),                                   
+                                        'nomor'   => $row['nobukti'],
+                                        'uraian'   => $row['memo'],
+                                        'akun'   => $row['akun'],
                                         'nominal' => rp($row['nominal']),                                      
                                         'action'  => $strDataAction);
             }

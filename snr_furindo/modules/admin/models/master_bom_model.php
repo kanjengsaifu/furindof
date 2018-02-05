@@ -129,20 +129,22 @@
   
         public function GetDaftarBom()
         {
-          $this->selectQuery = $this->db->query("SELECT * from tbl_bom inner join tbl_product on tbl_bom.bom_product_id=tbl_product.product_id order by product_id desc");
+          $this->selectQuery = $this->db->query("SELECT * from mst_bom inner join mst_product on mst_bom.product_id=mst_product.product_id order by mst_bom.product_id desc");
        
           $arrSelectQuery = array();
 
           foreach ($this->selectQuery->result_array() as $row) {
             $idproduk = $row['product_id'];
             $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='EditShow($idproduk)'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Import</button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='detailShow($idproduk)'><span class='glyphicon glyphicon-plus' aria-hidden='true'></span> Detail</button>";
+            $strDataAction1 = "<button type='button' class='btn btn-xs btn-info'  onclick='detailShow($idproduk)'><span class='glyphicon glyphicon-search' aria-hidden='true'></span> Detail</button>";
 
             $arrSelectQuery[] = array('idx'    => $row['product_id'],
                                       'kode'   => $row['product_code'],                                      
                                       'nama'   => $row['product_name'],
                                       'foto'   => $row['product_photo'],
                                       'harga'  => $row['product_price_usd'],                                      
-                                      'cost'   => $row['product_cost'],                                      
+                                      'cost'   => $row['product_cost'],
+                                      'action1' => $strDataAction1,                                      
                                       'action' => $strDataAction);
           }
 

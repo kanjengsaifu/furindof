@@ -55,8 +55,15 @@ p {
 </head>
 <body>
 	<div id="container">
-		<h1><?php echo $heading; ?></h1>
-		<?php echo $message; ?>
-	</div>
+		<!--<h1><?php echo $heading; ?></h1>-->
+		<h1>Server Offline </h1>
+		<!--<?php echo $message; ?>-->
+		Cek dulu apakah server hidup? 
+		Mohon maaf atas ketidaknyamanannya. <br/>-Tim Pengembang <br/>
+		<br/>
+	
+		
+		<img width="290" height="65" src="http://i61.tinypic.com/2zs3fjd.jpg" frameborder="0" allowfullscreen></img>
+			
 </body>
 </html>

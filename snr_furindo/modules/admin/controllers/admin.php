@@ -13,16 +13,12 @@
 
 			$this->checkIsAjaxRequest();
 
-			//$data = $this->db->query("SELECT * from ref_kecamatan");
-			//$data1 = $this->db->query("SELECT * from ref_kelurahan");
-			//$data2 = $this->db->query("SELECT * from ref_pedukuhan");
-	        $this->load->model('admin_model', 'ModelAdmin');
+			    $this->load->model('admin_model', 'ModelAdmin');
 	        $dataMenu = array('dataMenu' => $this->ModelAdmin->GetMenuAdmin());
 
 	        $menu 	  = $this->load->view('menu_admin_view', $dataMenu, true);
-	        $content = '';
-	        //$content  = $this->load->view('admin_view', '', true);
-
+	        $content  = $this->load->view('dashboard_view', '', true);
+	        
 	        $arrData = array('menu' 	=> $menu,	        				 
 	        			   	 'content'  => $content);
 
@@ -85,6 +81,152 @@
             echo  $content;
 		}
 
+    public function do_upload(){
+      $config = array(
+      'upload_path' => "./uploads/",
+      'allowed_types' => "gif|jpg|png|jpeg|pdf",
+      'overwrite' => TRUE,
+      'max_size' => "2048000", // Can be set to particular file size , here it is 2 MB(2048 Kb)
+      'max_height' => "768",
+      'max_width' => "1024"
+      );
+      $this->load->library('upload', $config);
+    }
+
+    public function addkaryawan()
+    {
+      $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();           
+
+            $content = $this->load->view('tambah_karyawan_view');                
+
+            echo  $content;
+    }
+
+    public function editkaryawan()
+    {
+      $idx = $this->input->post('ID'); 
+
+            $data['krs'] = $this->db->query("SELECT * from mst_karyawan where id_karyawan = '".$idx."'")->row();         
+
+            $content = $this->load->view('edit_karyawan_view', $data);                
+
+            echo  $content;
+    }
+
+    public function profil2()
+    {
+      $idx = $this->input->post('ID'); 
+
+            $data['krs'] = $this->db->query("SELECT * from mst_karyawan where id_karyawan = '".$idx."'")->row();         
+
+            $content = $this->load->view('edit_profil_view', $data);                
+
+            echo  $content;
+    }
+
+    function ajax_lookUpUsername2(){
+        $email = $this->input->post('email');
+        $this->db->where('email', $email);
+        $query = $this->db->get('mst_karyawan');
+        if ($query->num_rows() > 0){
+           echo 0;
+        } else {
+           echo 1;
+        }
+    }
+
+    function ajax_lookUpUemail(){
+        $email = $this->input->post('email');
+        $this->db->where('email', $email);
+        $query = $this->db->get('mst_karyawan');
+        if ($query->num_rows() > 0){
+           echo 0;
+        } else {
+           echo 1;
+        }
+    }
+
+    function uploadFileMulti()
+    {
+      //echo "<pre>";print_r($_FILES);"</pre>";exit();
+      if(isset($_FILES[0]['error']))
+      {
+        $fileUpload = $_FILES[0]['name'];
+        $tmpFile = $_FILES[0]['tmp_name'];
+        $uploadDir = "uploads/";
+        
+        move_uploaded_file($tmpFile, $uploadDir.$fileUpload);
+        
+        $flag = true;
+      }
+      else
+      {
+        $flag = false;
+      }
+      
+      echo $flag;
+    }
+
+    function unlink()
+    {
+      //echo "<pre>";print_r($_POST);"</pre>";exit();
+      $name_only = $this->input->post("file");
+      //$pathimages .= "/uploads/files/";
+      $pathimages = $_SERVER['DOCUMENT_ROOT'];
+      unlink($pathimages . "/sejahtera/uploads/" . $name_only);
+
+      $flag = true;
+
+      echo $flag;
+    }
+
+    function insert_karyawan(){
+    
+      //echo "<pre>";print_r($_POST);"</pre>";exit();
+      $data['id_jabatan']  = $this->input->post("jabatan");
+      $data['id_group']  = $this->input->post("group");
+      $data['kode_karyawan']  = $this->input->post("kodeKaryawan");
+      $data['nama_karyawan']  = $this->input->post("nama");
+      $data['email']  = $this->input->post("email");
+      $data['kata_sandi']  = md5($this->input->post("password"));
+      $data['telp']  = $this->input->post("hp");
+      $data['user_entry']  = $this->input->post("user_entry");
+      $data['alamat']  = $this->input->post("alamat");
+      $data['foto']  = $_POST['file'][0];
+      $this->db->insert("mst_karyawan", $data);
+    }
+
+    function update_karyawan(){
+      
+        //echo "<pre>";print_r($_POST);"</pre>";exit();      
+      $karyawan = $this->input->post("karyawan");
+      $data['id_jabatan']  = $this->input->post("jabatan");
+      $data['id_group']  = $this->input->post("group");
+      $data['kode_karyawan']  = $this->input->post("kodeKaryawan");
+      $data['nama_karyawan']  = $this->input->post("nama");
+      $data['email']  = $this->input->post("email");
+      if($this->input->post("user_entry")!='')
+      $data['user_entry']  = $this->input->post("user_entry");
+      if($_SESSION['IDUser']==1)
+        $data['user_entry']  = 300;
+      if($this->input->post("password") == ''){
+
+      }else{
+        $data['kata_sandi']  = md5($this->input->post("password"));
+      } 
+      $data['telp']  = $this->input->post("hp");
+      $data['alamat']  = $this->input->post("alamat");
+      if($this->input->post("kosong") == ''){
+
+      }else{
+        $data['foto']  = $_POST['file'][0];
+      }
+      $this->db->where('id_karyawan',$karyawan);      
+      $this->db->update("mst_karyawan", $data);     
+    }
+
 		public function Karyawan()
 		{
 			$this->checkCredentialAccess();
@@ -103,6 +245,14 @@
 
            
 		}
+
+    public function addBom()
+    {
+      
+            $this->load->view('tambah_bom');                
+
+           
+    }
 
 		public function Sales()
 		{
@@ -128,7 +278,7 @@
 			
 			for($i=0; $i<$c_kontak;$i++)
 			{	
-				$data['order'][]=$this->db->query("SELECT * from tbl_product where product_code = '".$_POST['noreg'][$i]."'")->row();
+				$data['order'][]=$this->db->query("SELECT * from mst_product where product_code = '".$_POST['noreg'][$i]."'")->row();
 				$data['qty_order'][]= $_POST['qty'][$i];				
 			}
 			$content = $this->load->view('sales_order', $data, true);                
@@ -142,9 +292,9 @@
       $idx = $this->input->post("IDBidang");
       
       
-      $data['order']=$this->db->query("SELECT * from tbl_sales_order where sales_order_id = '".$idx."'")->row();
-      $data['detail']=$this->db->query("SELECT * from tbl_sales_order_detail inner join tbl_product on tbl_product.product_id = tbl_sales_order_detail.sales_order_detail_product_id
-      where sales_order_detail_sales_order_id = '".$idx."'");
+      $data['order']=$this->db->query("SELECT * from trx_sales_order where sales_order_id = '".$idx."'")->row();
+      $data['detail']=$this->db->query("SELECT * from trx_sales_order_detail inner join mst_product on mst_product.product_id = trx_sales_order_detail.product_id
+      where sales_order_id = '".$idx."'");
       
       $content = $this->load->view('edit_sales_order', $data, true);                
 
@@ -156,16 +306,16 @@
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
 			$idproduct = $this->input->post("idproduct");
 			$c_kontak = count($this->input->post("noreg"));
-			$data["product"] = $this->db->query("SELECT * from tbl_product where product_id = '".$idproduct."'")->row();
+			$data["product"] = $this->db->query("SELECT * from mst_product where product_id = '".$idproduct."'")->row();
 			for($i=0; $i<$c_kontak;$i++)
 			{	
-				$data['order'][]=$this->db->query("SELECT * from tbl_material where material_code = '".$_POST['noreg'][$i]."'")->row();
+				$data['order'][]=$this->db->query("SELECT * from mst_material where material_code = '".$_POST['noreg'][$i]."'")->row();
 				$data['qty_order'][]= $_POST['qty'][$i];				
 			}
 			$c_liquid = count($this->input->post("noliquid"));			
 			for($i=0; $i<$c_liquid;$i++)
 			{	
-				$data['order_liquid'][]=$this->db->query("SELECT * from tbl_material where material_code = '".$_POST['noliquid'][$i]."'")->row();
+				$data['order_liquid'][]=$this->db->query("SELECT * from mst_material where material_code = '".$_POST['noliquid'][$i]."'")->row();
 				$data['qty_order_liquid'][]= $_POST['qtyliquid'][$i];				
 			}
 			$content = $this->load->view('add_bom', $data, true);                
@@ -177,19 +327,25 @@
         $idx['so_id'] = $this->input->post("IDBidang");
         $this->load->view('detail_so_view', $idx); 
     }
-
-    function GetDetailSO(){
+    
+function GetDetailSO(){
       //echo "<pre>";print_r($_POST);"</pre>";exit();
         $idx = $this->input->post("idx");
         
-        $arrContent = $this->db->query("SELECT * from tbl_product inner join tbl_sales_order_detail on tbl_product.product_id = tbl_sales_order_detail.sales_order_detail_product_id
-          where sales_order_detail_sales_order_id ='".$idx."'");           
+        $arrContent = $this->db->query("SELECT * from mst_product inner join trx_sales_order_detail on mst_product.product_id = trx_sales_order_detail.product_id
+          where sales_order_id ='".$idx."'");           
       
             $i=1; 
             $strContent = '';
 
             foreach($arrContent->result() as $row){               
                 //$hh ='<td> <img width="20" src="upload/'.$row->nama_file.'"/></td> ';
+                $cek = $this->db->query("SELECT * from mst_bom where product_id = '".$row->product_id."'");
+                if($cek->num_rows() == 0){
+                  $status = 'id=red';
+                } else{
+                  $status = '';
+                }
                 $code = "'".$row->product_code."'";
                 $nama = "'".str_replace(" ","_",$row->product_name)."'";
                 $strContent.='<tr class="record">   
@@ -200,7 +356,7 @@
                                       <td>'.rp($row->sales_order_detail_price).'</td>
                                       <td>'.$row->sales_order_detail_qty.'</td>  
                                       <td>
-                                        <button type="button" class="btn btn-xs btn-success"  onclick="detailShow('.$row->product_id.','.$idx.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                        <button type="button" '.$status.' class="btn btn-xs btn-success"  onclick="detailShow('.$row->product_id.','.$idx.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
                                       </td>
                                 </tr>';
               $i++;                      
@@ -217,9 +373,9 @@
             //echo $limit;exit();
             //$this->load->model('kasbank_model', 'ModelKasbank');
             if($limit == 1){
-            	$arrContent = $this->db->query("SELECT * from tbl_sales_order where sales_order_ref_no like '%".$idproduct."%' OR sales_order_status like '%".$idproduct."%'");           
+            	$arrContent = $this->db->query("SELECT * from trx_sales_order where sales_order_ref_no like '%".$idproduct."%' OR sales_order_status like '%".$idproduct."%'");           
             } else {
-            	$arrContent = $this->db->query("SELECT * from tbl_sales_order where sales_order_ref_no like '%".$idproduct."%' OR sales_order_status like '%".$idproduct."%' LIMIT 10"); 
+            	$arrContent = $this->db->query("SELECT * from trx_sales_order where sales_order_ref_no like '%".$idproduct."%' OR sales_order_status like '%".$idproduct."%' LIMIT 10"); 
             }
             $i=1; 
             $strContent = '';
@@ -268,9 +424,9 @@
             //echo $limit;exit();
             //$this->load->model('kasbank_model', 'ModelKasbank');
             if($limit == 1){
-            	$arrContent = $this->db->query("SELECT * from tbl_provider where provider_provider_categories_id = 1 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%')");           
+            	$arrContent = $this->db->query("SELECT * from mst_provider where provider_categories_id = 1 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%')");           
             } else {
-            	$arrContent = $this->db->query("SELECT * from tbl_provider where provider_provider_categories_id = 1 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%') LIMIT 10"); 
+            	$arrContent = $this->db->query("SELECT * from mst_provider where provider_categories_id = 1 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%') LIMIT 10"); 
             }
             $i=1; 
             $strContent = '';
@@ -311,9 +467,9 @@
             //echo $limit;exit();
             //$this->load->model('kasbank_model', 'ModelKasbank');
             if($limit == 1){
-            	$arrContent = $this->db->query("SELECT * from tbl_provider where provider_provider_categories_id = 2 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%')");           
+            	$arrContent = $this->db->query("SELECT * from mst_provider where provider_categories_id = 2 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%')");           
             } else {
-            	$arrContent = $this->db->query("SELECT * from tbl_provider where provider_provider_categories_id = 2 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%') LIMIT 10"); 
+            	$arrContent = $this->db->query("SELECT * from mst_provider where provider_categories_id = 2 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%') LIMIT 10"); 
             }
             $i=1; 
             $strContent = '';
@@ -351,7 +507,7 @@
             $this->checkIsAjaxRequest();
             $idproduct = $this->input->post("idx");
             //$this->load->model('kasbank_model', 'ModelKasbank');
-            $arrContent = $this->db->query("SELECT * from tbl_product where product_code like '%".$idproduct."%' OR product_name like '%".$idproduct."%' LIMIT 10");           
+            $arrContent = $this->db->query("SELECT * from mst_product where product_code like '%".$idproduct."%' OR product_name like '%".$idproduct."%' LIMIT 10");           
             
             $i=1; 
             $strContent = '';
@@ -380,7 +536,7 @@
             $this->checkIsAjaxRequest();
             $idproduct = $this->input->post("idx");
             //$this->load->model('kasbank_model', 'ModelKasbank');
-            $arrContent = $this->db->query("SELECT * from tbl_product where product_code like '%".$idproduct."%' OR product_name like '%".$idproduct."%' LIMIT 10");           
+            $arrContent = $this->db->query("SELECT * from mst_product where product_code like '%".$idproduct."%' OR product_name like '%".$idproduct."%' LIMIT 10");           
             
             $i=1; 
             $strContent = '';
@@ -409,7 +565,7 @@
             $this->checkIsAjaxRequest();
             $idproduct = $this->input->post("idx");
             //$this->load->model('kasbank_model', 'ModelKasbank');
-            $arrContent = $this->db->query("SELECT * from tbl_material where material_code like '%".$idproduct."%' OR material_name like '%".$idproduct."%' LIMIT 10");           
+            $arrContent = $this->db->query("SELECT * from mst_material where material_code like '%".$idproduct."%' OR material_name like '%".$idproduct."%' LIMIT 10");           
             
             $i=1; 
             $strContent = '';
@@ -431,13 +587,15 @@
             echo $strContent;            
           }
 
+         
+
           function addTableLiquid(){
             $this->checkCredentialAccess();
 
             $this->checkIsAjaxRequest();
             $idproduct = $this->input->post("idx");
             //$this->load->model('kasbank_model', 'ModelKasbank');
-            $arrContent = $this->db->query("SELECT * from tbl_material where material_code like '%".$idproduct."%' OR material_name like '%".$idproduct."%' LIMIT 10");           
+            $arrContent = $this->db->query("SELECT * from mst_material where material_code like '%".$idproduct."%' OR material_name like '%".$idproduct."%' LIMIT 10");           
             
             $i=1; 
             $strContent = '';
@@ -463,7 +621,7 @@
     public function saveprovider()
     {
       //echo "<pre>";print_r($_POST);"</pre>";exit();
-        $data['provider_provider_categories_id'] = $this->input->post("tipe");
+        $data['provider_categories_id'] = $this->input->post("tipe");
         $data['provider_code'] = $this->input->post("kode");
         $data['provider_name'] = $this->input->post("nama");
         $data['provider_description'] = $this->input->post("deskripsi");
@@ -478,13 +636,13 @@
         $data['provider_log'] = "insert by dwi";         
         $data['provider_date_created'] = date("Y-m-d");    
           
-        $this->db->insert("tbl_provider", $data);
+        $this->db->insert("mst_provider", $data);
     }
 
     public function updateprovider()
     {
       //echo "<pre>";print_r($_POST);"</pre>";exit();
-        $data['provider_provider_categories_id'] = $this->input->post("tipe");
+        $data['provider_categories_id'] = $this->input->post("tipe");
         $data['provider_code'] = $this->input->post("kode");
         $data['provider_name'] = $this->input->post("nama");
         $data['provider_description'] = $this->input->post("deskripsi");
@@ -500,22 +658,22 @@
         $data['provider_last_updated'] = date("Y-m-d");    
           
         $this->db->where('provider_id',$this->input->post("idubah"));
-        $this->db->update("tbl_provider", $data);
+        $this->db->update("mst_provider", $data);
     }
 
 		public function detailbom()
 		{
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
 			$idproduct = $this->input->post("idx");
-			$data["product"] = $this->db->query("SELECT * from tbl_product where product_id = '".$idproduct."'")->row();
+			$data["product"] = $this->db->query("SELECT * from mst_product where product_id = '".$idproduct."'")->row();
 				
-				$data['order']=$this->db->query("SELECT tbl_material.*, tbl_bom.bom_material_qty as qty, tbl_bom.bom_id from tbl_bom 
-					inner join tbl_material on tbl_bom.bom_material_id = tbl_material.material_id
-					where tbl_bom.bom_product_id = '".$idproduct."'");							
+				$data['order']=$this->db->query("SELECT mst_material.*, mst_bom.bom_qty as qty, mst_bom.bom_id from mst_bom 
+					inner join mst_material on mst_bom.material_id = mst_material.material_id
+					where mst_bom.product_id = '".$idproduct."'");							
 			
-				$data['order_liquid']=$this->db->query("SELECT tbl_material.*, tbl_bom_liquid.bom_liquid_material_qty as qty, tbl_bom_liquid.bom_liquid_id 
-					from tbl_bom_liquid inner join tbl_material on tbl_bom_liquid.bom_liquid_material_id= tbl_material.material_id
-					where tbl_bom_liquid.bom_liquid_product_id = '".$idproduct."'");								
+				$data['order_liquid']=$this->db->query("SELECT mst_material.*, mst_bom_liquid.bom_liquid_qty as qty, mst_bom_liquid.bom_liquid_id 
+					from mst_bom_liquid inner join mst_material on mst_bom_liquid.material_id= mst_material.material_id
+					where mst_bom_liquid.product_id = '".$idproduct."'");								
 			
 			$content = $this->load->view('detail_bom', $data, true);                
 
@@ -528,15 +686,15 @@
       $idproduct = $this->input->post("idx");
       $idso = $this->input->post("so");
       $data['idso'] = $idso;
-      $data["product"] = $this->db->query("SELECT * from tbl_product where product_id = '".$idproduct."'")->row();
+      $data["product"] = $this->db->query("SELECT * from mst_product where product_id = '".$idproduct."'")->row();
         
-        $data['order']=$this->db->query("SELECT tbl_material.*, tbl_bom.bom_material_qty as qty, tbl_bom.bom_id from tbl_bom 
-          inner join tbl_material on tbl_bom.bom_material_id = tbl_material.material_id
-          where tbl_bom.bom_product_id = '".$idproduct."'");              
+        $data['order']=$this->db->query("SELECT mst_material.*, mst_bom.bom_qty as qty, mst_bom.bom_id from mst_bom 
+          inner join mst_material on mst_bom.material_id = mst_material.material_id
+          where mst_bom.product_id = '".$idproduct."'");              
       
-        $data['order_liquid']=$this->db->query("SELECT tbl_material.*, tbl_bom_liquid.bom_liquid_material_qty as qty, tbl_bom_liquid.bom_liquid_id 
-          from tbl_bom_liquid inner join tbl_material on tbl_bom_liquid.bom_liquid_material_id= tbl_material.material_id
-          where tbl_bom_liquid.bom_liquid_product_id = '".$idproduct."'");                
+        $data['order_liquid']=$this->db->query("SELECT mst_material.*, mst_bom_liquid.bom_liquid_qty as qty, mst_bom_liquid.bom_liquid_id 
+          from mst_bom_liquid inner join mst_material on mst_bom_liquid.material_id= mst_material.material_id
+          where mst_bom_liquid.product_id = '".$idproduct."'");                
       
       $content = $this->load->view('detail_bom_so', $data, true);                
 
@@ -552,29 +710,29 @@
           
         for($i=0; $i<$c_kontak;$i++)
         {
-          $data2['sales_order_detail_sales_order_id'] = $idso;
-          $data2['sales_order_detail_product_id'] = $_POST['idproduk'][$i];
+          $data2['sales_order_id'] = $idso;
+          $data2['product_id'] = $_POST['idproduk'][$i];
           $data2['sales_order_detail_price'] = $_POST['price'][$i];
           $data2['sales_order_detail_qty'] = $_POST['qty'][$i];
           $data2['sales_order_detail_last_updated'] = date("Y-m-d");
           $data2['sales_order_detail_log'] = "update by dwi";
           $data2['sales_order_detail_status'] = "reguler";
-          //$this->db->insert("tbl_sales_order_detail", $data2);
+          //$this->db->insert("trx_sales_order_detail", $data2);
           $this->db->where('sales_order_detail_id',$_POST['iddetail'][$i]);
-          $this->db->update("tbl_sales_order_detail", $data2);
+          $this->db->update("trx_sales_order_detail", $data2);
         }
     }
 
 		public function saveso()
 		{
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
-			$cek = $this->db->query("SELECT sales_order_ref_no from tbl_sales_order where sales_order_ref_no = '".$this->input->post("nomor")."'");
+			$cek = $this->db->query("SELECT sales_order_ref_no from trx_sales_order where sales_order_ref_no = '".$this->input->post("nomor")."'");
 			if($cek->num_rows() >0){
 				echo $cek->num_rows();
 				exit();
 			} else{        
 				$data['sales_order_categories'] = $this->input->post("categories");
-				$data['sales_order_costumer_id'] = $this->input->post("id_customer");
+				$data['costumer_id'] = $this->input->post("id_customer");
 				$data['sales_order_ref_no'] = $this->input->post("nomor");
 				$data['sales_order_status'] = "draft";
 				$data['sales_order_address'] = "2nd vendor adress";
@@ -583,7 +741,7 @@
 				$data['sales_order_date_created'] = date("Y-m-d");			
 				$data['sales_order_log'] = "insert by dwi";			
 					
-				$this->db->insert("tbl_sales_order", $data);
+				$this->db->insert("trx_sales_order", $data);
 				
 				$idso = $this->db->insert_id();
 
@@ -591,28 +749,28 @@
 					
 				for($i=0; $i<$c_kontak;$i++)
 				{
-					$data2['sales_order_detail_sales_order_id'] = $idso;
-					$data2['sales_order_detail_product_id'] = $_POST['idproduk'][$i];
+					$data2['sales_order_id'] = $idso;
+					$data2['product_id'] = $_POST['idproduk'][$i];
 					$data2['sales_order_detail_price'] = $_POST['price'][$i];
 					$data2['sales_order_detail_qty'] = $_POST['qty'][$i];
 					$data2['sales_order_detail_date_created'] = date("Y-m-d");
 					$data2['sales_order_detail_log'] = "insert by dwi";
 					$data2['sales_order_detail_status'] = "reguler";
-					$this->db->insert("tbl_sales_order_detail", $data2);
+					$this->db->insert("trx_sales_order_detail", $data2);
 				}
 			}
 		}
 
     public function insertDetailSo()
     {
-          $data2['sales_order_detail_sales_order_id'] = $this->input->post("IDSo");
-          $data2['sales_order_detail_product_id'] = $this->input->post("IDproduct");
+          $data2['sales_order_id'] = $this->input->post("IDSo");
+          $data2['product_id'] = $this->input->post("IDproduct");
           $data2['sales_order_detail_price'] =$this->input->post("price");
           $data2['sales_order_detail_qty'] = 0;
           $data2['sales_order_detail_date_created'] = date("Y-m-d");
           $data2['sales_order_detail_log'] = "insert by dwi";
           $data2['sales_order_detail_status'] = "reguler";
-          $this->db->insert("tbl_sales_order_detail", $data2);
+          $this->db->insert("trx_sales_order_detail", $data2);
     }    
 
     public function savematerial()
@@ -620,19 +778,19 @@
       //echo "<pre>";print_r($_POST);"</pre>";exit();
       $data['material_code'] = $this->input->post("code");
       $data['material_name'] = $this->input->post("name");
-      $data['material_unit_id'] = $this->input->post("Satuan");
+      $data['unit_id'] = $this->input->post("Satuan");
       $data['material_price'] = $this->input->post("price");
       $data['material_price_usd'] = $this->input->post("usd");
-      $data['material_material_categories_id'] = $this->input->post("categories");
-      $data['material_material_categories_group_id'] = $this->input->post("Group");
+      $data['material_categories_id'] = $this->input->post("categories");
+      $data['material_categories_group_id'] = $this->input->post("Group");
       $data['material_cbm'] = $this->input->post("cbm");
-      $data['material_provider_id'] = 0;
+      $data['provider_id'] = 0;
       $data['material_currency'] = '';
       $data['material_date_created'] = date("Y-m-d H:i:s");
       $data['material_last_updated'] = date("Y-m-d H:i:s");
       $data['material_log'] = 'insert by dwi';
       $data['material_minimal_stock'] = $this->input->post("stock");
-      $this->db->insert("tbl_material", $data);
+      $this->db->insert("mst_material", $data);
     }
 
 		public function saveproduct()
@@ -654,7 +812,7 @@
 			$data['product_log'] = 'insert by dwi';
 			$data['product_labor'] = $this->input->post("labor");
 			$data['product_overhead'] = $this->input->post("overhead");
-			$this->db->insert("tbl_product", $data);
+			$this->db->insert("mst_product", $data);
 		}
 
     public function updateproduct()
@@ -677,8 +835,8 @@
       $data['product_labor'] = $this->input->post("labor");
       $data['product_overhead'] = $this->input->post("overhead");
       $this->db->where('product_id',$this->input->post("idx"));
-      $this->db->update("tbl_product", $data);
-     // $this->db->insert("tbl_product", $data);
+      $this->db->update("mst_product", $data);
+     // $this->db->insert("mst_product", $data);
     }
 
     public function updatematerial()
@@ -686,21 +844,21 @@
       //echo "<pre>";print_r($_POST);"</pre>";exit();
       $data['material_code'] = $this->input->post("code");
       $data['material_name'] = $this->input->post("name");
-      $data['material_unit_id'] = $this->input->post("Satuan");
+      $data['unit_id'] = $this->input->post("Satuan");
       $data['material_price'] = $this->input->post("price");
       $data['material_price_usd'] = $this->input->post("usd");
-      $data['material_material_categories_id'] = $this->input->post("categories");
-      $data['material_material_categories_group_id'] = $this->input->post("Group");
+      $data['material_categories_id'] = $this->input->post("categories");
+      $data['material_categories_group_id'] = $this->input->post("Group");
       $data['material_cbm'] = $this->input->post("cbm");
-      $data['material_provider_id'] = 0;
+      $data['provider_id'] = 0;
       $data['material_currency'] = '';
       //$data['material_date_created'] = date("Y-m-d H:i:s");
       $data['material_last_updated'] = date("Y-m-d H:i:s");
       $data['material_log'] = 'insert by dwi';
       $data['material_minimal_stock'] = $this->input->post("stock");
       $this->db->where('material_id',$this->input->post("idx"));
-      $this->db->update("tbl_material", $data);
-     // $this->db->insert("tbl_product", $data);
+      $this->db->update("mst_material", $data);
+     // $this->db->insert("mst_product", $data);
     }
 
 		public function savebom()
@@ -712,52 +870,55 @@
 				
 			for($i=0; $i<$c_kontak;$i++)
 			{
-				$cek = $this->db->query("SELECT * from tbl_bom where bom_product_id='".$idproduk."' AND bom_material_id = '".$_POST['idmaterial'][$i]."'");
+				$cek = $this->db->query("SELECT * from mst_bom where product_id='".$idproduk."' AND material_id = '".$_POST['idmaterial'][$i]."'");
 				if($cek->num_rows() > 0){
-					$data2['bom_material_qty'] = $_POST['qty'][$i];
+					$data2['bom_qty'] = $_POST['qty'][$i];
 					$this->db->where('bom_id',$cek->row()->bom_id);
-					$this->db->update("tbl_bom", $data2);
+					$this->db->update("mst_bom", $data2);
 				}else {
-					$data2['bom_product_id'] = $idproduk;
-					$data2['bom_material_id'] = $_POST['idmaterial'][$i];
-					$data2['bom_parent_id'] = 0;
-					$data2['bom_level'] = 1;
-					$data2['bom_material_qty'] = $_POST['qty'][$i];
-					$data2['bom_attach_required'] = 'yes';
+					$data2['product_id'] = $idproduk;
+					$data2['material_id'] = $_POST['idmaterial'][$i];
+					//$data2['bom_parent_id'] = 0;
+					//$data2['bom_level'] = 1;
+					$data2['bom_qty'] = $_POST['qty'][$i];
+					//$data2['bom_attach_required'] = 'yes';
 					$data2['bom_log'] = 'insert by dwi';
-					$this->db->insert("tbl_bom", $data2);
+					$this->db->insert("mst_bom", $data2);
 				}
       }
-        $c_liquid = count($this->input->post("idmaterial_ld"));
-      for($a=0; $a<$c_liquid;$a++)
-      {
-        $cek2 = $this->db->query("SELECT * from tbl_bom_liquid where bom_liquid_product_id='".$idproduk."' AND bom_liquid_material_id = '".$_POST['idmaterial_ld'][$a]."'");
-        if($cek2->num_rows() > 0){          
-          $data['bom_liquid_material_qty'] = $_POST['qty_ld'][$a];
-          $this->db->where('bom_liquid_id',$cek2->row()->bom_liquid_id);
-          $this->db->update("tbl_bom_liquid", $data);
-        }else {
-          $data['bom_liquid_product_id'] = $idproduk;
-          $data['bom_liquid_material_id'] = $_POST['idmaterial_ld'][$a];
-          $data['bom_liquid_material_qty'] = $_POST['qty_ld'][$a];
-          $data['bom_log'] = 'insert by dwi';
-          $this->db->insert("tbl_bom_liquid", $data);
-        }
-			}
+        
+      if($this->input->post("idmaterial_ld")){ 
+        $c_liquid = count($this->input->post("idmaterial_ld"));     
+        for($a=0; $a<$c_liquid;$a++)
+        {
+          $cek2 = $this->db->query("SELECT * from mst_bom_liquid where product_id='".$idproduk."' AND material_id = '".$_POST['idmaterial_ld'][$a]."'");
+          if($cek2->num_rows() > 0){          
+            $data['bom_liquid_qty'] = $_POST['qty_ld'][$a];
+            $this->db->where('bom_liquid_id',$cek2->row()->bom_liquid_id);
+            $this->db->update("mst_bom_liquid", $data);
+          }else {
+            $data['product_id'] = $idproduk;
+            $data['material_id'] = $_POST['idmaterial_ld'][$a];
+            $data['bom_liquid_qty'] = $_POST['qty_ld'][$a];
+            $data['bom_liquid_log'] = 'insert by dwi';
+            $this->db->insert("mst_bom_liquid", $data);
+          }
+  			}
+      }
 		}
 
 		public function tambahCount()
 		{
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
 			
-			$data2['bom_product_id'] = $this->input->post("IDproduct");
-			$data2['bom_material_id'] = $this->input->post("IDmaterial");
-			$data2['bom_parent_id'] = 0;
-			$data2['bom_level'] = 1;
-			$data2['bom_material_qty'] = 0;
-			$data2['bom_attach_required'] = 'yes';
+			$data2['product_id'] = $this->input->post("IDproduct");
+			$data2['material_id'] = $this->input->post("IDmaterial");
+			//$data2['bom_parent_id'] = 0;
+			//$data2['bom_level'] = 1;
+			$data2['bom_qty'] = 0;
+			//$data2['bom_attach_required'] = 'yes';
 			$data2['bom_log'] = 'insert by dwi';
-			$this->db->insert("tbl_bom", $data2);
+			$this->db->insert("mst_bom", $data2);
 				
 			
 		}
@@ -766,11 +927,11 @@
 		{
 			//echo "<pre>";print_r($_POST);"</pre>";exit();
 			
-			$data2['bom_liquid_product_id'] = $this->input->post("IDproduct");
-			$data2['bom_liquid_material_id'] = $this->input->post("IDmaterial");
-			$data2['bom_liquid_material_qty'] = 0;
-			$data2['bom_log'] = 'insert by dwi';
-			$this->db->insert("tbl_bom_liquid", $data2);
+			$data2['product_id'] = $this->input->post("IDproduct");
+			$data2['material_id'] = $this->input->post("IDmaterial");
+			$data2['bom_liquid_qty'] = 0;
+			$data2['bom_liquid_log'] = 'insert by dwi';
+			$this->db->insert("mst_bom_liquid", $data2);
 				
 			
 		}
@@ -778,7 +939,7 @@
 		function ajax_lookUpUsername(){
 		    $code = $this->input->post('code');
 		    $this->db->where('product_code', $code);
-		    $query = $this->db->get('tbl_product');
+		    $query = $this->db->get('mst_product');
 		    if ($query->num_rows() > 0){
 		       echo 0;
 		    } else {
@@ -790,7 +951,7 @@
 
         $code = $this->input->post('code');
         $this->db->where('material_code', $code);
-        $query = $this->db->get('tbl_material');
+        $query = $this->db->get('mst_material');
         if ($query->num_rows() > 0){
            echo 0;
         } else {
@@ -906,11 +1067,11 @@
 		{
 			$this->checkCredentialAccess();
 
-            $this->checkIsAjaxRequest();
+      $this->checkIsAjaxRequest();
 
-          	$this->form_validation->set_rules('IDKaryawan', 'Karyawan', 'trim|required|min_length[1]|xss_clean');
-            $this->form_validation->set_rules('kodeKaryawanUbah', 'Kode Karyawan', 'trim|required|min_length[1]|xss_clean');
-    		$this->form_validation->set_rules('namaKaryawanUbah', 'Nama Karyawan', 'trim|required|xss_clean');
+      $this->form_validation->set_rules('IDKaryawan', 'Karyawan', 'trim|required|min_length[1]|xss_clean');
+      $this->form_validation->set_rules('kodeKaryawanUbah', 'Kode Karyawan', 'trim|required|min_length[1]|xss_clean');
+    	$this->form_validation->set_rules('namaKaryawanUbah', 'Nama Karyawan', 'trim|required|xss_clean');
     		//$this->form_validation->set_rules('divisiUbah', 'Divisi', 'trim|required|min_length[1]|xss_clean');
 			$this->form_validation->set_rules('jabatanUbah', 'Jabatan', 'trim|required|min_length[1]|xss_clean');
 			$this->form_validation->set_rules('groupUbah', 'Group Pengguna', 'trim|required|min_length[1]|xss_clean');
@@ -979,8 +1140,9 @@
       $idx = $this->input->post('ID');
       
       $idx =   $this->input->post('ID');
-      $this->db->delete('tbl_sales_order', array('sales_order_id' => $idx));
-      $this->db->delete('tbl_sales_order_detail', array('sales_order_detail_sales_order_id' => $idx)); 
+      $this->db->delete('trx_sales_order_detail', array('sales_order_id' => $idx));
+      $this->db->delete('trx_sales_order', array('sales_order_id' => $idx));
+       
       
     }
 
@@ -991,7 +1153,7 @@
             $this->checkIsAjaxRequest();
 
       $idx =   $this->input->post('ID');
-            $this->db->delete('tbl_product', array('product_id' => $idx)); 
+            $this->db->delete('mst_product', array('product_id' => $idx)); 
             //echo $messageData;
       
     }
@@ -1003,7 +1165,7 @@
             $this->checkIsAjaxRequest();
 
       $idx =   $this->input->post('ID');
-            $this->db->delete('tbl_material', array('material_id' => $idx)); 
+            $this->db->delete('mst_material', array('material_id' => $idx)); 
             //echo $messageData;
       
     }
@@ -1015,7 +1177,7 @@
             $this->checkIsAjaxRequest();
 
       $idx =   $this->input->post('ID');
-            $this->db->delete('tbl_provider', array('provider_id' => $idx)); 
+            $this->db->delete('mst_provider', array('provider_id' => $idx)); 
             //echo $messageData;
       
     }
@@ -1027,7 +1189,7 @@
             $this->checkIsAjaxRequest();
 
 			$id_bom =   $this->input->post('IDbom');
-            $this->db->delete('tbl_bom', array('bom_id' => $id_bom)); 
+            $this->db->delete('mst_bom', array('bom_id' => $id_bom)); 
             //echo $messageData;
 			
 		}
@@ -1039,7 +1201,7 @@
             $this->checkIsAjaxRequest();
 
 			$id_bom =   $this->input->post('IDbom');
-            $this->db->delete('tbl_bom_liquid', array('bom_liquid_id' => $id_bom)); 
+            $this->db->delete('mst_bom_liquid', array('bom_liquid_id' => $id_bom)); 
             //echo $messageData;
 			
 		}
@@ -1051,7 +1213,7 @@
             $this->checkIsAjaxRequest();
 
       $id_bom =   $this->input->post('ID');
-            $this->db->delete('tbl_sales_order_detail', array('sales_order_detail_id' => $id_bom)); 
+            $this->db->delete('trx_sales_order_detail', array('sales_order_detail_id' => $id_bom)); 
             //echo $messageData;
       
     }
@@ -1063,7 +1225,7 @@
             $this->checkIsAjaxRequest();
 
 			$id_bom =   $this->input->post('IDbom');
-            $this->db->delete('tbl_bom_liquid', array('bom_liquid_product_id' => $id_bom)); 
+            $this->db->delete('mst_bom_liquid', array('product_id' => $id_bom)); 
             //echo $messageData;
 			
 		}

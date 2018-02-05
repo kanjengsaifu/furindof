@@ -1,13 +1,32 @@
-<div class="content-header">   
-	<h1>Daftar Material</h1>
+<style>
+.clockStyle {
+	background-color:#ECF0F5;
+	/*border:#999 2px inset;*/
+	padding:6px;
+	color:#3FA7E7;
+	font-family:"Arial Black", Gadget, sans-serif;
+    font-size:16px;
+    font-weight:bold;
+	letter-spacing: 2px;
+	display:inline;
+	float: right;
+}
+</style>
+
+<div class="content-header" style="font-size:25px">   
+	<b>Daftar Material</b>	
+	<!-- <span id="clockDisplay" class="clockStyle"></span>
+	<b class="clockStyle"><?php echo date("d F Y")." /"; ?></b> -->
 </div>
+
 
 <div class="content">
 	<div class="box box-warning">
 	  	<div class="box-body">
 	  		<div class="box-header">
 				<button type="button" class="btn btn-sm btn-primary" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
-				<button type="button" class="btn btn-sm btn-primary" id="btnCetak"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak PDF</button>		
+				<button type="button" class="btn btn-sm btn-primary" id="openMessageNotification"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak PDF</button>		
+				<p>jangan lupa inputkan <b>harga</b> MATERIAL dalam <font color="red"> <b>Rupiah</b> </font> </p>
 			</div>
 	  		<div class="form-control" style="min-height:610px;">
 				<div id="ajaxTreeGrid"></div>
@@ -47,7 +66,7 @@
 			       		<option value=''>:: Pilih MATERIAL CATEGORIES ::</option>
 			       		<?php  
 			       			$CI = get_instance();
-			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories ");
+			       			$selectQuery =  $CI->db->query("SELECT * from mst_material_categories ");
 			       			$arrTipeKaryawan = $selectQuery->result_array();
 			       			foreach ($arrTipeKaryawan as $row) {
 			       				echo "<option value='".$row['material_categories_id']."'>".$row['material_categories_name']."</option>";
@@ -63,7 +82,7 @@
 			       		<option value=''>:: Pilih MATERIAL CATEGORIES GROUP::</option>
 			       		<?php  
 			       			$CI = get_instance();
-			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories_group ");
+			       			$selectQuery =  $CI->db->query("SELECT * from ref_material_categories_group ");
 			       			$arrTipeKaryawan = $selectQuery->result_array();
 			       			foreach ($arrTipeKaryawan as $row) {
 			       				echo "<option value='".$row['material_categories_group_id']."'>".$row['material_categories_group_name']."</option>";
@@ -79,7 +98,7 @@
 			       		<option value=''>:: Pilih Satuan::</option>
 			       		<?php  
 			       			$CI = get_instance();
-			       			$selectQuery =  $CI->db->query("SELECT * from tbl_unit ");
+			       			$selectQuery =  $CI->db->query("SELECT * from ref_unit ");
 			       			$arrTipeKaryawan = $selectQuery->result_array();
 			       			foreach ($arrTipeKaryawan as $row) {
 			       				echo "<option value='".$row['unit_id']."'>".$row['unit_name']."</option>";
@@ -103,7 +122,7 @@
 		    <div class="form-group">
 			    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Material CBM</label>
 			    <div class="col-sm-8">
-		    	  	<input type="number" placeholder="Material CBM" name="cbm" id="" class="form-control"/> 	
+		    	  	<input type="number" step="0.001"  placeholder="Material CBM" name="cbm" id="" class="form-control"/> 	
 			    </div>
 		    </div>				    
 		    <div class="form-group">
@@ -155,7 +174,7 @@
 			       		<option value=''>:: Pilih MATERIAL CATEGORIES ::</option>
 			       		<?php  
 			       			$CI = get_instance();
-			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories ");
+			       			$selectQuery =  $CI->db->query("SELECT * from mst_material_categories ");
 			       			$arrTipeKaryawan = $selectQuery->result_array();
 			       			foreach ($arrTipeKaryawan as $row) {
 			       				echo "<option id='categories-".$row['material_categories_id']."' value='".$row['material_categories_id']."'>".$row['material_categories_name']."</option>";
@@ -171,7 +190,7 @@
 			       		<option value=''>:: Pilih MATERIAL CATEGORIES GROUP::</option>
 			       		<?php  
 			       			$CI = get_instance();
-			       			$selectQuery =  $CI->db->query("SELECT * from tbl_material_categories_group ");
+			       			$selectQuery =  $CI->db->query("SELECT * from ref_material_categories_group ");
 			       			$arrTipeKaryawan = $selectQuery->result_array();
 			       			$i=1;
 			       			foreach ($arrTipeKaryawan as $row) {
@@ -188,10 +207,10 @@
 			       		<option value=''>:: Pilih Satuan::</option>
 			       		<?php  
 			       			$CI = get_instance();
-			       			$selectQuery =  $CI->db->query("SELECT * from tbl_unit ");
+			       			$selectQuery =  $CI->db->query("SELECT * from ref_unit ");
 			       			$arrTipeKaryawan = $selectQuery->result_array();
 			       			foreach ($arrTipeKaryawan as $row) {
-			       				echo "<option id='unit-".$row['unit_id']."' value='".$row['unit_id']."'>".$row['unit_name']."</option>";
+			       				echo "<option id='unit-".$row['unit_name']."' value='".$row['unit_id']."'>".$row['unit_name']."</option>";
 			       			}
 			       		?>
 			       	</select>
@@ -223,7 +242,7 @@
 		    </div>		          
 	      </div>
 	      <div class="modal-footer">
-	        <button type="submit" id="tbh" class="btn btn-primary">Tambah</button>
+	        <button type="submit" id="tbh" class="btn btn-primary">Update</button>
 	        <button type="button" class="btn btn-warning" id="btnBatalUbahKaryawan">Batal</button>
 	      </div>
 	      </form>
@@ -235,7 +254,8 @@
 	
 <script>
 	$(document).ready(function () {
-                     
+
+
     	$('#btnTambahBaru').click(function(e)
         {
 			e.preventDefault(); 
@@ -299,10 +319,10 @@
              dataFields: [
                   { name: "idx", 	type: "string" },
                   { name: "kode", 	type: "string" },
-                  { name: "cbm", 	type: "string" },
+                  //{ name: "cbm", 	type: "string" },
                   { name: "nama", 	type: "string" },
-                  { name: "harga", 	type: "string" },
-                  { name: "usd", 	type: "string" },
+                  { name: "harga", 	type: "number" },
+                  { name: "cat", 	type: "string" },
                   { name: "provider", 	type: "string" },
                   { name: "unit", 	type: "string" },
                   { name: "stock", 	type: "string" },
@@ -327,21 +347,27 @@
             altRows: true,
             sortable: true,
             filterable: true,
+            columnsResize: true,
             height: '600px',
             pageable : true,
-            pageSize : 14,
-            pagerPosition : 'bottom',
+            pageSize : 20,
+            //showfilterrow: true,
+            //groupable: true,
+            //pagerPosition : 'bottom',
             filterMode: 'simple',
             theme: 'fresh',
             width: '100%',
             columns: [
-              { text: 'PID', cellsAlign: 'center', align: 'center', dataField: 'idx', width : '10%'},
-              { text: 'Kode', cellsAlign: 'left', align: 'center', dataField: 'kode', width : '15%'},
+              { text: 'PID', cellsAlign: 'center', align: 'center', dataField: 'idx', width : '8%'},
+              { text: 'Kode', cellsAlign: 'left', align: 'center', dataField: 'kode', width : '10%'},
               // { text: 'Foto', cellsAlign: 'left', align: 'center', dataField: 'foto', width : '12%'},
-              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '40%'},
-              { text: 'Harga', cellsAlign: 'left', align: 'center', dataField: 'harga', width : '15%'},
-              { text: 'Provider', cellsAlign: 'left', align: 'center', dataField: 'provider', width : '10%'},
-              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '10%' }
+              { text: 'Nama', cellsAlign: 'left', align: 'center', dataField: 'nama', width : '30%'},
+              { text: 'Satuan', cellsAlign: 'left', filtertype: 'checkedlist', align: 'center', dataField: 'unit', width : '5%'},
+              { text: 'Harga', cellsAlign: 'left', align: 'center', dataField: 'harga',cellsformat: 'f', width : '8%'},
+              { text: 'Jenis', cellsAlign: 'left', align: 'center', filtertype: 'checkedlist', dataField: 'categories', width : '5%'},
+              { text: 'MIN Stock', cellsAlign: 'left', align: 'center', dataField: 'stock', width : '8%'},
+              { text: 'Provider', cellsAlign: 'left', align: 'center', filtertype: 'checkedlist', dataField: 'provider', width : '12%'},
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '14%' }
             ]
         }).on('rowDoubleClick', function(event)
         {	          	
@@ -364,9 +390,10 @@
 	 		provider 	= data.provider,
 	 		unit 		= data.unit,
 	 		group 		= data.group,
+	 		cat 		= data.cat,
 	 		categories 	= data.categories,
 	 		stock 		= data.stock;
-
+	 		//alert(categories);
 			$('#alertMessage').remove();
 			$('#idx').val(idx);
 		 	$('#kode').val(kode);
@@ -377,7 +404,7 @@
 	 		$('#provider').val(provider);
 	 		$('#unit-'+unit).attr('selected','selected');	 		
 	 		$('#gr-'+group).attr('selected','selected');
-	 		$('#categories-'+categories).attr('selected','selected');
+	 		$('#categories-'+cat).attr('selected','selected');
 			$('#stock').val(stock);
 
 			$('#dialogFormUbah').attr('class', 'modal show');
@@ -447,7 +474,7 @@
 	    );
 	}
 
-	function lookUpUsername(name)
+	function lookUpUsername2(name)
 	{
 		var idx = $('#idx').val();
 	    $.post( 
@@ -506,6 +533,34 @@
 	
 		});
 	}
+
+	function renderTime() {
+		var currentTime = new Date();
+		var diem = "AM";
+		var h = currentTime.getHours();
+		var m = currentTime.getMinutes();
+	    var s = currentTime.getSeconds();
+		setTimeout('renderTime()',1000);
+	    if (h == 0) {
+			h = 12;
+		} else if (h > 12) { 
+			h = h - 12;
+			diem="PM";
+		}
+		if (h < 10) {
+			h = "0" + h;
+		}
+		if (m < 10) {
+			m = "0" + m;
+		}
+		if (s < 10) {
+			s = "0" + s;
+		}
+	    var myClock = document.getElementById('clockDisplay');
+		myClock.textContent = h + ":" + m + ":" + s + " " + diem;
+		myClock.innerText = h + ":" + m + ":" + s + " " + diem;
+}
+//renderTime();
             		
 </script>
 

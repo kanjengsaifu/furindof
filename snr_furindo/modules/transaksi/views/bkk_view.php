@@ -16,13 +16,13 @@
 
 				<button type="button" class="btn btn-sm btn-primary" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>		
 
-				<button type="button" class="btn btn-sm btn-primary" onclick="dialogFormPrintkas()"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Kas Harian</button>
+				<!-- <button type="button" class="btn btn-sm btn-primary" onclick="dialogFormPrintkas()"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Kas Harian</button>
 
         <button type="button" class="btn btn-sm btn-primary" onclick="dialogFormPrintbank()"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Buku Bank</button>		
-
+ -->
 			</div>
 
-	  		<div class="form-control" style="overflow:scroll;min-height:430px;">
+	  		<div class="form-control" style="overflow:scroll;min-height:530px;">
 
 				<div id="ajaxTreeGrid"></div>
 
@@ -93,6 +93,8 @@
 
                   { name: "uraian", 	type: "string" },
 
+                  { name: "akun",  type: "string" },
+
                   { name: "nominal", 	type: "string" },
 
                   { name: "action", 	type: "string" }
@@ -131,11 +133,11 @@
 
             filterable: true,
 
-            height: '400px',
+            height: '500px',
 
             pageable : true,
 
-            pageSize : 10,
+            pageSize : 1000,
 
             pagerPosition : 'bottom',
 
@@ -149,11 +151,13 @@
 
             columns: [
 
-              { text: 'Tanggal', cellsAlign: 'center', align: 'center', dataField: 'tgl', width : '15%'},
+              { text: 'Tanggal', cellsAlign: 'center', align: 'center', dataField: 'tgl', width : '12%'},
 
-              { text: 'Nomor', cellsAlign: 'center', align: 'center', dataField: 'nomor', width : '15%'},
+              { text: 'Nomor', cellsAlign: 'center', align: 'center', dataField: 'nomor', width : '13%'},
 
-              { text: 'Uraian', cellsAlign: 'left', align: 'center', dataField: 'uraian', width : '35%'},
+              { text: 'Uraian', cellsAlign: 'left', align: 'center', dataField: 'uraian', width : '30%'},
+
+              { text: 'Akun', cellsAlign: 'center', align: 'center', dataField: 'akun', width : '10%'},
 
               { text: 'Nominal', cellsAlign: 'right', align: 'center', dataField: 'nominal', width : '15%'},
 
@@ -194,6 +198,13 @@
         
         window.open(htmlOut);   
              
+
+  }
+
+  function EditData(idx)
+  {
+    kodeTipebkk = ajaxFillGridJSON('transaksi/edit_bkk', {IDBidang : idx}); 
+    $('.content-wrapper').html(kodeTipebkk);
 
   }
 

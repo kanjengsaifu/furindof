@@ -18,6 +18,11 @@
 			$this->load->view('login_view');	
 		}
 
+public function cek()
+{
+	echo 'TES';
+}
+
 public function login()
 {
 

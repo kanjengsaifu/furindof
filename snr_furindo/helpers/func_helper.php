@@ -14,7 +14,29 @@
 		}
 	}
 
+	function userName($id){
+		$CI=&get_instance();
+		$nama = $CI->db->query("SELECT nama_karyawan from mst_karyawan where id_karyawan = ".$id."")->row();
+		return $nama->nama_karyawan;
+	}
+
 	function rp($value)
+	{
+
+		if ( $value !=0 )
+		{
+			$value = number_format($value,0,"",",");
+		}
+		else
+		{
+			$value = 0 ; 
+		}
+		$x =  "<span class='currency' style='color:#03011F'>Rp</span> <span class='value'>".$value."</span>.00";
+		
+		return $x ; 
+	}
+
+	function usd($value)
 	{
 
 		if ( $value >0 )
@@ -25,7 +47,7 @@
 		{
 			$value = 0 ; 
 		}
-		$x =  "<span class='currency' style='color:#666'>Rp</span> <span class='value'>".$value."</span>.00";
+		$x =  "<span class='currency' style='color:#666'>$&nbsp;</span><span class='value'>".$value."</span>";
 		
 		return $x ; 
 	}

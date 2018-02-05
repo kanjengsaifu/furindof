@@ -10,13 +10,23 @@
 		public function index()
 		{	
 			$this->checkCredentialAccess();
-			
-			$this->load->model('group_modul_model', 'ModelGroupModul');
-			$dataGroupModul = array('daftarGroupModul' => $this->ModelGroupModul->GetDaftarGroupModul());
 
-			$this->load->view('header', $dataGroupModul);
-			$this->load->view('main_view');
-			$this->load->view('footer');
+			$this->checkIsAjaxRequest();
+
+			//$data = $this->db->query("SELECT * from ref_kecamatan");
+			//$data1 = $this->db->query("SELECT * from ref_kelurahan");
+			//$data2 = $this->db->query("SELECT * from ref_pedukuhan");
+	        $this->load->model('arsip_model', 'ModelAdmin');
+	        $dataMenu = array('dataMenu' => $this->ModelAdmin->GetMenuAdmin());
+
+	        $menu 	  = $this->load->view('menu_arsip_view', $dataMenu, true);
+	        $content  = $this->load->view('dashboard_view', '', true);
+	        //$content  = $this->load->view('admin_view', '', true);
+
+	        $arrData = array('menu' 	=> $menu,	        				 
+	        			   	 'content'  => $content);
+
+	        echo json_encode($arrData);
 		}	
 
 		 public function savefile()

@@ -12,16 +12,10 @@
     <link href="assets/plugins/bootstrap 3.3.2/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
       <!--bootstrap select 2-->
     <link href="assets/plugins/select2/css/select2.min.css" rel="stylesheet" type="text/css" />
-    <!-- FontAwesome 4.3.0 
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
-    <link href="http://code.ionicframework.com/ionicons/2.0.0/css/ionicons.min.css" rel="stylesheet" type="text/css" />
-    Ionicons 2.0.0 -->
     <link href="assets/plugins/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
     <link href="assets/css/ionicons.css" rel="stylesheet" type="text/css" />
     <!-- Theme style -->
     <link href="assets/plugins/adminlte/css/AdminLTE.min.css" rel="stylesheet" type="text/css" />
-    <!-- AdminLTE Skins. Choose a skin from the css/skins 
-         folder instead of downloading all of them to reduce the load. -->
     <link href="assets/plugins/adminlte/css/skins/_all-skins.min.css" rel="stylesheet" type="text/css" />
     <!-- iCheck -->
     <link href="assets/plugins/iCheck/flat/blue.css" rel="stylesheet" type="text/css" />
@@ -37,6 +31,7 @@
     <link href="assets/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css" rel="stylesheet" type="text/css" />
     <!-- local style -->
     <link href="assets/css/style.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/bootstrap-select.min.css" rel="stylesheet" type="text/css" />
     
     <!--treeGrid bootstrap -->
     <link href="assets/plugins/treegrid/css/jquery.treegrid.css" rel="stylesheet" type="text/css" />
@@ -62,13 +57,7 @@
     <script src="assets/plugins/datatables/jquery.datatables.js"></script>
     <script src="assets/plugins/datatables/datatables.bootstrap.js"></script>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
-    <![endif]-->
-
+    
     <script>
         (function($)
          {
@@ -82,17 +71,18 @@
             }
 
         )(jQuery);
+
     </script>
     
 </head>
 <body class="skin-yellow fixed">
     <div class="wrapper">
         <header class="main-header">
-            <!-- Logo 
-            <a href="<?php base_url() ?>" class="logo"><img src="assets/images/logo.png" />
-            </a>-->
+            
+            <a href="<?php base_url() ?>" class="logo"><img src="assets/images/logo1.png" /><b style="color: #FF6900; font-size:20px;"> SNR FURINDO</b>
+            </a>
             <!-- Header Navbar: style can be found in header.less -->
-            <h1 style="margin: 0px; padding-top:5px;  height: 70px;" class="logo"> <a href="<?php base_url() ?>" /><b>SNR FURINDO</b></a></h1>
+            <!-- <h1 style="margin: 0px; padding-top:5px;  height: 70px;" class="logo"> <a href="<?php base_url() ?>" /><b>SNR FURINDO</b></a></h1> -->
             <nav class="navbar navbar-static-top" role="navigation">
                 
                 <!-- Navbar Left -->
@@ -107,15 +97,16 @@
                    <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                           <!-- User Account: style can be found in dropdown.less -->
+                          <?php $user = $this->db->query("SELECT * from mst_karyawan where id_karyawan = '".$_SESSION['IDUser']."'"); ?>
                           <li class="dropdown user user-menu">
                             <a data-toggle="dropdown" class="dropdown-toggle" href="#" aria-expanded="false">
-                              <img alt="User Image" class="user-image" src="assets/images/icons/user.png">
+                              <img alt="User Image" class="user-image" src="uploads/<?php echo $user->row()->foto; ?>">
                               <span class="hidden-xs"><?php echo $daftarProfilOperator[0]['NamaLengkap']; ?></span>
                             </a>
                             <ul class="dropdown-menu">
                               <!-- User image -->
                               <li class="user-header">
-                                <img alt="User Image" class="img-circle" src="assets/images/icons/user.png">
+                                <img alt="User Image" class="img-circle" src="uploads/<?php echo $user->row()->foto; ?>">
                                 <p>
                                   <?php echo $daftarProfilOperator[0]['NamaLengkap']." - ".$daftarProfilOperator[0]['Jabatan']; ?>
                                   <?php 
@@ -128,7 +119,7 @@
                               <!-- Menu Footer-->
                               <li class="user-footer">
                                 <div class="pull-left">
-                                  <a class="btn btn-default btn-flat" href="#">Profile</a>
+                                  <a class="btn btn-default btn-flat" type="button" onclick="profil(<?php echo $_SESSION['IDUser'] ?>)">Profile</a>
                                 </div>
                                 <div class="pull-right">
                                   <a class="btn btn-default btn-flat" href="user/logout">Logout</a>
@@ -142,3 +133,10 @@
 
             </nav>
         </header>
+        <script type="text/javascript">
+        function profil(idx)
+        { 
+            var htmlOut = ajaxFillGridJSON('admin/profil2', {ID : idx});
+            $(".content-wrapper").html(htmlOut);
+        }
+        </script>

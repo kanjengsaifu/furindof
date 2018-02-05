@@ -129,13 +129,13 @@
   
         public function GetDaftarProduct()
         {
-          $this->selectQuery = $this->db->query("SELECT * from tbl_product order by product_id desc");
+          $this->selectQuery = $this->db->query("SELECT * from mst_product order by product_id desc");
        
           $arrSelectQuery = array();
 
           foreach ($this->selectQuery->result_array() as $row) {
 
-            $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>";
+            $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow()'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow()'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span></button>&nbsp;<button type='button' class='btn btn-xs btn-info' onclick='dialogFormCopy()'><span class='glyphicon glyphicon-floppy-disk' aria-hidden='true'></span></button>";
 
             $arrSelectQuery[] = array('idx'    => $row['product_id'],
                                       'kode'   => $row['product_code'],                                      

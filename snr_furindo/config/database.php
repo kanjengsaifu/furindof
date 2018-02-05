@@ -45,17 +45,19 @@
 | the active record class
 */
 
-$active_group = 'timesheetSyncore';
+$active_group = 'snrexportfurindo';
 $active_record = TRUE;
 
-$db['timesheetSyncore']['hostname'] = '127.0.0.1';
-$db['timesheetSyncore']['username'] = 'root';
-$db['timesheetSyncore']['password'] = '';
-$db['timesheetSyncore']['database'] = 'furindo-try';
-$db['timesheetSyncore']['dbdriver'] = 'mysql';
-$db['timesheetSyncore']['dbprefix'] = '';
-$db['timesheetSyncore']['pconnect'] = TRUE;
-$db['timesheetSyncore']['db_debug'] = TRUE;
+$db['snrexportfurindo']['hostname'] = '127.0.0.1';
+$db['snrexportfurindo']['username'] = 'root';
+$db['snrexportfurindo']['password'] = '';
+//$db['timesheetSyncore']['database'] = 'furindo-try';
+//$db['snrexportfurindo']['database'] = 'snr_dummy';
+$db['snrexportfurindo']['database'] = 'snr_new';
+$db['snrexportfurindo']['dbdriver'] = 'mysql';
+$db['snrexportfurindo']['dbprefix'] = '';
+$db['snrexportfurindo']['pconnect'] = TRUE;
+$db['snrexportfurindo']['db_debug'] = TRUE;
 $db['timesheetSyncore']['cache_on'] = FALSE;
 $db['timesheetSyncore']['cachedir'] = '';
 $db['timesheetSyncore']['char_set'] = 'utf8';

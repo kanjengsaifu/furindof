@@ -1,13 +1,14 @@
 <aside class="main-sidebar">
     <!-- sidebar: style can be found in sidebar.less -->
     <?php $a=$_SESSION['IDUser']; ?>
+    <?php $user = $this->db->query("SELECT * from mst_karyawan where id_karyawan = '".$_SESSION['IDUser']."'"); ?>
     <section class="sidebar" style="height: auto;">
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="assets/images/icons/user.png" class="img-circle" alt="User Image" />
+                <img src="uploads/<?php echo $user->row()->foto; ?>" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">
-                <p><?php echo 'Administrator'; ?></p>
+                <p><?php echo $user->row()->nama_karyawan; ?></p>
 
                 <a data-toggle="offcanvas" role="button" href="#"><i class="fa fa-circle text-success"></i> Online</a>
             </div>

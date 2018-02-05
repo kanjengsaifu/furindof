@@ -7,7 +7,7 @@
 	  	<div class="box-body">
 	  		<div class="box-header">
 				<button type="button" class="btn btn-sm btn-primary" id="btnTambahBaru"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;Tambah Baru</button>
-				<button type="button" class="btn btn-sm btn-primary" id="btnCetak"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak PDF</button>		
+				<!-- <button type="button" class="btn btn-sm btn-primary" id="btnCetak"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak PDF</button>	 -->	
 			</div>
 	  		<div class="form-control" style="min-height:450px;">
 				<div id="ajaxTreeGrid"></div>
@@ -18,99 +18,120 @@
 </div>
 
  <div class="modal hide" id="dialogFormBaru" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
-	 <div class="modal-dialog">
+	 <div class="modal-dialog" style="min-width:70%">
 	    <div class="modal-content">
 	      <div class="modal-header">
 	        <h4 class="modal-title" id="FormTambahData">Tambah Data Karyawan</h4>
 	      </div>
 	      <div class="modal-body">
 	      	<div class="pesanBaru"></div>
-	      		<form id="formBaru" class="form-horizontal" action="admin/TambahKaryawan" method="post">
-	      			<div class="form-group">
-					    <label for="kodeKaryawan" class="col-sm-2 control-label">Kode</label>
-					    <div class="col-sm-10">
-				    	  	<input type="text" name="kodeKaryawan" id="kodeKaryawan" class="form-control"/> 	
-					    </div>
-				    </div>
-				    
-				    <div class="form-group">
-					    <label for="namaKaryawan" class="col-sm-2 control-label">Nama</label>
-					    <div class="col-sm-10">
-					       	<input id="namaKaryawan" name="namaKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>				    
-				    
+	      		     		
+				<div class="form-horizontal">
+	      			<div class="row">
+	      				<div class="col-sm-6">
+	      				<?php echo form_open_multipart('admin/do_upload');?>	      					
+	      					<div class="form-group">
+				                <label for="email" class="control-label col-sm-2">Foto :</label>
+				                <div class="col-sm-10">          
+				                <input type="file" name="userfile" id="foto"></input> <br />
+				                  <div style="padding:20px; line-height:10; text-align:center;border:1px dashed #000; min-height:100px;">
+				                    <img id="blah" src="#" alt="Rekomendasi (215 x 215) px">
+				                    <!-- <input type="hidden" name="kosong" id="kosong"></input> -->
+				                  </div>
+				                  <small>* format gambar : gif, jpg, png, jpeg, bmp</small>
+				                </div> <!-- <div class="col-sm-9">  -->
+				              </div>
+				              <input type='submit' name='submit' value='upload' />
+				            </form>
+				              <form id="formBaru" enctype="multipart/form-data" action="admin/TambahKaryawan" method="post"> 
+			      			<div class="form-group">
+							    <label for="kodeKaryawan" class="col-sm-2 control-label">Kode</label>
+							    <div class="col-sm-10">
+						    	  	<input type="text" name="kodeKaryawan" id="kodeKaryawan" class="form-control"/> 	
+							    </div>
+						    </div>
+						    
+						    <div class="form-group">
+							    <label for="namaKaryawan" class="col-sm-2 control-label">Nama</label>
+							    <div class="col-sm-10">
+							       	<input id="namaKaryawan" name="namaKaryawan" value="" type="text" class="form-control"/>
+							    </div>
+						    </div>
+						</div>
+						<div class="col-sm-6">
+						    <div class="form-group">
+							    <label for="jabatan" class="col-sm-2 control-label">Jabatan </label>
+							    <div class="col-sm-10">
+							       	<select name="jabatan" class="form-control">
+							       		<option value=''>:: Pilih Jabatan ::</option>
+							       		<?php  
+							       			$CI = get_instance();
+							       			$selectQuery =  $CI->db->query("select id_jabatan as IDJabatan, nama_jabatan as NamaJabatan   
+							       											from ref_jabatan ");
+							       			$arrTipeKaryawan = $selectQuery->result_array();
+							       			foreach ($arrTipeKaryawan as $row) {
+							       				echo "<option value='".$row['IDJabatan']."'>".$row['NamaJabatan']."</option>";
+							       			}
+							       		?>
+							       	</select>
+							    </div>
+						    </div>
 
-				    <div class="form-group">
-					    <label for="jabatan" class="col-sm-2 control-label">Jabatan </label>
-					    <div class="col-sm-10">
-					       	<select name="jabatan" class="form-control">
-					       		<option value=''>:: Pilih Jabatan ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_jabatan as IDJabatan, nama_jabatan as NamaJabatan   
-					       											from ref_jabatan ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDJabatan']."'>".$row['NamaJabatan']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
+						    <div class="form-group">
+							    <label for="alamatKaryawan" class="col-sm-2 control-label">Alamat</label>
+							    <div class="col-sm-10">
+							       	<input id="alamatKaryawan" name="alamatKaryawan" value="" type="text" class="form-control"/>
+							    </div>
+						    </div>
+						
+						    <div class="form-group">
+							    <label for="telpKaryawan" class="col-sm-2 control-label">Telp</label>
+							    <div class="col-sm-10">
+							       	<input id="telpKaryawan" name="telpKaryawan" value="" type="text" class="form-control"/>
+							    </div>
+						    </div>
 
-				    <div class="form-group">
-					    <label for="alamatKaryawan" class="col-sm-2 control-label">Alamat</label>
-					    <div class="col-sm-10">
-					       	<input id="alamatKaryawan" name="alamatKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
+						    <div class="form-group">
+							    <label for="emailKaryawan" class="col-sm-2 control-label">Email</label>
+							    <div class="col-sm-10">
+							       	<input id="emailKaryawan" name="emailKaryawan" value="" type="text" class="form-control"/>
+							    </div>
+						    </div>
 
-				    <div class="form-group">
-					    <label for="telpKaryawan" class="col-sm-2 control-label">Telp</label>
-					    <div class="col-sm-10">
-					       	<input id="telpKaryawan" name="telpKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
+						    <div class="form-group">
+							    <label for="kataSandiKaryawan" class="col-sm-2 control-label">Kata Sandi</label>
+							    <div class="col-sm-10">
+							       	<input id="kataSandiKaryawan" name="kataSandiKaryawan" value="" type="password" class="form-control"/>
+							    </div>
+						    </div>
+						
+						     <div class="form-group">
+							    <label for="group" class="col-sm-2 control-label">Group Pengguna </label>
+							    <div class="col-sm-10">
+							       	<select name="group" id="group" class="form-control">
+							       		<option value=''>:: Pilih Group ::</option>
+							       		<?php  
+							       			$CI = get_instance();
+							       			$selectQuery =  $CI->db->query("select id_group as IDGroup, nama_group as NamaGroup     
+							       											from sys_group where id_group not in (select id_group from sys_group where id_group = 1) ");
+							       			$arrTipeKaryawan = $selectQuery->result_array();
+							       			foreach ($arrTipeKaryawan as $row) {
+							       				echo "<option value='".$row['IDGroup']."'>".$row['NamaGroup']."</option>";
+							       			}
+							       		?>
+							       	</select>
+							    </div>
+						    </div>
 
-				    <div class="form-group">
-					    <label for="emailKaryawan" class="col-sm-2 control-label">Email</label>
-					    <div class="col-sm-10">
-					       	<input id="emailKaryawan" name="emailKaryawan" value="" type="text" class="form-control"/>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="kataSandiKaryawan" class="col-sm-2 control-label">Kata Sandi</label>
-					    <div class="col-sm-10">
-					       	<input id="kataSandiKaryawan" name="kataSandiKaryawan" value="" type="password" class="form-control"/>
-					    </div>
-				    </div>
-
-				     <div class="form-group">
-					    <label for="group" class="col-sm-2 control-label">Group Pengguna </label>
-					    <div class="col-sm-10">
-					       	<select name="group" id="group" class="form-control">
-					       		<option value=''>:: Pilih Group ::</option>
-					       		<?php  
-					       			$CI = get_instance();
-					       			$selectQuery =  $CI->db->query("select id_group as IDGroup, nama_group as NamaGroup     
-					       											from sys_group where id_group not in (select id_group from sys_group where id_group = 1) ");
-					       			$arrTipeKaryawan = $selectQuery->result_array();
-					       			foreach ($arrTipeKaryawan as $row) {
-					       				echo "<option value='".$row['IDGroup']."'>".$row['NamaGroup']."</option>";
-					       			}
-					       		?>
-					       	</select>
-					    </div>
-				    </div>
-
-				    <div class="form-group">
-					    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
-					    <div class="col-sm-10">
-					       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
-					    </div>
-				    </div>
+						    <div class="form-group">
+							    <label for="deskripsi" class="col-sm-2 control-label">Deskripsi</label>
+							    <div class="col-sm-10">
+							       	<textarea id="deskripsi" name="deskripsi" class="form-control"></textarea>
+							    </div>
+						    </div>
+						</div>
+					</div>
+				</div>
 		        </form>  
 	      </div>
 	      <div class="modal-footer">
@@ -230,14 +251,20 @@
 	
 <script>
 	$(document).ready(function () {
-                     
-    	$('#btnTambahBaru').click(function(e)
+
+		$('#btnTambahBaru').click(function(e)
         {
-			e.preventDefault(); 
-			resetForm();
-	    	$('#alertMessage').remove();
-	    	$('#dialogFormBaru').attr('class', 'modal show');               
+			var loadhtml = "<?php echo site_url("admin/addkaryawan")?>";
+			$(".content-wrapper").load(loadhtml);              
         });
+                     
+   //  	$('#btnTambahBaru').click(function(e)
+   //      {
+			// e.preventDefault(); 
+			// resetForm();
+	  //   	$('#alertMessage').remove();
+	  //   	$('#dialogFormBaru').attr('class', 'modal show');               
+   //      });
 
         $('#btnBatalTambahKaryawan').click( function(e){
     		e.preventDefault(); 
@@ -345,6 +372,7 @@
 
 	function dialogFormEditShow()
 	{ 
+		
 		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
 
 		var dataKaryawan = selection[0];
@@ -358,6 +386,10 @@
 	 		telp 			= dataKaryawan.telp,
 	 		email 			= dataKaryawan.email,
 	 		deskripsi 		= dataKaryawan.deskripsi;
+
+	 	var htmlOut = ajaxFillGridJSON('admin/editkaryawan', {ID : idx});
+		$(".content-wrapper").html(htmlOut);  
+		return false;
 
 			$('#alertMessage').remove();
 
@@ -414,6 +446,23 @@
 		kodeTipeKaryawan = ajaxFillGridJSON('admin/GetKodeDivisiAJax', {IDDivisi : IDDivisi}); 
 		$(objReference).html(kodeTipeKaryawan);
 	}
+
+	function readURL(input){
+      if(input.files&&input.files[0]){
+        var reader = new FileReader();
+
+        reader.onload = function (e){
+          $('#blah').attr('src',e.target.result);
+        }
+
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+ 
+    $("#foto").change(function(){
+        readURL(this);
+         $('#kosong').val('isi');
+    });
             		
 </script>
 

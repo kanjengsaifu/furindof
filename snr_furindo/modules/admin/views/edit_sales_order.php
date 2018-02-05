@@ -186,8 +186,10 @@ $(document).ready(function(){
 
 		$(".date").datepicker({
 			format : "dd-mm-yyyy",
-			autoclose : true
-		});	
+			startDate : new Date('<?php echo date('Y-m-d', strtotime("-".$_SESSION['Akses']." days"))?>'),
+		    endDate : new Date('<?php echo date('Y-m-d', strtotime("+90 days"))?>'),
+			autoclose : true,
+		});		
 		$('.Count').click(function(e)
 	    {
 	    	$('#myModal').attr('class', 'modal hide'); 
@@ -243,25 +245,7 @@ function simpanreg()
 		sendRequestForm('admin/updateso', data, 'box-body');
 		var kodeTipeKaryawan = ajaxFillGridJSON('admin/editso', {IDBidang : idx}); 
 		alert("Data berhasil disimpan.");
-		$('.content-wrapper').html(kodeTipeKaryawan);
-		// var target = "<?php echo site_url("admin/updateso")?>";
-		// 	data = $("#addkso").serialize();
-		// $.post(target, data, function(e){
-		// 	//$(".content-wrapper").html(e);
-		// 	//console.log(e);
-		// 	//return false;
-		// 	//tinymce.triggerSave();
-			
-		// 	//alert("Kode barang sudah digunakan , silahkan ganti yang lain !!!");
-		// 	if(e==1){
-		// 		alert("REFF NO sudah dipakai, Silahkan ganti yang lain !!!");
-		// 	} else{
-		// 		loadhtml = "<?php echo site_url("admin/Sales")?>";
-		// 		alert("Data berhasil disimpan.");
-		// 		$(".content-wrapper").load(loadhtml);
-		// 	}
-		
-		// });
+		$('.content-wrapper').html(kodeTipeKaryawan);		
 	}
 
 </script>

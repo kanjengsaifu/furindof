@@ -13,14 +13,14 @@
 				<label class="col-sm-8 control-label"></label>
 				<div class="col-sm-4">
 					<div class="input-group">
-						<input type="text" id="caridata" oninput="loadGridData(2)" placeholder="Cari data product" value="" class="form-control" autofocus> 
+						<!-- <input type="text" id="caridata" oninput="loadGridData(2)" placeholder="Cari data product" value="" class="form-control" autofocus> 
 						<div class="input-group-addon">
 							<i class="fa fa-search"></i>
-					  	</div>
+					  	</div> -->
 					</div> 
 	  			</div>
 	  		</div>
-	  		<div class="form-control" style="min-height:550px;">
+	  		<div class="form-horizontal" style="min-height:550px;">
 				<table id="example2" class="table table-bordered table-striped">
 		            <thead style="">
 		                <tr>            
@@ -42,6 +42,12 @@
 		            <tbody id="ajaxTreeGrid">                   
 		            </tbody>
 		        </table>
+			</div>
+			<div class="form-horizontal footer">
+				<div class="row" id="">
+					<div class="col-sm-6">
+					</div>
+				</div>				
 			</div>
 		</div> 
 	  </div>
@@ -577,11 +583,11 @@
         $("#example1").dataTable();
         $('#example2').dataTable({
           "bPaginate": true,
-          "bLengthChange": false,
-          "bFilter": false,
+          "bLengthChange": true,
+          "bFilter": true,
           "bSort": true,
-          "bInfo": false,
-          "bAutoWidth": false
+          "bInfo": true,
+          "bAutoWidth": true
         });
       });
     </script>

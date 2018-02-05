@@ -25,12 +25,13 @@
    
    <tr> 
    <th style="border-style:none; font-size:11px; height:-10px;">
-      <img src="<?php echo base_url().'assets/images/logo.png'?>" alt="Logo Bakti Husada"/>
+      <img src="<?php echo base_url().'assets/images/logo11.png'?>" alt="Logo Bakti Husada"/>
     </th>   
     <th colspan="3" style="border-style:none; font-size:11px; height:-10px;">
-      <label style="font-family:courier; font-size:11px; ">KOPERASI BINA SEJAHTERA</label><br>
-      <label style="font-family:courier; font-size:11px; ">Jogotirto Berbah Sleman Yogyakarta</label><br>
-      <label style="font-family:courier; font-size:11px; ">Telp : 085733299999</label>
+      <label style="font-family:courier; font-size:11px; ">C.V. SNR EKSPOR FURINDO</label><br>
+      <label style="font-family:courier; font-size:11px; ">JL. RING ROAD SELATAN, TLAJUK/WOJO RT.7/RW.11</label><br>
+      <label style="font-family:courier; font-size:11px; ">BANGUN HARJO, SEWON, BANTUL, YOGYAKARTA</label><br>
+      <label style="font-family:courier; font-size:11px; ">TEL/FAX: +62-274-3057199</label>
     </th>
     <th colspan="1" style="border-style:none; font-size:11px;">
       <label style="font-family:courier; font-size:11px; ">Nomor : <?php echo $cek->nobukti; ?></label><br>
@@ -71,8 +72,8 @@
     <td class="tg-s6z2"><?php echo $i; ?></td>
     <td class="tg-031e"><?php echo $row->nomor; ?></td>
     <td class="tg-031e"><?php echo $row->uraian; ?></td>
-    <td class="tg-yw4l"><?php echo rp($row->nominal); ?></td>
-    <td class="tg-yw4l"><?php echo rp($row->nominal*-1); ?></td>
+    <td class="tg-yw4l"><?php if($row->akun == '41001') {echo rp($row->nominal*-1);}else{echo rp($row->nominal);} ?></td>
+    <td class="tg-yw4l"><?php if($row->akun == '41001') {echo rp($row->nominal);}else{echo rp($row->nominal*-1);} ?></td>
   </tr>  
   <?php $i++; }?>
   <!-- <tr>
@@ -85,7 +86,7 @@
       </td>
   </tr>  -->
 </table>
-<br><label style="text-align:left; margin-left:500px;">Jogotirto, <?php echo date("d F Y", strtotime($cek->tgl)); ?> </label>
+<br><label style="text-align:left; margin-left:500px;">Bantul, <?php echo date("d F Y", strtotime($cek->tgl)); ?> </label>
 <br>
 <label style="margin-left:500px;">Dibuat Oleh,</label>
 <!-- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

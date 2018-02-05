@@ -42,6 +42,7 @@
 <script src="assets/plugins/adminlte/js/app.min.js" type="text/javascript"></script>
 <!-- Ajax Generic Purpose Function -->
 <script src="assets/js/ajax/ajax.js" type="text/javascript"></script>
+<script src="assets/js/bootstrap-select.min.js" type="text/javascript"></script>
 <!-- jEditable Bootstrap -->
 <script src="assets/plugins/bootstrap3-editable/js/bootstrap-editable.min.js" type="text/javascript"> </script>
 <!-- CKEditor Bootstrap -->
@@ -56,7 +57,11 @@
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxscrollbar.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxdatatable.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxmenu.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxcalendar.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.grouping.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.edit.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.aggregates.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.pager.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.sort.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.filter.js"></script>
@@ -73,7 +78,10 @@
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxtooltip.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxinput.js"></script>
 <script type="text/javascript" src="assets/plugins/jqwidgets/jqxdata.export.js"></script> 
-<script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.export.js"></script> 
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxgrid.export.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxnotification.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxdraw.js"></script>
+<script type="text/javascript" src="assets/plugins/jqwidgets/jqxchart.core.js"></script> 
 <!-- Bootstrap-switch -->
 <script src="assets/plugins/bootstrap-switch/js/bootstrap-switch.min.js" type="text/javascript"> </script>
 <!-- Bootstrap DateTimePicker -->
@@ -89,7 +97,7 @@
 
 <script>
 $(document).ready(function(e) {
-
+	
     $('a[class="modules"]').click(function(e) {
         e.preventDefault();
         sendRequest($(this).attr('href'), '', 'GET', 'container', 'json', $(this).attr('class'));

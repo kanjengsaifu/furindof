@@ -157,7 +157,9 @@ $(document).ready(function(){
 
 		$(".date").datepicker({
 			format : "dd-mm-yyyy",
-			autoclose : true
+			//startDate : new Date('<?php echo date('Y-m-d', strtotime("-".$_SESSION['Akses']." days"))?>'),
+		   // endDate : new Date('<?php echo date('Y-m-d', strtotime("+90 days"))?>'),
+			autoclose : true,
 		});	
 	});	
 
@@ -175,7 +177,7 @@ function simpanreg()
 			if(e==1){
 				alert("REFF NO sudah dipakai, Silahkan ganti yang lain !!!");
 			} else{
-				loadhtml = "<?php echo site_url("admin/User")?>";
+				loadhtml = "<?php echo site_url("admin/Sales")?>";
 				alert("Data berhasil disimpan.");
 				$(".content-wrapper").load(loadhtml);
 			}

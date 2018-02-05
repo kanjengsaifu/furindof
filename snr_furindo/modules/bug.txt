@@ -1,0 +1,8 @@
+1.Pretty Cash (Debet) SOLVED
+2.Penjualan (Kredit) SOLVED
+3.Data Loncat (dari buffer, loncat ke sales pada waktu di PO) SOLVED dengan tambahan form 
+4.Pemakaian Bahan Penolong (Pada Buku Bantu)
+- PCK (packing) --> kredit  (NOT Solved)
+- Issue (coomon, assembly dst)--> debet (Not Solved)
+5.Import mbak lusi (Lpb cash)
+

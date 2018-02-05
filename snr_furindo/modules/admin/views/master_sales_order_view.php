@@ -149,7 +149,7 @@
               { text: 'Date', cellsAlign: 'left', align: 'center', dataField: 'date', width : '10%'},
               { text: 'Address', cellsAlign: 'left', align: 'center', dataField: 'address', width : '28%'},
               { text: 'Status', cellsAlign: 'left', align: 'center', dataField: 'status', width : '12%'},
-              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '20%' }
+              { text: '', cellsAlign: 'center', align: 'center', dataField: 'action', width: '20  %' }
             ]
         }).on('rowDoubleClick', function(event)
         {	  

@@ -21,25 +21,43 @@
     background: url(../images/icons/admin.png) no-repeat center center;
     width: 50px;
 }
-.headerMenu li a span.icon-laporan {
-    background: url(../images/icons/laporan.png) no-repeat center center;
+.headerMenu li a span.icon-arsip {
+    background: url(../images/icons/arsip.png) no-repeat center center;
     width: 50px;
 }
-.headerMenu li a span.icon-setup {
-    background: url(../images/icons/setup.png) no-repeat center center;
+.headerMenu li a span.icon-po-raw {
+    background: url(../images/icons/po-raw.png) no-repeat center center;
     width: 50px;
 }
-.headerMenu li a span.icon-utilities {
-    background: url(../images/icons/utilities.png) no-repeat center center;
+.headerMenu li a span.icon-po-sm {
+    background: url(../images/icons/po-sm.png) no-repeat center center;
+}
+.headerMenu li a span.icon-lpb {
+    background: url(../images/icons/lpb.png) no-repeat center center;
+}
+.headerMenu li a span.icon-gudang {
+    background: url(../images/icons/sj.png) no-repeat center center;
+}
+.headerMenu li a span.icon-production {
+    background: url(../images/icons/shipment.png) no-repeat center center;
 }
 .headerMenu li a span.icon-akuntansi {
     background: url(../images/icons/akuntansi.png) no-repeat center center;
 }
-.headerMenu li a span.icon-transaksi {
-    background: url(../images/icons/transaksi.png) no-repeat center center;
+.headerMenu li a span.icon-setup {
+    background: url(../images/icons/setup.png) no-repeat center center;
 }
 .navbar-right{
     margin-top: 15px;
+}
+
+.bg_content {
+    background: url(../images/icons/admin_bg.jpg);
+    background-position: left center;
+    position: absolute;
+    width: 100%;
+    background-repeat: no-repeat;
+    opacity: 0.7;
 }
 
 .main-sidebar {
@@ -59,8 +77,8 @@
 }
 .logo img {
     margin: 5px auto;
-    width: 170px;
-    height: 60px;
+    width: 45px;
+    height: 59px;
 }
 .title {
     margin-top: 10px;

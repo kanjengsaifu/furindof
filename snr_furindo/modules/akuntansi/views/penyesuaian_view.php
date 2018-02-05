@@ -142,8 +142,8 @@
 				<div class="row" id="addcol">
 					<div class="col-sm-6">
 						<button type="submit" class="btn btn-sm btn-primary"><span class="glyphicon glyphicon-plus-sign"></span> Simpan Data</button>
-						<button onclick="adddataprint('')" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-print"></span> Simpan Data dan Cetak</button>
-						<button onclick="batal()" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-minus-sign"></span> Batal</button>
+						<!-- <button onclick="adddataprint('')" class="btn btn-sm btn-info"><span class="glyphicon glyphicon-print"></span> Simpan Data dan Cetak</button>
+						<button onclick="batal()" class="btn btn-sm btn-danger"><span class="glyphicon glyphicon-minus-sign"></span> Batal</button> -->
 					</div>
 				</div>		
 				
@@ -206,6 +206,12 @@ $(document).ready(function () {
 		//$("#nomor").val("<?php echo $bkk ?>");
 		getnobkk("<?php echo $bkk ?>");
 		getnobukti("<?php echo $bukti ?>");
+	$(".date").datepicker({
+      format : "dd-mm-yyyy",
+     //startDate : new Date('<?php echo date('Y-m-d', strtotime("-".$_SESSION['Akses']." days"))?>'),
+       //endDate : new Date('<?php echo date('Y-m-d', strtotime("+90 days"))?>'),
+      autoclose : true,
+    });
 	$('#btnCariRekanan').click(function(e)
 
     {
@@ -619,6 +625,12 @@ function loadGridData(tipe){
 
 	function simpanreg()
 	{
+		var cek = $('#total').val().replace(/,/ig,"");
+			num = parseInt(cek);
+		if(num != 0){
+			alert('Data belum balance !'+num);
+			return false;
+		}
 		var target = "<?php echo site_url("akuntansi/savepenyesuaian")?>";
 			data = $("#addkasmasuk").serialize();
 		$.post(target, data, function(e){

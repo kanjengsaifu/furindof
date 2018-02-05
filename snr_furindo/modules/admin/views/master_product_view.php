@@ -21,7 +21,7 @@
 	 <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h4 class="modal-title" id="FormTambahData">Tambah Data Bom</h4>
+	        <h4 class="modal-title" id="FormTambahData">Tambah Data Product</h4>
 	      </div>
 	      <form id="formBaru" class="form-horizontal" onsubmit="simpanreg(); return false;">
 	      <div class="modal-body">
@@ -56,19 +56,19 @@
 				    <div class="form-group">
 					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product Cubic Meter</label>
 					    <div class="col-sm-8">
-				    	  	<input type="number" placeholder="Product CBM" name="cbm" id="cbm" class="form-control"/> 	
+				    	  	<input type="number" step="0.001" placeholder="Product CBM"  name="cbm" id="cbm" class="form-control"/> 	
 					    </div>
 				    </div>
 				    <div class="form-group">
 					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Weight</label>
 					    <div class="col-sm-8">
-				    	  	<input type="number" placeholder="Product Weight" name="weight" id="weight" class="form-control"/> 	
+				    	  	<input type="number" placeholder="Product Weight" step="0.001" name="weight" id="weight" class="form-control"/> 	
 					    </div>
 				    </div>
 				    <div class="form-group">
 					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Bundle</label>
 					    <div class="col-sm-8">
-				    	  	<input type="number" placeholder="Product Bundle" name="bundle" id="bundle" class="form-control"/> 	
+				    	  	<input type="number" step="0.001" placeholder="Product Bundle" name="bundle" id="bundle" class="form-control"/> 	
 					    </div>
 				    </div>
 				    <div class="form-group">
@@ -99,7 +99,7 @@
 	 <div class="modal-dialog">
 	    <div class="modal-content">
 	      <div class="modal-header">
-	        <h4 class="modal-title" id="FormUbahData">Ubah Data Bom</h4>
+	        <h4 class="modal-title" id="FormUbahData">Ubah Data Product</h4>
 	      </div>
 	      <form id="formUbah" class="form-horizontal" onsubmit="updatereg(); return false;">
 	      <input type="hidden" name="idx" id="idx" class="form-control"/> 
@@ -173,6 +173,86 @@
 	  </div>
 	</div>
 </div>
+
+<div class="modal hide" id="dialogFormCopy" tabindex="1" role="dialog" aria-labelledby="FormTambahData" aria-hidden="true">
+	 <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <h4 class="modal-title" id="FormUbahData">Copy Data Product</h4>
+	      </div>
+	      <form id="formCopy" class="form-horizontal" onsubmit="copyreg(); return false;">
+	      <input type="hidden" name="idx" id="idx1" class="form-control"/> 
+	      <div class="modal-body">
+	      	<div class="pesanBaru"></div>
+	      		
+	      			<div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Item COde</label>
+					    <div class="col-sm-8">
+				    	  	<input type="text" oninput="lookUpUsername1(this.value)" placeholder="Product Code" name="code" id="codeubah1" class="form-control" required/> 
+				    	  	<span id="error5" style="margin-top:4px; color: Red; display: none">* kode sudah ada</span>
+                			<span id="error4"  style="margin-top:4px; color: green; display: none">* kode tersedia</span>	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Name</label>
+					    <div class="col-sm-8">
+				    	  	<input type="text" placeholder="Product Name" name="name" id="nameubah1" class="form-control" required/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Deafault Product COst</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Cost" name="cost" id="costubah1" class="form-control"/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product Price</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Price USD" name="price" id="priceubah1" class="form-control"/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Default Product CBM</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" step="0.001" placeholder="Product CBM" name="cbm" id="cbmubah1" class="form-control"/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Weight</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Weight" name="weight" id="weightUbah1" class="form-control"/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Product Bundle</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Product Bundle" name="bundle" id="bundleubah1" class="form-control"/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Biaya Labor</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Biaya Labor" name="labor" id="laborubah1" class="form-control"/> 	
+					    </div>
+				    </div>
+				    <div class="form-group">
+					    <label for="kodeKaryawan" class="col-sm-4 control-label">Biaya Overhead</label>
+					    <div class="col-sm-8">
+				    	  	<input type="number" placeholder="Biaya Overhead" name="overhead" id="overheadubah1" class="form-control"/> 	
+					    </div>
+				    </div>
+		          
+	      </div>
+	      <div class="modal-footer">
+	        <button type="submit" disabled="true" id="tbh2" class="btn btn-success">Copy</button>
+	        <button type="button" class="btn btn-warning" id="btnBatalCopy">Batal</button>
+	      </div>
+	      </form>
+	    </div>
+	  </div>
+	</div>
+</div>
+
 	
 <script>
 	$(document).ready(function () {
@@ -194,6 +274,15 @@
 	    	e.preventDefault(); 
 	    	$('#alertMessage').remove();
 	    	$('#dialogFormUbah').attr('class', 'modal hide');
+	    });
+
+	    $('#btnBatalCopy').click( function(e){
+	    	e.preventDefault(); 
+	    	$('#alertMessage').remove();
+	    	$('#dialogFormCopy').attr('class', 'modal hide');
+	    	document.getElementById("error4").style.display = "none";
+            document.getElementById("error5").style.display = "inline";
+	    	$('#tbh2').prop('disabled', true);
 	    });
 
    		$('#btnTambahKaryawan').click( function(e){
@@ -323,9 +412,46 @@
 
 	}
 
+	function dialogFormCopy()
+	{ 
+		var selection = $("#ajaxTreeGrid").jqxDataTable('getSelection');
+
+		var data = selection[0];
+
+		var	idx      		= data.idx,	
+	 		kode 			= data.kode,	
+	 		nama    		= data.nama,
+	 		harga 			= data.harga,
+	 		cost 			= data.cost,
+	 		cbm 			= data.cbm,
+	 		weight 			= data.weight,
+	 		bundle 			= data.bundle,
+	 		labor 			= data.labor,
+	 		overhead		= data.overhead;
+
+			$('#idx1').val(idx);
+		 	$('#codeubah1').val(kode);
+		 	$('#nameubah1').val(nama);
+		 	$('#priceubah1').val(harga);
+		 	$('#costubah1').val(cost);
+		 	$('#cbmubah1').val(cbm);
+	 		$('#weightUbah1').val(weight);
+	 		$('#bundleubah1').val(bundle);	 		
+	 		$('#laborubah1').val(labor);
+			$('#overheadubah1').val(overhead);
+
+			$('#dialogFormCopy').attr('class', 'modal show');
+
+	}
+
 	function dialogFormUbahClose()
 	{
 		 $('#dialogFormUbah').attr('class', 'modal close');	
+	}
+
+	function dialogFormCopyClose()
+	{
+		 $('#dialogFormCopy').attr('class', 'modal close');	
 	}
 
 	function dialogFormBaruClose()
@@ -350,26 +476,32 @@
 	}
 
 
-	function fillKodeDivisi(objSource, objReference)
-	{
-		
-		var IDBidang = $(objSource).val();
-		kodeTipeKaryawan = ajaxFillGridJSON('admin/GetKodeBidangAJax', {IDBidang : IDBidang}); 
-		$(objReference).html(kodeTipeKaryawan);
-	}
-
-	function fillKodeDivisi(objSource, objReference)
-	{
-		
-		var IDDivisi = $(objSource).val();
-		kodeTipeKaryawan = ajaxFillGridJSON('admin/GetKodeDivisiAJax', {IDDivisi : IDDivisi}); 
-		$(objReference).html(kodeTipeKaryawan);
-	}
-
 	function simpanreg()
 	{
 		var target = "<?php echo site_url("admin/saveproduct")?>";
 			data = $("#formBaru").serialize();
+		$.post(target, data, function(e){
+			$(".content-wrapper").html(e);
+			//console.log(e);
+			return false;
+			//tinymce.triggerSave();
+			
+			//alert("Kode barang sudah digunakan , silahkan ganti yang lain !!!");
+			
+				var htmlOut = ajaxFillGridJSON('admin/Product'); 
+	    		alert("Data berhasil disimpan.");
+	   			$('.content-wrapper').html(htmlOut);
+				// loadhtml = "<?php echo site_url("admin/Bom")?>";
+				// alert("Data berhasil disimpan.");
+				// $(".content-wrapper").load(loadhtml);		
+	
+		});
+	}
+
+	function copyreg()
+	{
+		var target = "<?php echo site_url("admin/saveproduct")?>";
+			data = $("#formCopy").serialize();
 		$.post(target, data, function(e){
 			//$(".content-wrapper").html(e);
 			//console.log(e);
@@ -419,6 +551,25 @@
                 document.getElementById("error2").style.display = "none";
                 document.getElementById("error3").style.display = "inline";
                 $('#tbh').prop('disabled', true);
+            }
+         }  
+    );
+}
+
+function lookUpUsername1(name){
+    $.post( 
+        '<?php echo base_url();?>admin/ajax_lookUpUsername',
+         { code: name },
+         function(response) {  
+            if (response == 1) {
+                //alert('username ok');
+                  document.getElementById("error4").style.display = "inline";
+                  document.getElementById("error5").style.display = "none";
+                $('#tbh2').prop('disabled', false);
+            } else {
+                document.getElementById("error4").style.display = "none";
+                document.getElementById("error5").style.display = "inline";
+                $('#tbh2').prop('disabled', true);
             }
          }  
     );

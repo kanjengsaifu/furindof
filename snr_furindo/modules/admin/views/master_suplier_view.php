@@ -13,23 +13,23 @@
 				<label class="col-sm-8 control-label"></label>
 				<div class="col-sm-4">
 					<div class="input-group">
-						<input type="text" id="caridata" oninput="loadGridData(2)" placeholder="Cari data product" value="" class="form-control" autofocus> 
+						<!-- <input type="text" id="caridata" oninput="loadGridData(2)" placeholder="Cari data product" value="" class="form-control" autofocus> 
 						<div class="input-group-addon">
 							<i class="fa fa-search"></i>
-					  	</div>
+					  	</div> -->
 					</div> 
 	  			</div>
 	  		</div>
-	  		<div class="form-control" style="min-height:550px;">
+	  		<div class="form-horizontal" style="min-height:560px;">
 				<table id="example2" class="table table-bordered table-striped">
 		            <thead style="">
 		                <tr>            
 		                    <th class="sorting" tabindex='0' style="text-align:center; width:5%"> SID</th>
 		                    <th class="sorting" tabindex='1' style="text-align:center; width:7%"> Kode</th>
-		                    <th class="sorting" tabindex='2' style="text-align:center; width:16%"> Nama Suplier</th>                    
-		                    <th class="sorting" tabindex='3' style="text-align:center; width:30%"> Alamat </th>
+		                    <th class="sorting" tabindex='2' style="text-align:center; width:18%"> Nama Suplier</th>                    
+		                    <th class="sorting" tabindex='3' style="text-align:center; width:31%"> Alamat </th>
 		                    <th class="sorting" tabindex='4' style="text-align:center; width:10%"> Telepon </th>
-		                    <th class="sorting" tabindex='5' style="text-align:center; width:17%"> Email </th>
+		                    <th class="sorting" tabindex='5' style="text-align:center; width:14%"> Email </th>
 		                    <th class="hidden" tabindex='6' style="text-align:center; width:10%"> Telpon 2 </th>
 		                    <th class="hidden" tabindex='7' style="text-align:center; width:10%"> Fax </th>
 		                    <th class="hidden" tabindex='8' style="text-align:center; width:10%"> city </th>
@@ -42,6 +42,12 @@
 		            <tbody id="ajaxTreeGrid">                   
 		            </tbody>
 		        </table>
+			</div>
+			<div class="form-horizontal footer">
+				<div class="row" id="addcol">
+					<div class="col-sm-6">
+					</div>
+				</div>				
 			</div>
 		</div> 
 	  </div>
@@ -577,8 +583,8 @@
         $("#example1").dataTable();
         $('#example2').dataTable({
           "bPaginate": true,
-          "bLengthChange": false,
-          "bFilter": false,
+          "bLengthChange": true,
+          "bFilter": true,
           "bSort": true,
           "bInfo": false,
           "bAutoWidth": false
