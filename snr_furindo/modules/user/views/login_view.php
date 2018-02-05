@@ -38,7 +38,7 @@
             <form action="user/login" method="post" class="loginForm">
               <a style="padding-left:124px"><img src="assets/images/logo1.png" /></a>
               <h3 style="text-align: center;" class="form-signin-heading">SNR EXPORT FURINDO</h3>
-              <h5 style="text-align: center;">Kunden RT 05, Sendangsari, Pajangan, Bantul, Yogyakarta</h5>
+              <h5 style="text-align: center;">Kunden RT 055, Sendangsari, Pajangan, Bantul, Yogyakarta</h5>
               <hr/>
 
                 <input type="hidden" id="<?php echo config_item('csrf_token_name'); ?>" name="<?php echo config_item('csrf_token_name'); ?>" value="<?php echo GenerateNewCRSFHash() ?>" />
