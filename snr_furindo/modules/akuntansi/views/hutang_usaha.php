@@ -198,6 +198,11 @@ function DetailSM(idm){
 		//loadhtml = "<?php echo site_url("akuntansi/DetailPembayaran")?>";
 		$(".content-wrapper").html(loadhtml);
 	}
+	function DetailJasa(idm){
+		loadhtml = ajaxFillGridJSON('akuntansi/DetailPembayaranjasa', {IDBidang : idm});
+		//loadhtml = "<?php echo site_url("akuntansi/DetailPembayaran")?>";
+		$(".content-wrapper").html(loadhtml);
+	}
 	
 function loadGridDataHutang(){
 

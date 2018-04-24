@@ -41,8 +41,8 @@
   }
 </style>
 <p style="text-align:center; font-weight:bodt">
-<label style="font-family:courier; font-size:18px; ">KOPERASI BINA SEJAHTERA</label><br>
-<label style="font-family:courier; font-size:18px; ">JOGOTIRTO BERBAH SLEMAN YOGYAKARTA</label><br>
+<label style="font-family:courier; font-size:18px; ">SNR EKSPOR FURINDO</label><br>
+<label style="font-family:courier; font-size:18px; ">Kunden RT 05, Sendangsari, Pajangan, Bantul, Yogyakarta</label><br>
 <label style="font-family:courier; font-size:18px; ">LAPORAN LABA RUGI</label><br>
 <label style="font-family:courier; font-size:12px; ">PERIODE :<?php $tgl = date("d F ", strtotime('1-01-2016')); echo $tgl; ?> S/d <?php $tgl = date("d F Y"); echo $tgl; ?></label><br>
 </p>

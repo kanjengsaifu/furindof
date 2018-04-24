@@ -80,8 +80,8 @@
 						<div class="form-group">
 						<label for="Nomor" class="col-sm-3 control-label">Catatan :</label>
 							<div class="col-sm-8">
-								<input type="hidden" name="pembayaran" value="<?php echo $lpb->lpb_liquid_code; ?>"/>
-								<textarea class="form-control" id="catatan" name="catatan">Pembayaran LPB <?php echo $lpb->lpb_liquid_code; ?></textarea>
+								<input type="hidden" name="pembayaran" value="<?php echo $lpb->lpb_code; ?>"/>
+								<textarea class="form-control" id="catatan" name="catatan">Pembayaran LPB <?php echo $lpb->lpb_nota; ?></textarea>
 							</div>
 						</div>						
 					</div>
@@ -118,7 +118,7 @@
 						 </thead>
 						<tbody name="tabelContent" id="tabelContent">	
             <?php 
-              $nominal = $this->db->query("SELECT sum(nominal) as nominal from trx_jurnal where akun = '22001' AND (pembayaran = '".$lpb->lpb_liquid_code."' OR nobukti = '".$lpb->lpb_liquid_code."')")->row();
+              $nominal = $this->db->query("SELECT sum(nominal) as nominal from trx_jurnal where akun = '22001' AND (pembayaran = '".$lpb->lpb_code."' OR nobukti = '".$lpb->lpb_code."')")->row();
             ?>
               <tr id="tmbinput-0">
                 <td><input type="text" readonly="readonly" value="22001" name="kode[]" id="kode-0" class="form-control autocomplate"></td>
@@ -155,9 +155,9 @@
 							<label for="Nomor" class="col-sm-3 col-sm-offset-1 control-label">Bayar Dari :</label>
 								<div class="col-sm-7">									
 									<div class="input-group">
-                      <input type="text" readonly="" value="KAS DITANGAN IDR" class="form-control" id="kasbank" name="kasbank">
-                      <input type="hidden" id="id_kasbank" name="id_kasbank" value="3">
-                      <input type="hidden" id="bank_code" name="bank_code" value="11102">
+                      <input type="text" readonly="" value="BANK MANDIRI 2620 IDR" class="form-control" id="kasbank" name="kasbank">
+                      <input type="hidden" id="id_kasbank" name="id_kasbank" value="11">
+                      <input type="hidden" id="bank_code" name="bank_code" value="11107">
 									   <span class="input-group-btn">
 						       			<button type="button" id="btnCariKasbank" class="btn btn-warning"><span class="glyphicon glyphicon-search" aria-hidden="true"></span>&nbsp;Cari</button>
 						       	</span>	

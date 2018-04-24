@@ -133,12 +133,12 @@
 		<td style="color:#012473; border-color:#012473; vertical-align:middle;"><?php echo $row->sales_order_ref_no; ?></td>
 		<td style="color:#012473; border-color:#012473; vertical-align:middle;"><?php echo $row->product_code ?></td>
 		<td style="color:#012473; border-color:#012473; vertical-align:middle;"><?php echo $row->product_name ?></td>
-		<td style="text-align: right, vertical-align:middle; vertical-align:middle;"><?php echo $d_qty = $row->purchase_order_detail_qty;?></td>
+		<td style="text-align:center; vertical-align:middle; vertical-align:middle;"><?php echo $d_qty = $row->purchase_order_detail_qty;?></td>
 		<!-- <td style="text-align: right, vertical-align:middle;"><?php //echo $d_qty = $row->total_qty;?></td>	 -->
 		<td style="color:#012473; border-color:#012473; vertical-align:middle;"><?php echo $row->unit_name ?></td>
 		<td style="text-align: right; border-color:#012473; vertical-align:middle;" ><?php $price = $row->purchase_order_detail_price; echo 'Rp '.number_format($price); ?></td>
 		<td style="text-align: right; border-color:#012473; vertical-align:middle;" ><?php $ttl_price = $d_qty*$price; echo 'Rp '.number_format($ttl_price); ?></td>
-		<td><?php echo $row->purchase_order_detail_desc ?></td>
+		<td style="text-align: center; border-color:#012473; vertical-align:middle;"><?php echo $row->purchase_order_detail_desc ?></td>
 		<?php if ($row->product_photo == '') { ?>
 			<td></td>
 		<?php } else { ?>
@@ -154,7 +154,7 @@
 
 	<tfoot style="color:#012473; border-color:#012473;">
 		<th style="color:#012473; border-color:#012473;" colspan="3"><b>Total</b></th>
-		<td style="text-align: right; border-color:#012473; font:weight;"><b><?php echo $total_qty; ?></b></td>
+		<td style="text-align: center; border-color:#012473; font:weight;"><b><?php echo $total_qty; ?></b></td>
 		<th style="color:#012473; border-color:#012473;" colspan="2"></th>
 		<td style="text-align: right; border-color:#012473; font:weight;"><b><?php if( $total_price> 0 ) { echo 'Rp '.number_format($total_price); } ?></b></td>
 

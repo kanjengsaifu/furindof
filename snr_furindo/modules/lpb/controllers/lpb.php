@@ -107,6 +107,13 @@
 
            
     }
+    public function lpb_jasa()
+    {
+      
+            $this->load->view('master_lpb_jasa_view');                
+
+           
+    }
 
     public function lpb_umum()
     {
@@ -181,6 +188,22 @@
 
            
     }
+    public function tambah_lpb_jasa()
+    {
+            $tgl2 = date('m');
+            $tgl3 = date('Y');
+            $cek = $this->db->query("SELECT lpb_code from trx_lpb_jasa where MONTH(lpb_date) = '".$tgl2."' AND YEAR(lpb_date) = '".$tgl3."' order by lpb_id DESC");
+            $tgl = date('Y');
+            $tgl1 = date('M');
+            if($cek->num_rows() == 0){
+              $data['nomor'] = '000/SNR JASA-'.$tgl1.'/'.$tgl;
+            }else{
+              $data['nomor'] = $cek->row()->lpb_code;
+            }
+            $this->load->view('tambah_lpb_jasa_view', $data);                
+
+           
+    } 
 
     public function tambah_lpb_umum()
     {       
@@ -259,7 +282,16 @@
             where lpb_liquid_id = '".$idx."'");
             $this->load->view('edit_lpb_bebas_view', $data);
     }  
+    public function edit_lpb_jasa()
+    {
+      $idx = $this->input->post("IDBidang");
+      $data['LPB'] = $this->db->query("SELECT * from trx_lpb_jasa inner join trx_shipment on trx_shipment.shipment_id = trx_lpb_jasa.shipment_id 
+        inner join mst_provider on mst_provider.provider_id=trx_lpb_jasa.provider_id where trx_lpb_jasa.lpb_id = '".$idx."'")->row();
+      $data['LPBDet'] = $this->db->query("SELECT * from trx_lpb_jasa_detail where lpb_id = '".$idx."'");
+            $this->load->view('edit_lpb_jasa_view', $data);                
 
+           
+    }
 		function addTableRekanan(){
             $this->checkCredentialAccess();
 
@@ -287,6 +319,41 @@
                                         <button type="button" class="btn btn-xs btn-success"  onclick="addRekanan('.$row->provider_id.','.$nama.','.$code.','.$phone.','.$address.','.$row->purchase_order_id.','.$cat.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
                                       </td>
                                 </tr>';
+              $i++;                      
+            }     
+            echo $strContent;            
+          }
+           function addTableSales(){
+            $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            $idproduct = $this->input->post("idx");
+            //$this->load->model('kasbank_model', 'ModelKasbank');
+            $arrContent = $this->db->query("SELECT shipment_id, shipment_code,shipment_container_code from trx_shipment");           
+            
+           
+            foreach($arrContent->result() as $row){ 
+
+             
+              if($arrContent == 0) 
+              {
+                $status = 'hidden';
+                
+              } else{
+                $status = '';
+                         
+                //$hh ='<td> <img width="20" src="upload/'.$row->nama_file.'"/></td> ';
+                $code = "'".$row->shipment_code."'";
+                $nama = "'".str_replace(" ","_",$row->shipment_id)."'";
+                $strContent.='<tr class="record '.$status.'">   
+                            <td>'.$row->shipment_id.'</td>                                                                         
+                                      <td>'.$row->shipment_code.'</td>                                      
+                                      <td>'.$row->shipment_container_code.'</td>                                       
+                                      <td>
+                                        <button type="button" class="btn btn-xs btn-success"  onclick="addSales('.$row->shipment_id.','.$code.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                      </td>
+                                </tr>';
+                }
               $i++;                      
             }     
             echo $strContent;            
@@ -358,6 +425,38 @@
             }     
             echo $strContent;            
           }
+          
+           function addTableRekananJasa(){
+            $this->checkCredentialAccess();
+
+            $this->checkIsAjaxRequest();
+            $idproduct = $this->input->post("idx");
+            //$this->load->model('kasbank_model', 'ModelKasbank');
+            $arrContent = $this->db->query("SELECT * from mst_provider where provider_categories_id = 5 AND (provider_code like '%".$idproduct."%' OR provider_name like '%".$idproduct."%')");           
+            
+            $i=1; 
+            $strContent = '';
+
+            foreach($arrContent->result() as $row){               
+                //$hh ='<td> <img width="20" src="upload/'.$row->nama_file.'"/></td> ';
+                $tgl = date('mdy');
+                $code = "'".$row->provider_code.''.$tgl."'";
+                $nama = "'".str_replace(" ","_",$row->provider_name)."'";
+                $phone = "'".str_replace(" ","_",$row->provider_phone)."'";
+                $address = "'".str_replace(" ","_",$row->provider_city)."'";
+                $strContent.='<tr class="record">   
+                            <td>'.$row->provider_id.'</td>                                                                         
+                                      <td>'.$row->provider_code.'</td>                                      
+                                      <td>'.$row->provider_name.'</td>                                       
+                                      <td>
+                                        <button type="button" class="btn btn-xs btn-success"  onclick="addRekanan('.$row->provider_id.','.$nama.','.$code.','.$phone.','.$address.')"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span> Pilih</button>
+                                      </td>
+                                </tr>';
+              $i++;                      
+            }     
+            echo $strContent;            
+          }
+
 
            function addTablePO(){
             $this->checkCredentialAccess();
@@ -934,6 +1033,116 @@
           $data7['nominal'] = $ttl;
           $this->db->insert("trx_jurnal", $data7);
         }
+        public function saveLPBJasa()
+          {
+            //echo "<pre>";print_r($_POST);"</pre>";exit();            
+           $cek = $this->db->query("SELECT * from trx_lpb_jasa where provider_id = '".$this->input->post("id_customer")."' AND lpb_code = '".$this->input->post("nomor")."'");
+            if($cek->num_rows() !=0  ){   
+            $idso = $cek->row()->lpb_id;
+            $data['lpb_code'] = $this->input->post("nomor");
+            $data['shipment_id'] = $this->input->post("id_sales");
+            $this->db->where('lpb_id',$idso);
+            $this->db->update("trx_lpb_jasa",$data);
+
+            }else{
+
+            $data['lpb_code'] = $this->input->post("nomor");
+            $data['shipment_id'] = $this->input->post("id_sales");
+            $data['provider_id'] = $this->input->post("id_customer");
+            $data['lpb_nota'] = $this->input->post("note");
+            $data['lpb_date'] = date("Y-m-d", strtotime($this->input->post("tgllpb")));
+            $data['nota_date'] = date("Y-m-d", strtotime($this->input->post("tglreg")));
+            
+            $this->db->insert("trx_lpb_jasa", $data);
+            
+            $idso = $this->db->insert_id();
+
+          }
+            $c_kontak = count($this->input->post("material"));
+          for($i=0; $i<$c_kontak;$i++)
+          {
+            $data2['lpb_id'] = $idso;
+            $data2['material_name'] = $_POST['material'][$i];
+            $data2['lpb_detail_qty'] = $_POST['qty'][$i];
+            $data2['lpb_detail_price'] = strToCurrDB($_POST['nominal'][$i]);
+            $data2['lpb_detail_desc'] = $_POST['desc'][$i];
+            $this->db->insert("trx_lpb_jasa_detail", $data2);
+          }
+
+          $cus = $this->input->post("id_customer");
+          $profit = $this->db->query("SELECT * from mst_provider where provider_id = '".$cus."'");
+          $ttl = strToCurrDB($this->input->post("total"));   
+
+          $hutang = $profit->row()->provider_hutang+$ttl;
+          $data4['provider_hutang'] = $hutang;
+          $this->db->where('provider_id',$cus);
+          $this->db->update("mst_provider", $data4);
+       
+
+          $cek1 = $this->db->query("SELECT * from trx_jurnal order by id_jurnal DESC");       
+          $jml1 = $cek1->row()->id_jurnal;
+          $jml_det1=0;
+          if ($jml1 == 0) {
+            $data16['nomor']= 'JU-0001';
+          } else if($jml1 < 10){
+            $jml_det1 = $jml1+1;
+            $data16['nomor']= 'JU-000'.$jml_det1;
+          } else if($jml1 < 100){
+            $jml_det1 = $jml1+1;
+            $data16['nomor']= 'JU-00'.$jml_det1;
+          } else if($jml1 < 1000){
+            $jml_det1 = $jml1+1;
+            $data16['nomor']= 'JU-0'.$jml_det1;
+          } else {
+            $jml_det1 = $jml1+1;
+            $data16['nomor']= 'JU-'.$jml_det1;
+          }
+          $data16['tgl'] = date("Y-m-d");
+          $data16['uraian'] = 'BEBAN EXPORT';
+          $data16['memo'] = 'LPB Jasa '.$profit->row()->provider_name;
+          $data16['akun'] = '62002';
+          $data16['nobukti'] = $this->input->post("nomor");       
+          $data16['id_kategori'] = 2;
+          $data16['id_lpb_jasa'] = $idso;
+          $data16['provider_id'] = $cus;
+          $data16['dateentry'] = date("Y-m-d");
+          $data16['userentry'] = $_SESSION['IDUser'];
+          $data16['jenis'] = 'uk';
+          $data16['nominal'] = '-'.$ttl;
+          $this->db->insert("trx_jurnal", $data16);
+
+          $jml2 = $jml1+1;
+          $jml_det2=0;
+          if ($jml2 == 0) {
+            $data17['nomor']= 'JU-0001';
+          } else if($jml2 < 10){
+            $jml_det2 = $jml2+1;
+            $data17['nomor']= 'JU-000'.$jml_det2;
+          } else if($jml2 < 100){
+            $jml_det2 = $jml2+1;
+            $data17['nomor']= 'JU-00'.$jml_det2;
+          } else if($jml2 < 1000){
+            $jml_det2 = $jml2+1;
+            $data17['nomor']= 'JU-0'.$jml_det2;
+          } else {
+            $jml_det2 = $jml2+1;
+            $data17['nomor']= 'JU-'.$jml_det2;
+          }
+          $data17['tgl'] = date("Y-m-d");
+          $data17['uraian'] = 'HUTANG USAHA';
+          $data17['memo'] = 'LPB Jasa '.$profit->row()->provider_name;
+          $data17['akun'] = '22001';
+          $data17['nobukti'] = $this->input->post("nomor");       
+          $data17['id_kategori'] = 1;
+          $data17['id_lpb_jasa'] = $idso;
+          $data17['provider_id'] = $cus;
+          $data17['dateentry'] = date("Y-m-d");
+          $data17['userentry'] = $_SESSION['IDUser'];
+          $data17['jenis'] = 'um';
+          $data17['nominal'] = $ttl;
+          $this->db->insert("trx_jurnal", $data17);          
+        }
+
 
         public function saveLPBSMBebas()
           {
@@ -1413,6 +1622,71 @@
           $this->db->where('id_lpb_liquid',$idso);
           $this->db->update("trx_jurnal", $data6);
         }
+        public function updateLPBJasa()
+          {
+            //echo "<pre>";print_r($_POST);"</pre>";exit(); 
+             //echo "<pre>";print_r($_POST);"</pre>";exit(); 
+           $cek = $this->db->query("SELECT * from trx_lpb_jasa where provider_id = '".$this->input->post("id_customer")."' AND lpb_code = '".$this->input->post("nomor")."'");
+            if($cek->num_rows()  !=0 ){
+            $idso = $cek->row()->lpb_id;
+            $data['lpb_code'] = $this->input->post("nomor");
+            $data['provider_id'] = $this->input->post("id_customer");
+            //$data['provider_id'] = $this->input->post("id_customer");
+            $data['shipment_id'] = $this->input->post("id_sales");
+
+            $data['lpb_nota'] = $this->input->post("note");
+            $data['lpb_date'] = date("Y-m-d", strtotime($this->input->post("tgllpb")));
+            $data['nota_date'] = date("Y-m-d", strtotime($this->input->post("tglreg")));
+            $this->db->where('lpb_id',$idso);
+            $this->db->update("trx_lpb_jasa", $data);
+
+          } else {
+
+
+            $data['lpb_code'] = $this->input->post("nomor");
+            $data['shipment_id'] = $this->input->post("id_sales");
+            $data['provider_id'] = $this->input->post("id_customer");
+            $data['lpb_nota'] = $this->input->post("note");
+            $data['lpb_date'] = date("Y-m-d", strtotime($this->input->post("tgllpb")));
+            $data['nota_date'] = date("Y-m-d", strtotime($this->input->post("tglreg")));
+            
+            $this->db->insert("trx_lpb_jasa", $data);
+            $idso = $this->db->insert_id();
+
+          }
+            $c_kontak = count($this->input->post("material"));
+          for($i=0; $i<$c_kontak;$i++)
+          {
+            $idDet = $_POST['iddetail'][$i];
+            if($idDet != 0){
+              $data2['lpb_id'] = $idso;
+              $data2['material_name'] = $_POST['material'][$i];
+              $data2['lpb_detail_qty'] = $_POST['qty'][$i];
+              $data2['lpb_detail_price'] = strToCurrDB($_POST['nominal'][$i]);
+              $data2['lpb_detail_desc'] = $_POST['desc'][$i];
+              $this->db->where('lpb_detail_id',$idDet);
+              $this->db->update("trx_lpb_jasa_detail", $data2);
+            }else {
+              $data2['lpb_id'] = $idso;
+              $data2['material_name'] = $_POST['material'][$i];
+              $data2['lpb_detail_qty'] = $_POST['qty'][$i];
+              $data2['lpb_detail_price'] = strToCurrDB($_POST['nominal'][$i]);
+              $data2['lpb_detail_desc'] = $_POST['desc'][$i];
+              $this->db->insert("trx_lpb_jasa_detail", $data2);
+            }
+          }
+          $ttl = strToCurrDB($this->input->post("total"));
+          $data7['nominal'] = $ttl;
+          $this->db->where('id_lpb_jasa',$idso);
+          $this->db->where('akun','62002');
+          $this->db->update("trx_jurnal", $data7);
+
+          $data8['nominal'] = '-'.$ttl;
+          $this->db->where('id_lpb_jasa',$idso);
+          $this->db->where('akun','22001');
+          $this->db->update("trx_jurnal", $data8);
+          
+        }
 
         public function updateLPBSMBebas()
           {
@@ -1581,6 +1855,19 @@
                 echo $this->ModelRaw->GetDaftarLpbSm(); 
         }
 
+        public function GetDaftarLpbJasa()
+        {
+          $this->checkCredentialAccess();
+
+                $this->checkIsAjaxRequest();
+                
+                $this->load->model("lpb_model", "ModelRaw");
+                
+                echo $this->ModelRaw->GetDaftarLpbJasa(); 
+        }
+
+
+
         public function GetDaftarLpbUmum()
         {
           $this->checkCredentialAccess();
@@ -1636,6 +1923,19 @@
           $this->db->update("mst_provider", $data4);           
           
         }
+        public function HapusLpbJasa()
+          {
+            $this->checkCredentialAccess();
+            $this->checkIsAjaxRequest();
+
+            $idx = $this->input->post('ID');
+            
+
+            $this->db->delete('trx_lpb_jasa', array('lpb_id' => $idx));
+            $this->db->delete('trx_lpb_jasa_detail', array('lpb_id' => $idx));
+            $this->db->delete('trx_jurnal', array('id_lpb_jasa' => $idx));
+
+          }
 
         public function HapusLpbUmum()
         {

@@ -41,29 +41,35 @@
   }
 </style>
 <p style="text-align:center; font-weight:bodt">
-<label style="font-family:courier; font-size:18px; ">KOPERASI BINA SEJAHTERA</label><br>
-<label style="font-family:courier; font-size:18px; ">JOGOTIRTO BERBAH SLEMAN YOGYAKARTA</label><br>
+<label style="font-family:courier; font-size:18px; ">SNR EKSPOR FURINDO</label><br>
+<label style="font-family:courier; font-size:18px; ">Kunden RT05, Sendangsari, Pajangan, Bantul, Yogyakarta</label><br>
 <label style="font-family:courier; font-size:18px; ">NERACA</label><br>
-<label style="font-family:courier; font-size:12px; ">PER : <?php $tgl = date("F Y"); echo $tgl; ?></label><br>
+<label style="font-family:courier; font-size:12px; ">PER : <?php $Sampai=$_POST['Sampai'];echo $Sampai; ?></label><br>
 </p>
 <table id="tables"  width="100%" cellspacing="10" aria-describedby="tabel transaksi" role="grid" class="table table-bordered" style="font-family:courier; font-size:14px;">
-            
+    
     <tr role="row">
       <td colspan="3" width="650" style="text-align:left;"><b>AKTIVA</b></td>                                          
     </tr>            
     <tbody name="tabelContent" id="tabelContent">
     <?php 
       $jml = 0;   
+      $Dari=$_POST['Dari'];
+      $Sampai=$_POST['Sampai'];
         
       $a=0; 
       foreach ($aktiva->result() as $kas) { 
+      $ajs = $this->db->query("SELECT * from ajs_jurnal_detail where akun ='".$kas->kode_kasbank."' AND id_ajs_jurnal=".$idz."")->row();
+      $ajsNilai=!isset($ajs->nominal)?0:$ajs->nominal;
+      $aktif = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
+                trx_jurnal.akun where status = 0 and level !=0 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$akhir."') and trx_jurnal.akun='".$kas->kode_kasbank."'")->row(); 
       $a++;
-        $jml += $kas->total; ?>
+        $jml += $aktif->total+$ajsNilai; ?>
         
       <tr>
         <td style="text-align:center;"><?php echo $kas->kode_kasbank; ?></td>
         <td><?php echo $kas->nama_kasbank; ?></td>
-        <td style="text-align:right;"><?php echo rp($kas->total); ?></td>               
+        <td style="text-align:right;"><?php echo rp($aktif->total+$ajsNilai); ?></td>               
       </tr>
     <?php } ?>                      
       
@@ -76,16 +82,25 @@
         <td colspan="3" style="text-align:left;"><b>PASSIVA</b></td>               
       </tr>
     <?php 
-      $jml_pasiva = 0;    
-        
-      $a=0; 
-      foreach ($pasiva->result() as $kas1) { 
-      $a++;
-        if($kas1->total < 0){
-          $kas1->total = $kas1->total*-1;
-        }
-        
-        $jml_pasiva += $kas1->total; ?>
+              $jml_pasiva= 0; 
+              $jml_hutang =0; 
+                
+              $a=0; 
+              foreach ($pasiva->result() as $kas1) { 
+              $ajs = $this->db->query("SELECT * from ajs_jurnal_detail where akun ='".$kas1->kode_kasbank."' AND id_ajs_jurnal=".$idz."")->row();
+              $ajsNilai=!isset($ajs->nominal)?0:$ajs->nominal;
+              $pasif = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
+                trx_jurnal.akun where status = 1 and mst_kasbank.id_induk =38 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$akhir."') and trx_jurnal.akun='".$kas1->kode_kasbank."'")->row();
+              $a++;
+                $kas1->total = $pasif->total+$ajsNilai;
+                if($kas1->total < 0){
+                  $kas1->total = $kas1->total*-1;
+                }
+                
+                $jml_pasiva += $kas1->total;
+                $jml_hutang += $kas1->total; ?>
+                
+            
         
       <tr>
         <td style="text-align:center;"><?php echo $kas1->kode_kasbank; ?></td>
@@ -93,27 +108,74 @@
         <td style="text-align:right;"><?php echo rp($kas1->total); ?></td>                
       </tr>
     <?php } ?>    
+    <tr>
+                <td></td>
+                <td colspan="1" style="text-align:left;"><b>Total Hutang</b></td>
+                <td style="text-align:right;"><b><?php echo 'Rp '.number_format($jml_hutang).'.00'; ?></b></td>
+              </tr> 
+
       
-      <tr>
-        <td style="text-align:center;"></td>
-        <td>Laba tahun berjalan</td>
-        <td style="text-align:right;"><?php $laba = $debet->nominal-$kredit->nominal+32476377+11558920; echo rp($laba); ?></td>               
-      </tr>       
-      
-      <tr>
-        <td></td>
-        <td colspan="1" style="text-align:left;"><b>Jumlah</b></td>
-        <td style="text-align:right;"><b><?php echo rp($jml_pasiva+$laba); ?></b></td>
-      </tr>
-      <tr>
-        <td colspan="3"></td>
-      </tr>             
-    </tbody>            
+     <tr>
+                <td colspan="3" style="text-align:left; background: #A19DE2;">EKUITAS</td>                
+              </tr>
+            <?php 
+              $jml_ekuitas = 0;   
+                
+              $a=0; 
+              foreach ($ekuitas->result() as $kas2) { 
+              $ajs = $this->db->query("SELECT * from ajs_jurnal_detail where akun ='".$kas2->kode_kasbank."' AND id_ajs_jurnal=".$idz."")->row();
+              $ajsNilai=!isset($ajs->nominal)?0:$ajs->nominal;
+              $ekuit = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
+                trx_jurnal.akun where status = 1 and mst_kasbank.id_induk =46 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$akhir."') and trx_jurnal.akun='".$kas2->kode_kasbank."'")->row();
+              $a++;
+                $kas2->total = $ekuit->total+$ajsNilai;
+                if($kas2->total < 0){
+                  $kas2->total = $kas2->total*-1;
+                }
+                
+                $jml_pasiva += $kas2->total;
+                $jml_ekuitas += $kas2->total; ?>
+              <tr>
+                <td style="text-align:center;"><?php echo $kas2->kode_kasbank; ?></td>
+                <td><?php echo $kas2->nama_kasbank; ?></td>
+                <td style="text-align:right;"><?php echo 'Rp '.number_format($kas2->total).'.00'; ?></td>               
+              </tr>
+            <?php } ?>
+              <tr>
+                <td></td>
+                <td colspan="1" style="text-align:left;"><b>Total Ekuitas</b></td>
+                <td style="text-align:right;"><b><?php echo 'Rp '.number_format($jml_ekuitas).'.00'; ?></b></td>
+              </tr>
+
+              <?php 
+                for ($i=0; $i < 18 ; $i++) {                  
+              ?>
+                <tr>
+                  <td colspan="3" style="color:white;">1</td>
+                </tr>
+              <?php } ?>    
+              
+              <tr>
+                <td style="text-align:center;"></td>
+                <td>Laba tahun berjalan</td>                
+                <td style="text-align:right;"><?php $laba = $debet->nominal+$kredit->nominal; echo 'Rp '.number_format($laba).'.00'; ?></td>  
+                            
+              </tr>       
+              
+              <tr>
+                <td></td>
+                <td colspan="1" style="text-align:left;"><b>Jumlah</b></td>
+                <td style="text-align:right;"><b><?php echo 'Rp '.number_format($jml_pasiva+$laba).'.00'; ?></b></td>
+              </tr>
+              <tr>
+                <td colspan="3"></td>
+              </tr>             
+            </tbody>                
   </table>
 <br>
 <br>
 <p style="text-align:right;">
-<label style="font-family:courier; font-size:12px;">Jogotirto,<?php $tgl = date("d F Y"); echo $tgl; ?></label>
+<label style="font-family:courier; font-size:12px;">Bantul,<?php $tgl = date("d F Y"); echo $tgl; ?></label>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br><br>
 <label style="font-family:courier; font-size:12px;">Dibuat Oleh,</label>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;

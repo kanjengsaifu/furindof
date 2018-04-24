@@ -115,6 +115,16 @@
 							</div>
 						</div>
 						<div class="form-group">
+						  <label class="control-label col-sm-3">Kategories:</label>
+						  <div style="margin-top:5px;" class="col-sm-8">          
+							<select required id="kategories" name="kategories" class="form-control">
+								<option value="">--PILIH Jenis Order--</option>
+								<option value="sales">Sales</option>
+								<option value="buffer">Buffer</option>
+							</select>
+						  </div>
+					  </div>
+						<div class="form-group">
 						<label for="Nomor" class="col-sm-3 control-label">Note :</label>
 							<div class="col-sm-8">
 								<textarea class="form-control" name="note"><?php echo $PO->purchase_order_note ?></textarea>

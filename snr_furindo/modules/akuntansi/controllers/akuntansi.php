@@ -162,6 +162,25 @@
             echo $content;
 
 		}
+		public function BayarHutangJasa()
+
+		{
+			$idx = $this->input->post("idx");
+			$data['lpb'] = $this->db->query("SELECT trx_lpb_jasa.*, nominal, mst_provider.* from trx_lpb_jasa inner join mst_provider on mst_provider.provider_id = trx_lpb_jasa.provider_id 
+				left join trx_jurnal on trx_lpb_jasa.lpb_id = trx_jurnal.id_lpb_jasa where akun = '22001' AND trx_lpb_jasa.lpb_id = '".$idx."'")->row();
+			$cari = $this->db->query("SELECT nobukti from trx_jurnal where nobukti like '%BKK%' order by nobukti DESC");
+
+			if ($cari->num_rows()==0) {
+				$data['bkk'] = 'BKK-0000';
+			}else{
+				$data['bkk'] = $cari->row()->nobukti;
+			}
+
+            $content = $this->load->view('input_bayar_hutangJasa', $data, true);
+              
+            echo $content;
+
+		}
 
 		public function DepositPembayaran()
 
@@ -191,6 +210,11 @@
 	        $idx['so_id'] = $this->input->post("IDBidang");
 	        $this->load->view('detail_pembayaranSM', $idx); 
 	    }
+	    function DetailPembayaranJasa(){
+	        $idx['so_id'] = $this->input->post("IDBidang");
+	        $this->load->view('detail_pembayaranjasa', $idx); 
+	    }
+
 
 		function GetDetailPembayaran(){
       	//echo "<pre>";print_r($_POST);"</pre>";exit();
@@ -278,6 +302,37 @@
                                       <td>'.rp($nominal->nominal).'</td>
                                       <td>
                                         <button type="button" class="btn btn-xs btn-success" onclick="bayar('.$row->lpb_liquid_id.')"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Bayar</button>
+                                      </td>
+                                </tr>';
+              $i++; 
+              }                     
+            }     
+            echo $strContent;
+        }
+         function GetDetailPembayaranJasa(){
+      	//echo "<pre>";print_r($_POST);"</pre>";exit();
+        $idx = $this->input->post("idx");
+        
+        $arrContent = $this->db->query("SELECT trx_lpb_jasa.*, nominal, mst_provider.*  from trx_lpb_jasa inner join mst_provider on mst_provider.provider_id = trx_lpb_jasa.provider_id 
+			left join trx_jurnal on trx_lpb_jasa.lpb_id = trx_jurnal.id_lpb_jasa  where akun = '22001' AND trx_lpb_jasa.provider_id = '".$idx."'");           
+      
+            $i=1; 
+            $strContent = '';
+
+            foreach($arrContent->result() as $row){               
+                $nominal = $this->db->query("SELECT sum(nominal) as nominal from trx_jurnal where akun = '22001' AND (pembayaran = '".$row->lpb_code."' OR nobukti = '".$row->lpb_code."')")->row();
+                $code = "'".$row->provider_code."'";
+                $nama = "'".str_replace(" ","_",$row->provider_name)."'";
+                if($nominal->nominal != 0){
+                $strContent.='<tr class="record">   
+                            <td>'.$i.'</td>      
+                            		  <td>'.$row->lpb_date.'</td>                                                                   
+                                      <td>'.$row->lpb_nota.'</td>                                      
+                                      <td>'.$row->provider_name.'</td>
+                                      <td>'.$row->provider_address.'</td> 
+                                      <td>'.rp($nominal->nominal).'</td>
+                                      <td>
+                                        <button type="button" class="btn btn-xs btn-success" onclick="bayar('.$row->lpb_id.')"><span class="glyphicon glyphicon-usd" aria-hidden="true"></span> Bayar</button>
                                       </td>
                                 </tr>';
               $i++; 

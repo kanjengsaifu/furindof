@@ -36,9 +36,29 @@
 <div class="content">        
 	<div class="box box-primary">
 		<div class="box-body">			
-			<div class="box-header">					
+			<div class="box-header">
+			<form target="_blank" id="fftgpelamar" method="POST" action="<?php echo site_url("laporan/printneraca")?>">
+  				 				
 
-				<button type="button" class="btn btn-sm btn-primary" onclick="dialogFormPrint()"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Laporan</button>	
+				<!--<button type="button" class="btn btn-sm btn-primary" onclick="dialogFormPrint()"><span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;Cetak Laporan</button>	
+				<tr>-->
+		<tr>		
+             
+             <td><input type="hidden" class="date" name="Dari" data-options="formatter:myformatter,parser:myparser" style="width:200px;height:25px"></td>
+         </tr>
+         <tr>
+             <td>Pilih Periode</td>
+             <td>:</td>
+             <td><input class="date" name="Sampai" data-options="formatter:myformatter,parser:myparser" style="width:200px;height:25px"></td>
+       	  </tr>
+        	 <tr>
+         		<td>&nbsp;</td>
+             	<td>&nbsp;</td>
+				<td><input class="btn btn-sm btn-primary" type="submit" name="Submit"  value="Print" style="width:100px;height:30px"></td>
+				<input class="btn btn-sm btn-primary" type="reset" name="reset" value="Reset" style="width:100px;height:30px" onclick="javascript:$('#dlgtglpelamar').dialog('close')"></td>
+				        </tr>
+				 
+				 </form>
 
 			</div>
 						
@@ -46,7 +66,7 @@
 			
 			<div class="header1">
 				<label><b><?php echo strtoupper('NERACA') ?></b></label><br>
-				<label><b><?php $tgl = date('d F Y'); echo strtoupper('PERIODE : ');?></b><input id="tglNeraca" class="date" type="text" readonly value="<?php echo $setDate; ?>" style="padding-left:5px;background:#ddd;" onchange="getNeraca()"></label><br>				
+				<label><b><?php $tgl = date('d F Y'); echo strtoupper('PERIODE : ');?></b><input id="tglNeraca" class="date" type="text" readonly value="<?php echo $setDate; ?>" style="padding-left:5px;background:#ddd;" onchange="getNeraca(); "></label><br>				
 			</div>			
 			
 			
@@ -206,9 +226,9 @@ $(document).ready(function(){
 function dialogFormPrint()
 	{
 		//var htmlOut = ajaxFillGridJSON('transaksi/printbkk', {idx : idx}); 
-
+		//var idx = $('#tglNeraca').val();
 		var htmlOut = "<?php echo site_url("laporan/printneraca")?>";
-        
+        	
         window.open(htmlOut);   
     			   
 

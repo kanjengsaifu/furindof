@@ -89,6 +89,31 @@
           return json_encode($arrSelectQuerySM);
 
         }
+         function GetDaftarLpbJasa()
+        {
+        $this->selectQuery = $this->db->query("SELECT * from trx_lpb_jasa inner join mst_provider on trx_lpb_jasa.provider_id = mst_provider.provider_id order by lpb_id desc");
+       
+       
+          $arrSelectQuery = array();
+          $no = 1;
+          foreach ($this->selectQuery->result_array() as $row) {
+          $idsales = $row['lpb_id'];
+          $fr = $row['lpb_code'];
+          $strDataAction = "<button type='button' class='btn btn-xs btn-warning' onclick='dialogFormEditShow($idsales)'><span class='glyphicon glyphicon-pencil' aria-hidden='true'></span> Edit</button>&nbsp;<button type='button' class='btn btn-xs btn-danger'  onclick='deleteConfirmShow($idsales)'><span class='glyphicon glyphicon-trash' aria-hidden='true'></span> Hapus</button>&nbsp;<button type='button' class='btn btn-xs btn-success' onclick='printLPB($idsales)'><span class='glyphicon glyphicon-print' aria-hidden='true'></span> Print</button>"; 
+          
+          $arrSelectQuerySM[] = array('idx'    => $row['lpb_id'],
+                                      'kode'   => $row['lpb_code'],
+                                      'nama'   => $row['provider_name'],
+                                      'date'    => $row['lpb_date'],
+                                      'note'  => $row['lpb_nota'], 
+                                      'action' => $strDataAction);
+          }
+
+          return json_encode($arrSelectQuerySM);
+
+        }
+
+
 
         function GetDaftarLpbUmum()
         {

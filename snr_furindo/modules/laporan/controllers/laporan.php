@@ -48,7 +48,7 @@
 			$tgl=date('Y-m-d');
 			$data['setDate']= date('d-m-Y');
 			$mulai = '2015-01-01';
-			$akhir = date("Y-m-d");			
+			$akhir  = date("Y-m-d");			
 			if(isset($_POST['tgl'])){
 				$tgl = date("Y-m-d", strtotime($_POST['tgl']));
 				$data['setDate']=$_POST['tgl'];
@@ -218,24 +218,50 @@
 		
 		public function printneraca()
 
-		{
-			$data['debet'] = $this->db->query("SELECT sum(nominal) as nominal from trx_kas_det inner join trx_kas 
-				on trx_kas.id_kas = trx_kas_det.id_kas where (kode in (select kode_pemasukan from mst_pemasukan) 
-				or kode in (select kode_pengeluaran from mst_pengeluaran)) and jenis = 'um'")->row();
+		{	
+			$rampung=date('Y-m-d'); //ambil data pertanggal
+			$tgl=date('Y-m-d');
+			$data['setDate']= date('d-m-Y');
+			$Dari=$_POST['Dari'];
+			if(isset($_POST['Sampai'])){
+				$Sampai = date("Y-m-d", strtotime($_POST['Sampai']));
+				$data['Sampai']=$_POST['Sampai'];
+				//$rampung=$Sampai;
 
-			$data['kredit'] = $this->db->query("SELECT sum(nominal) as nominal from trx_kas_det inner join trx_kas 
-				on trx_kas.id_kas = trx_kas_det.id_kas where (kode in (select kode_pemasukan from mst_pemasukan) 
-				or kode in (select kode_pengeluaran from mst_pengeluaran)) and jenis = 'uk'")->row();
+			}
+			$mulai = '2015-01-01';
+			$akhir = date("Y-m-d");			
+			if(isset($_POST['tgl'])){
+				$tgl = date("Y-m-d", strtotime($_POST['tgl']));
+				$data['setDate']=$_POST['tgl'];
+				$akhir=$tgl;
+			}
+			$IDajs = $this->db->query("SELECT * from ajs_jurnal where status = 1 AND (tgl BETWEEN '".$mulai."' AND '".$Sampai."') order by tgl DESC")->row();
+			$idz=0;
+			$data['mulai']=$mulai;
+			if(isset($IDajs->id)){
+				$idz = $IDajs->id;
+				$data['mulai'] = date("Y-m-d", strtotime('+1 days',strtotime($IDajs->tgl)));
+			}			
+			$data['akhir']=$akhir;
+			$data['idz']=$idz;
+			$data['debet'] = $this->db->query("SELECT sum(nominal) as nominal from trx_jurnal where id_kategori = 3 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$Sampai."')")->row();
+			
+
+			$data['kredit'] = $this->db->query("SELECT sum(nominal) as nominal from trx_jurnal where id_kategori = 2 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$Sampai."')")->row();
 
 			$data['aktiva'] = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
-				trx_jurnal.akun where status = 0 and level !=0 group by kode_kasbank");
+				trx_jurnal.akun where status = 0 and level !=0 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$Sampai."') group by kode_kasbank");
 
 			$data['pasiva'] = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
-				trx_jurnal.akun where status = 1 and level !=0 group by kode_kasbank");
+				trx_jurnal.akun where status = 1 and mst_kasbank.id_induk =38 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$Sampai."') group by kode_kasbank");
+
+			$data['ekuitas'] = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
+				trx_jurnal.akun where status = 1 and mst_kasbank.id_induk =46 and (trx_jurnal.tgl BETWEEN '0000-00-00' AND '".$Sampai."') group by kode_kasbank");
 
 			$data['neraca'] = $this->db->query("SELECT kode_kasbank,nama_kasbank, sum(nominal) as total from mst_kasbank left join trx_jurnal on mst_kasbank.kode_kasbank =
-				trx_jurnal.akun where status = 1 and level !=0 ")->row();		
-
+				trx_jurnal.akun where status = 1 and level !=0 and (trx_jurnal.tgl BETWEEN '".$mulai."' AND '".$Sampai."')")->row();		
+		
             $this->load->view('cetak_neraca', $data);   
 
 		}

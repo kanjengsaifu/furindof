@@ -275,7 +275,7 @@
           return json_encode($arrSelectQuery);
         }
 
-        public function GetDaftarHutang()
+         public function GetDaftarHutang()
         {
                      
             $this->selectQuery = $this->db->query("SELECT sum(nominal) as nominal3, trx_jurnal.*, mst_provider.* from trx_jurnal left join mst_provider on mst_provider.provider_id = trx_jurnal.provider_id where id_kategori = 1 and akun = '22001' group by trx_jurnal.provider_id ");
@@ -286,9 +286,11 @@
               $cek = $this->db->query("SELECT sum(nominal) as nominal2 from trx_jurnal where id_kategori = 1 and akun = '13001' and  provider_id = '".$row['provider_id']."'")->row();
               $idpinjam = $row['provider_id'];
               if($row['provider_categories_id'] == 1){              
-                $strDataAction = "<button type='button' class='btn btn-xs btn-info'  onclick='Detail($idpinjam)'><span class='glyphicon glyphicon-usd' aria-hidden='true'>Detail</span></button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='Deposit($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Deposit</button>";
+                $strDataAction = "<button type='button' class='btn btn-xs btn-info'  onclick='Detail($idpinjam)'><span class='glyphicon glyphicon-usd' aria-hidden='true'>Details</span></button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='Deposit($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Deposit</button>";
+              }elseif ($row['provider_categories_id'] == 5){
+                $strDataAction = "<button type='button' class='btn btn-xs btn-info'  onclick='DetailJasa($idpinjam)'><span class='glyphicon glyphicon-usd' aria-hidden='true'>Details</span></button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='Deposit($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Deposit</button>";
               }else{
-                $strDataAction = "<button type='button' class='btn btn-xs btn-info'  onclick='DetailSM($idpinjam)'><span class='glyphicon glyphicon-usd' aria-hidden='true'>Detail</span></button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='Deposit($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Deposit</button>";
+                $strDataAction = "<button type='button' class='btn btn-xs btn-info'  onclick='DetailSM($idpinjam)'><span class='glyphicon glyphicon-usd' aria-hidden='true'>Details</span></button>&nbsp;<button type='button' class='btn btn-xs btn-success'  onclick='Deposit($idpinjam)'><span class='glyphicon glyphicon-book' aria-hidden='true'></span> Deposit</button>";
               }
               $arrSelectQuery[] = array('idx'    => $row['id_jurnal'],
                                         'tgl'   => date("d-m-Y", strtotime($row['tgl'])),                                   
