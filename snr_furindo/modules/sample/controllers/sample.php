@@ -532,67 +532,67 @@
           $data7['nominal'] = $ttl;
           $this->db->insert("trx_jurnal", $data7);
 
-          // $jml3 = $jml1+2;
-          // $jml_det3=0;
-          // if ($jml3 == 0) {
-          //   $data8['nomor']= 'JU-0001';
-          // } else if($jml3 < 10){
-          //   $jml_det3 = $jml3+1;
-          //   $data8['nomor']= 'JU-000'.$jml_det3;
-          // } else if($jml3 < 100){
-          //   $jml_det3 = $jml3+1;
-          //   $data8['nomor']= 'JU-00'.$jml_det3;
-          // } else if($jml3 < 1000){
-          //   $jml_det3 = $jml3+1;
-          //   $data8['nomor']= 'JU-0'.$jml_det3;
-          // } else {
-          //   $jml_det3 = $jml3+1;
-          //   $data8['nomor']= 'JU-'.$jml_det3;
-          // }
-          // $data8['tgl'] = date("Y-m-d");
-          // $data8['uraian'] = 'BAHAN BAKU (RAW BODY)';
-          // $data8['memo'] = 'LPB '.$profit->row()->provider_name;
-          // $data8['akun'] = '14002';
-          // $data8['nobukti'] = $this->input->post("nomor");       
-          // $data8['id_kategori'] = 1;
-          // $data8['id_lpb'] = $idso;
-          // $data8['provider_id'] = $cus;
-          // $data8['dateentry'] = date("Y-m-d");
-          // $data8['userentry'] = $_SESSION['IDUser'];
-          // $data8['jenis'] = 'uk';
-          // $data8['nominal'] = '-'.$ttl;
-          // $this->db->insert("trx_jurnal", $data8);
+           $jml3 = $jml1+2;
+           $jml_det3=0;
+           if ($jml3 == 0) {
+           $data8['nomor']= 'JU-0001';
+           } else if($jml3 < 10){
+             $jml_det3 = $jml3+1;
+             $data8['nomor']= 'JU-000'.$jml_det3;
+           } else if($jml3 < 100){
+             $jml_det3 = $jml3+1;
+            $data8['nomor']= 'JU-00'.$jml_det3;
+          } else if($jml3 < 1000){
+            $jml_det3 = $jml3+1;
+            $data8['nomor']= 'JU-0'.$jml_det3;
+          } else {
+            $jml_det3 = $jml3+1;
+            $data8['nomor']= 'JU-'.$jml_det3;
+          }
+          $data8['tgl'] = date("Y-m-d");
+          $data8['uraian'] = 'BAHAN BAKU (RAW BODY)';
+          $data8['memo'] = 'LPB '.$profit->row()->provider_name;
+          $data8['akun'] = '14002';
+          $data8['nobukti'] = $this->input->post("nomor");       
+          $data8['id_kategori'] = 1;
+          $data8['id_lpb_sample'] = $idso;
+          $data8['provider_id'] = $cus;
+          $data8['dateentry'] = date("Y-m-d");
+          $data8['userentry'] = $_SESSION['IDUser'];
+          $data8['jenis'] = 'uk';
+          $data8['nominal'] = '-'.$ttl;
+          $this->db->insert("trx_jurnal", $data8);
 
-          // $jml4 = $jml1+3;
-          // $jml_det4=0;
-          // if ($jml4 == 0) {
-          //   $data9['nomor']= 'JU-0001';
-          // } else if($jml4 < 10){
-          //   $jml_det4 = $jml4+1;
-          //   $data9['nomor']= 'JU-000'.$jml_det4;
-          // } else if($jml4 < 100){
-          //   $jml_det4 = $jml4+1;
-          //   $data9['nomor']= 'JU-00'.$jml_det4;
-          // } else if($jml4 < 1000){
-          //   $jml_det4 = $jml4+1;
-          //   $data9['nomor']= 'JU-0'.$jml_det4;
-          // } else {
-          //   $jml_det4 = $jml4+1;
-          //   $data9['nomor']= 'JU-'.$jml_det4;
-          // }
-          // $data9['tgl'] = date("Y-m-d");
-          // $data9['uraian'] = 'PEMAKAIAN BAHAN BAKU';
-          // $data9['memo'] = 'LPB '.$profit->row()->provider_name;
-          // $data9['akun'] = '52001';
-          // $data9['nobukti'] = $this->input->post("nomor");       
-          // $data9['id_kategori'] = 2;
-          // $data9['id_lpb'] = $idso;
-          // $data9['provider_id'] = $cus;
-          // $data9['dateentry'] = date("Y-m-d");
-          // $data9['userentry'] = $_SESSION['IDUser'];
-          // $data9['jenis'] = 'uk';
-          // $data9['nominal'] = '-'.$ttl;
-          // $this->db->insert("trx_jurnal", $data9);
+          $jml4 = $jml1+3;
+          $jml_det4=0;
+          if ($jml4 == 0) {
+            $data9['nomor']= 'JU-0001';
+          } else if($jml4 < 10){
+            $jml_det4 = $jml4+1;
+            $data9['nomor']= 'JU-000'.$jml_det4;
+          } else if($jml4 < 100){
+            $jml_det4 = $jml4+1;
+            $data9['nomor']= 'JU-00'.$jml_det4;
+          } else if($jml4 < 1000){
+            $jml_det4 = $jml4+1;
+            $data9['nomor']= 'JU-0'.$jml_det4;
+          } else {
+            $jml_det4 = $jml4+1;
+            $data9['nomor']= 'JU-'.$jml_det4;
+          }
+          $data9['tgl'] = date("Y-m-d");
+          $data9['uraian'] = 'PEMAKAIAN BAHAN BAKU';
+          $data9['memo'] = 'LPB '.$profit->row()->provider_name;
+          $data9['akun'] = '52001';
+          $data9['nobukti'] = $this->input->post("nomor");       
+          $data9['id_kategori'] = 2;
+          $data9['id_lpb_sample'] = $idso;
+          $data9['provider_id'] = $cus;
+          $data9['dateentry'] = date("Y-m-d");
+          $data9['userentry'] = $_SESSION['IDUser'];
+          $data9['jenis'] = 'uk';
+          $data9['nominal'] = '-'.$ttl;
+          $this->db->insert("trx_jurnal", $data9);
         }
 
         public function updateLPBSample()
